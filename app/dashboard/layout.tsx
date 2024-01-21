@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Be_Vietnam_Pro } from "next/font/google";
+import Sidebar from "../components/sidebar/Sidebar";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -11,5 +12,10 @@ export default function DashboardLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <div>{children}</div>;
+  return (
+    <div className="flex">
+      <Sidebar />
+      <main>{children}</main>
+    </div>
+  );
 }
