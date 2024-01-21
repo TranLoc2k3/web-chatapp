@@ -1,4 +1,3 @@
-import { Be_Vietnam_Pro } from "next/font/google";
 import type { Config } from "tailwindcss";
 
 const config = {
@@ -11,6 +10,10 @@ const config = {
   ],
   prefix: "",
   theme: {
+    screens: {
+      md: "800px",
+      xl: "1200px",
+    },
     container: {
       center: true,
       padding: "2rem",
