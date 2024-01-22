@@ -14,9 +14,9 @@ import MainTabList from "./MainTabList";
 
 function MainTab() {
   return (
-    <div className="w-[64px] pt-8 bg-[#0091ff] h-dvh flex flex-col justify-between">
+    <div className="w-16 min-w-16 pt-8 bg-[#0091ff] h-dvh flex flex-col justify-between">
       <ScrollArea className="h-full">
-        <div className=" mb-8">
+        <div className="mb-8">
           <Avatar className="size-12 mx-auto">
             <DropdownMenu>
               <DropdownMenuTrigger>

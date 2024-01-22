@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Be_Vietnam_Pro } from "next/font/google";
 import Sidebar from "../components/sidebar/Sidebar";
 
 export const metadata: Metadata = {
@@ -13,9 +12,9 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex">
+    <div className="flex relative">
       <Sidebar />
-      <main>{children}</main>
+      <main className="md:flex-1">{children}</main>
     </div>
   );
 }
