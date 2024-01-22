@@ -1,5 +1,5 @@
-function MessagePage() {
-  return <div>Message Page</div>;
+function MessagesDefaultPage() {
+  return null;
 }
 
-export default MessagePage;
+export default MessagesDefaultPage;

@@ -1,8 +1,10 @@
 "use client";
+
 import { Separator } from "@/components/ui/separator";
-import MessageTab from "./MessageTab";
+import MessageTab from "./message-tab/MessageTab";
 import { usePathname } from "next/navigation";
 import ContactTab from "./ContactTab";
+import { cn } from "@/lib/utils";
 
 const data = [
   {
@@ -20,11 +22,8 @@ function ContentTab() {
   const activeTab = data.find((item) => pathName.includes(item.title));
 
   return (
-    <div className="min-w-[344px] flex">
-      <div className="flex-1 flex items-center justify-center">
-        {activeTab?.component}
-      </div>
-
+    <div className={cn("flex w-full", "md:w-[344px]")}>
+      <div className="flex-1">{activeTab?.component}</div>
       <Separator
         className="h-full w-[1px] bg-[#d6dbe1]"
         orientation="vertical"
