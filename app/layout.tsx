@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Be_Vietnam_Pro } from "next/font/google";
+import "./globals.scss";
 
 const vietNam_Pro_Font = Be_Vietnam_Pro({
   subsets: ["latin"],
