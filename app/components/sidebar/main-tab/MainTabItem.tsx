@@ -10,7 +10,10 @@ function MainTabItem({ icon, href }: IProps) {
   const pathName = usePathname();
   const isActive = pathName.includes(href);
   return (
-    <Link className={isActive ? "bg-[#006edc]" : ""} href={href}>
+    <Link
+      className={isActive ? "bg-[#006edc]" : ""}
+      href={`/dashboard/${href}`}
+    >
       {icon}
     </Link>
   );
