@@ -7,12 +7,13 @@ function MessageMainContent({ children }: { children: React.ReactNode }) {
     <div
       className={cn(
         "absolute top-0 left-16 w-[calc(100%-64px)] h-full bg-[#f5f6f7] overflow-hidden",
-        "md:relative md:left-0 md:w-full"
+        "md:relative md:left-0 md:w-full md:flex"
       )}
     >
-      <Header />
-      {children}
-
+      <div className="flex-1">
+        <Header />
+        {children}
+      </div>
       <ConversationInfo />
     </div>
   );
