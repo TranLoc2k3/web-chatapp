@@ -1,6 +1,8 @@
 import { cn } from "@/lib/utils";
 import Header from "./header/Header";
 import ConversationInfo from "./conversation-info/ConversationInfo";
+import ChatInput from "./chat-input/ChatInput";
+import MessageThread from "./MessageThread";
 
 function MessageMainContent({ children }: { children: React.ReactNode }) {
   return (
@@ -10,9 +12,10 @@ function MessageMainContent({ children }: { children: React.ReactNode }) {
         "md:relative md:left-0 md:w-full md:flex"
       )}
     >
-      <div className="flex-1">
+      <div className="relative flex-1">
         <Header />
-        {children}
+        <MessageThread />
+        <ChatInput />
       </div>
       <ConversationInfo />
     </div>
