@@ -1,4 +1,4 @@
-import { UsersRound } from "lucide-react";
+import { Copy, Link, Share, UsersRound } from "lucide-react";
 import SectionWrapper, { SectionButton } from "./SectionWrapper";
 
 interface IProps {
@@ -15,7 +15,13 @@ function ConversationMember({ memberList }: IProps) {
         />
         <SectionButton
           title={`Link tham gia nhóm`}
-          icon={<UsersRound strokeWidth={1.5} />}
+          icon={<Link strokeWidth={1.5} />}
+          subTitle="https://zalo.me/g/ivfwgh854"
+          isLink={true}
+          rightIcon={[
+            <Copy key="copy-icon" strokeWidth={1.5} />,
+            <Share key="share-icon" strokeWidth={1.5} />,
+          ]}
         />
       </SectionWrapper>
     </div>
