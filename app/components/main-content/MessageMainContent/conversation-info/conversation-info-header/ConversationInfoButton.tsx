@@ -1,3 +1,4 @@
+import { TYPE_GROUP } from "@/app/types";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -13,20 +14,23 @@ import { useState } from "react";
 interface IProps {
   // isOpenNotify: boolean,
   // isConversationPinned: boolean
+  typeGroup: TYPE_GROUP;
 }
 
-const HeaderButton = ({
+export const HeaderButton = ({
   title,
   onClick,
   activeIcon,
   nonActiveIcon,
   isActive = false,
+  className,
 }: {
-  title: string;
+  title?: string;
   activeIcon?: React.ReactNode;
   nonActiveIcon?: React.ReactNode;
-  onClick: () => void;
+  onClick?: () => void;
   isActive?: boolean;
+  className?: string;
 }) => {
   return (
     <div className="flex flex-col items-center justify-center p-1 gap-2">
@@ -34,18 +38,23 @@ const HeaderButton = ({
         variant="icon"
         className={cn(
           "rounded-[50%]",
-          `${isActive ? "bg-[#e5efff] hover:bg-[#e5efff]" : "bg-[#eaedf0]"}`
+          `${isActive ? "bg-[#e5efff] hover:bg-[#e5efff]" : "bg-[#eaedf0]"}`,
+          `${className}`
         )}
         size="icon"
         onClick={onClick}
       >
         {isActive ? nonActiveIcon : activeIcon}
       </Button>
-      <span className="text-[#7589A3] text-[11.5px] text-center">{title}</span>
+      {title && (
+        <span className="text-[#7589A3] text-[11.5px] text-center">
+          {title}
+        </span>
+      )}
     </div>
   );
 };
-function ConversationInfoButton() {
+function ConversationInfoButton({ typeGroup }: IProps) {
   const [activeState, setActiveState] = useState({
     isOpenNotify: false,
     isConversationPinned: false,
@@ -88,23 +97,35 @@ function ConversationInfoButton() {
         }
         activeIcon={<Pin width={20} height={20} strokeWidth={1.5} />}
       />
-      <HeaderButton
-        title="Thêm thành viên"
-        activeIcon={
-          <UserRoundPlus
-            className="relative left-[1.5px]"
-            width={20}
-            height={20}
-            strokeWidth={1.5}
+      {typeGroup === TYPE_GROUP.GROUP ? (
+        <>
+          <HeaderButton
+            title="Thêm thành viên"
+            activeIcon={
+              <UserRoundPlus
+                className="relative left-[1.5px]"
+                width={20}
+                height={20}
+                strokeWidth={1.5}
+              />
+            }
+            onClick={() => {}}
           />
-        }
-        onClick={() => {}}
-      />
-      <HeaderButton
-        title="Quản lý nhóm"
-        activeIcon={<Settings width={20} height={20} strokeWidth={1.5} />}
-        onClick={() => {}}
-      />
+          <HeaderButton
+            title="Quản lý nhóm"
+            activeIcon={<Settings width={20} height={20} strokeWidth={1.5} />}
+            onClick={() => {}}
+          />{" "}
+        </>
+      ) : (
+        <HeaderButton
+          title="Tạo nhóm trò chuyện"
+          activeIcon={
+            <UserRoundPlus width={20} height={20} strokeWidth={1.5} />
+          }
+          onClick={() => {}}
+        />
+      )}
     </div>
   );
 }

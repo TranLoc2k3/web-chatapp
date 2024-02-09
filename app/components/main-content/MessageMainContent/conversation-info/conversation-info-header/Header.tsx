@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { TYPE_GROUP } from "../ConversationInfo";
 import ConversationInfoButton from "./ConversationInfoButton";
+import { TYPE_GROUP } from "@/app/types";
 
 interface IProps {
   type: TYPE_GROUP;
@@ -18,7 +18,7 @@ function ConversationInfoHeader({ type, conversationName }: IProps) {
         <p className="text-[17px] text-[#081c36] font-[600]">
           {conversationName}
         </p>
-        <ConversationInfoButton />
+        <ConversationInfoButton typeGroup={TYPE_GROUP.GROUP} />
       </div>
     </div>
   );

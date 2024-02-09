@@ -3,6 +3,7 @@ import Header from "./header/Header";
 import ConversationInfo from "./conversation-info/ConversationInfo";
 import ChatInput from "./chat-input/ChatInput";
 import MessageThread from "./MessageThread";
+import { TYPE_GROUP } from "@/app/types";
 
 function MessageMainContent({ children }: { children: React.ReactNode }) {
   return (
@@ -17,7 +18,7 @@ function MessageMainContent({ children }: { children: React.ReactNode }) {
         <MessageThread />
         <ChatInput />
       </div>
-      <ConversationInfo />
+      <ConversationInfo type={TYPE_GROUP.GROUP} />
     </div>
   );
 }

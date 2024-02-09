@@ -1,18 +1,30 @@
-import { AlarmClock, NotebookPen } from "lucide-react";
+import { AlarmClock, NotebookPen, UsersRound } from "lucide-react";
 import SectionWrapper, { SectionButton } from "./SectionWrapper";
+import { TYPE_GROUP } from "@/app/types";
+import { iconStyle } from "@/app/utils/iconStyle";
 
-function ConversationBoard() {
+interface IProps {
+  typeGroup: TYPE_GROUP;
+}
+function ConversationBoard({ typeGroup }: IProps) {
   return (
     <div>
       <SectionWrapper title="Bảng tin hội thoại">
         <SectionButton
           title="Danh sách nhắc hẹn"
-          icon={<AlarmClock strokeWidth={1.5} />}
+          icon={<AlarmClock {...iconStyle} />}
         />
-        <SectionButton
-          title="Ghi chú, ghim, bình chọn"
-          icon={<NotebookPen strokeWidth={1.5} />}
-        />
+        {typeGroup !== TYPE_GROUP.GROUP ? (
+          <SectionButton
+            title="Ghi chú, ghim, bình chọn"
+            icon={<NotebookPen {...iconStyle} />}
+          />
+        ) : (
+          <SectionButton
+            title="1 nhóm chung"
+            icon={<UsersRound {...iconStyle} />}
+          />
+        )}
       </SectionWrapper>
     </div>
   );
