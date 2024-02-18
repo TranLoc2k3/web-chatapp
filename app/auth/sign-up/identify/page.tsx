@@ -1,10 +1,9 @@
 "use client";
-import { Route } from "lucide-react";
+import { ChevronDown, Lock, PackageCheck } from "lucide-react";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
-
+import { useRouter } from "next/navigation";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 function SignUp() {
@@ -15,6 +14,7 @@ function SignUp() {
   const [phone, setPhone] = useState<string>("");
   const [result, setResult] = useState(false);
   const route = useRouter();
+
   // Xử lý xác thực
   const handleReliable = () => {
     setResult(true);
@@ -30,7 +30,7 @@ function SignUp() {
             Thông tin bảo mật đến với lựa chọn khách hàng
           </h2>
         </div>
-        <div className="bg-white w-[420px] h-[300px] mt-6 ">
+        <div className="bg-white w-[420px] h-[400px] mt-6 ">
           <div className="">
             <h3 className="text-center p-4  border-b">Đăng ký tài khoản</h3>
           </div>
@@ -44,20 +44,42 @@ function SignUp() {
               />
             </div>
           </div>
+          {/* password */}
+          <div className="pl-8 pr-8">
+            <div className="flex mt-8 border-b pb-2">
+              <span className="mr-4">
+                <Lock />
+              </span>
 
+              <input
+                placeholder="Mật khẩu"
+                className="w-full transition focus-visible:outline-none "
+              ></input>
+            </div>
+          </div>
+          {/* confilm password */}
+          <div className="pl-8 pr-8">
+            <div className="flex mt-8 border-b pb-2 ">
+              <span className="mr-4">
+                <PackageCheck />
+              </span>
+
+              <input
+                placeholder="Xác nhận mật khẩu"
+                className="w-full transition  focus-visible:outline-none"
+              ></input>
+            </div>
+          </div>
           {/* log in */}
           <div className="pl-8 pr-8 mt-8">
-            <button
-              className=" bg-blue-500 text-white w-full p-3 rounded-full hover:bg-blue-600"
-              onClick={handleReliable}
-            >
-              Xác thực mã OTP
+            <button className=" bg-blue-500 text-white w-full p-3 rounded-full hover:bg-blue-600">
+              Đăng ký tài khoản
             </button>
           </div>
 
           {/* quên mật khẩu */}
           <div className="pl-8 pr-8 mt-3 text-center">
-            <Link href="/auth/sign-in" className="hover:underline">
+            <Link href="/auth/sign-up" className="hover:underline">
               Quay về
             </Link>
           </div>
