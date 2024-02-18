@@ -1,3 +1,4 @@
+"use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -9,10 +10,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { Cloud, Settings } from "lucide-react";
+import { Cloud, Divide, Settings } from "lucide-react";
 import MainTabList from "./MainTabList";
+import { useState } from "react";
+import InfoUserModal from "../../modal/InfoUserModal";
 
 function MainTab() {
+  const [open, setOpen] = useState<boolean>(false);
+
+  function handleProfileClick() {
+    setOpen(true);
+  }
   return (
     <div className="w-16 min-w-16 pt-8 bg-[#0091ff] h-dvh flex flex-col justify-between">
       <ScrollArea className="h-full">
@@ -26,7 +34,9 @@ function MainTab() {
               <DropdownMenuContent>
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleProfileClick}>
+                  Profile
+                </DropdownMenuItem>
                 <DropdownMenuItem>Billing</DropdownMenuItem>
                 <DropdownMenuItem>Team</DropdownMenuItem>
                 <DropdownMenuItem>Subscription</DropdownMenuItem>
@@ -49,6 +59,9 @@ function MainTab() {
           <Settings color="#FFF" width={28} height={28} />
         </li>
       </ul>
+      <InfoUserModal open={open} onClose={() => setOpen(false)}>
+        <></>
+      </InfoUserModal>
     </div>
   );
 }
