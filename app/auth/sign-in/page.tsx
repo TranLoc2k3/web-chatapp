@@ -1,15 +1,18 @@
 "use client";
-import {
-  CheckSquare2,
-  ChevronDown,
-  Contact2,
-  Lock,
-  MessageSquareText,
-  Smartphone,
-} from "lucide-react";
+import { Lock } from "lucide-react";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 function SignIn() {
+  const [phone, setPhone] = useState<string>("");
+  const customInputStyle = {
+    border: "1px solid #60a5fa",
+    width: "100%",
+  };
   return (
     <div className="bg-gradient-to-bl from-cyan-200 to-blue-400 h-screen w-screen flex justify-center">
       <div>
@@ -26,16 +29,12 @@ function SignIn() {
           </div>
           <div className="pl-8 pr-8">
             <div className="flex mt-8 border-b pb-2">
-              <span className="mr-4">
-                <Smartphone />
-              </span>
-              <span className="flex mr-2">
-                +84 <ChevronDown />
-              </span>
-              <input
-                placeholder="Số điện thoại"
-                className="w-full transition focus-visible:outline-none"
-              ></input>
+              <PhoneInput
+                country={"vn"}
+                value={phone}
+                onChange={(phone) => setPhone(phone)}
+                inputStyle={customInputStyle}
+              />
             </div>
           </div>
           {/* password */}
