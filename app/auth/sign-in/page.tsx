@@ -61,12 +61,7 @@ function SignIn() {
               Đăng nhập với mật khẩu
             </button>
           </div>
-          {/* sign in */}
-          <div className="pl-8 pr-8 mt-3">
-            {/* <button className=" border border-blue-100 text-blue-500 w-full p-3 rounded-full hover:border-blue-500" > */}
-
-            {/* </button> */}
-          </div>
+      
           {/* quên mật khẩu */}
           <div className="pl-8 pr-8 mt-10 text-center">
             <Link className="hover:underline mr-5" href="/auth/sign-up">

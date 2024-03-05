@@ -18,7 +18,7 @@ function SignUp() {
   // Xử lý xác thực
   const handleReliable = () => {
     setResult(true);
-    route.push("/auth/sign-up/identify");
+    route.push("/auth/sign-up/identify/info-signup");
   };
   return (
     <div className="bg-gradient-to-bl from-cyan-200 to-blue-400 h-screen w-screen flex justify-center  ">
@@ -72,7 +72,10 @@ function SignUp() {
           </div>
           {/* log in */}
           <div className="pl-8 pr-8 mt-8">
-            <button className=" bg-blue-500 text-white w-full p-3 rounded-full hover:bg-blue-600">
+            <button
+              className=" bg-blue-500 text-white w-full p-3 rounded-full hover:bg-blue-600"
+              onClick={handleReliable}
+            >
               Đăng ký tài khoản
             </button>
           </div>
