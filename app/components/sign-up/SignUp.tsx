@@ -12,7 +12,7 @@ import {
 import { Loader2, LoaderIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
@@ -37,27 +37,25 @@ function SignUp() {
   const handleOtpChange = (value: number) => {
     setOtp(value);
   };
-  const onCaptchVerify = () => {
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(
-        getAuth(),
-        "recaptcha-container",
-        {
-          size: "invisible",
-          callback: (response: any) => {
-            handleSendOpt();
-          },
-        }
-      );
-    }
-  };
   const handleAuthenticateOtp = () => {
     route.push("/auth/sign-up/identify");
   };
+  const onCaptchaVerify = () => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        {
+          size: "invisible",
+        }
+      );
+      window.recaptchaVerifier.render();
+    }
+  };
   const handleSendOpt = () => {
     // setResult(true);
-    onCaptchVerify();
 
+    onCaptchaVerify();
     const appVerifier = window.recaptchaVerifier;
 
     const formatPh = "+" + phone;
