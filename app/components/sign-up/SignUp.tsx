@@ -33,12 +33,11 @@ function SignUp() {
   const [loading, setLoading] = useState(false);
   const route = useRouter();
   const { toast } = useToast();
-
   const handleOtpChange = (value: number) => {
     setOtp(value);
   };
   const handleAuthenticateOtp = () => {
-    route.push("/auth/sign-up/identify");
+    route.push(`/auth/sign-up/identify?phone=${phone}&verified=true`);
   };
   const onCaptchaVerify = () => {
     if (!window.recaptchaVerifier) {
@@ -52,9 +51,44 @@ function SignUp() {
       window.recaptchaVerifier.render();
     }
   };
+  const onOtpVerify = () => {
+    
+    if (window.confirmationResult) {
+      window.confirmationResult.confirm(otp)
+    .then((result: any) => {
+      handleAuthenticateOtp()
+    })
+    .catch((err: any) => {
+      if (err.code == "auth/invalid-verification-code") {
+        toast({
+          title: "Xác thực không thành công",
+          description: "Mã xác thực không chính xác !",
+          duration: 2000,
+          variant: "destructive",
+        });
+      }
+      else if (err.code == 'auth/code-expired') {
+        toast({
+          title: "Xác thực không thành công",
+          description: "Mã xác thực đã hết hạn !",
+          duration: 2000,
+          variant: "destructive",
+        });
+      }
+      console.log(err);
+      
+    })
+    }
+    else {
+      toast({
+        title: "Xác thực không thành công",
+        description: "Mã xác thực không hợp lệ !",
+        duration: 2000,
+        variant: "destructive",
+      });
+    }
+  }
   const handleSendOpt = () => {
-    // setResult(true);
-
     onCaptchaVerify();
     const appVerifier = window.recaptchaVerifier;
 
@@ -124,7 +158,7 @@ function SignUp() {
           <div className="pl-8 pr-8 mt-8">
             <button
               className=" bg-blue-500 text-white w-full p-3 rounded-full hover:bg-blue-600 flex gap-2 items-center justify-center"
-              onClick={handleAuthenticateOtp}
+              onClick={onOtpVerify}
             >
               {loading && <Loader2 className="animate-spin" />}
               <span>Xác thực mã OTP</span>
