@@ -1,9 +1,11 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-const protectedRoutes = ["/auth/sign-up/identify"];
+const protectedRoutes = [
+  "/auth/sign-up/identify",
+  "/auth/sign-up/identify/user-info",
+];
 const publicRoutes = ["/auth/sign-up"];
-const allow_origins = ["http://localhost:3000"];
 
 export default function middleware(req: NextRequest) {
   if (
@@ -14,3 +16,8 @@ export default function middleware(req: NextRequest) {
     return NextResponse.redirect(absoluteURL.toString());
   }
 }
+
+export const config = {
+  // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
+  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
+};

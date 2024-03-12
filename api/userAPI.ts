@@ -32,6 +32,11 @@ const userAPI = {
         },
       }
     ),
+  onSignIn: (username: string, password: string) =>
+    axiosClient.post("/auth/sign-in", {
+      username,
+      password,
+    }),
 };
 
 export { userAPI };

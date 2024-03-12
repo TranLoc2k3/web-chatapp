@@ -1,14 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { Lock, PackageCheck } from "lucide-react";
-import useSWRMutation from "swr/mutation";
 
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import "react-phone-input-2/lib/style.css";
 import { userAPI } from "@/api/userAPI";
 import { useToast } from "@/components/ui/use-toast";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import "react-phone-input-2/lib/style.css";
 function Identify() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -36,6 +35,13 @@ function Identify() {
           )}`
         );
       }
+    } else {
+      toast({
+        title: "Đăng ký thất bại",
+        description: "Xác nhận mật khẩu thất bại !",
+        duration: 2000,
+        variant: "destructive",
+      });
     }
   };
 

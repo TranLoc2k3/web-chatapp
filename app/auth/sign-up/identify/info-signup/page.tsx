@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Toaster } from "@/components/ui/toaster";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import Image from "next/image";
@@ -57,17 +58,15 @@ function InfoSignUp() {
     }
   };
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
     values.image = file as File;
     values.birthday = format(date as Date, "yyyy-MM-dd");
-    // const res = await userAPI.updateUserInfo(
-    //   `/auth/update-info/${searchParams.get("phone")}`,
-    //   values as any
-    // );
-    // if (res.data.message == "Update information successfully") {
-    //   route.push("/dashboard");
-    // }
+    const res = await userAPI.updateUserInfo(
+      `/auth/update-info/${searchParams.get("phone")}`,
+      values as any
+    );
+    if (res.data.message == "Update information successfully") {
+      route.push("/auth/sign-in");
+    }
     console.log(values);
   }
 
@@ -168,6 +167,7 @@ function InfoSignUp() {
           </Form>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }
