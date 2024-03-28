@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import OtpInput from "@/components/ui/otp-input";
 import { useToast } from "@/components/ui/use-toast";
 import { auth } from "@/configs/firebase.init";
 import {
@@ -13,8 +12,15 @@ import { Loader2, LoaderIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
 
 declare global {
   interface Window {
@@ -29,16 +35,15 @@ const customInputStyle = {
 };
 function SignUp() {
   const [phone, setPhone] = useState<string>("");
-  const [otp, setOtp] = useState<number>(0);
+  const [otp, setOtp] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const route = useRouter();
   const { toast } = useToast();
-
-  const handleOtpChange = (value: number) => {
+  const handleOtpChange = (value: string) => {
     setOtp(value);
   };
   const handleAuthenticateOtp = () => {
-    route.push("/auth/sign-up/identify");
+    route.push(`/auth/sign-up/identify?phone=${phone}&verified=true`);
   };
   const onCaptchaVerify = () => {
     if (!window.recaptchaVerifier) {
@@ -52,9 +57,42 @@ function SignUp() {
       window.recaptchaVerifier.render();
     }
   };
-  const handleSendOpt = () => {
-    // setResult(true);
 
+  const onOtpVerify = () => {
+    if (window.confirmationResult) {
+      window.confirmationResult
+        .confirm(otp)
+        .then((result: any) => {
+          handleAuthenticateOtp();
+        })
+        .catch((err: any) => {
+          if (err.code == "auth/invalid-verification-code") {
+            toast({
+              title: "Xác thực không thành công",
+              description: "Mã xác thực không chính xác !",
+              duration: 2000,
+              variant: "destructive",
+            });
+          } else if (err.code == "auth/code-expired") {
+            toast({
+              title: "Xác thực không thành công",
+              description: "Mã xác thực đã hết hạn !",
+              duration: 2000,
+              variant: "destructive",
+            });
+          }
+          console.log(err);
+        });
+    } else {
+      toast({
+        title: "Xác thực không thành công",
+        description: "Mã xác thực không hợp lệ !",
+        duration: 2000,
+        variant: "destructive",
+      });
+    }
+  };
+  const handleSendOpt = () => {
     onCaptchaVerify();
     const appVerifier = window.recaptchaVerifier;
 
@@ -84,9 +122,9 @@ function SignUp() {
       <div id="recaptcha-container"></div>
       <div>
         <div className="text-center mt-[50px]">
-          <h1 className="text-blue-600 text-5xl font-bold">Zalo</h1>
+          <h1 className="text-blue-600 text-5xl font-bold">TinTin</h1>
           <h2 className="mt-2">
-            Đăng ký tài khoản Zalo <br />
+            Đăng ký tài khoản TinTin <br />
             Thông tin bảo mật đến với lựa chọn khách hàng
           </h2>
         </div>
@@ -116,7 +154,19 @@ function SignUp() {
                   Gửi mã
                 </Button>
               </div>
-              <OtpInput length={6} otp={otp} onOtpChange={handleOtpChange} />
+              <InputOTP
+                value={otp}
+                onChange={handleOtpChange}
+                maxLength={6}
+                pattern={REGEXP_ONLY_DIGITS}
+                render={({ slots }) => (
+                  <InputOTPGroup>
+                    {slots.map((slot, index) => (
+                      <InputOTPSlot key={index} {...slot} />
+                    ))}{" "}
+                  </InputOTPGroup>
+                )}
+              />
             </div>
           </div>
 
@@ -124,7 +174,7 @@ function SignUp() {
           <div className="pl-8 pr-8 mt-8">
             <button
               className=" bg-blue-500 text-white w-full p-3 rounded-full hover:bg-blue-600 flex gap-2 items-center justify-center"
-              onClick={handleAuthenticateOtp}
+              onClick={onOtpVerify}
             >
               {loading && <Loader2 className="animate-spin" />}
               <span>Xác thực mã OTP</span>
