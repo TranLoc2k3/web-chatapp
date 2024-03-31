@@ -1,5 +1,6 @@
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import useSWR from "swr";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,13 +15,20 @@ import { Cloud, Divide, Settings } from "lucide-react";
 import MainTabList from "./MainTabList";
 import { useState } from "react";
 import InfoUserModal from "../../modal/InfoUserModal";
+import { userAPI } from "@/api/userAPI";
+
+const phone = localStorage.getItem("phone");
 
 function MainTab() {
   const [open, setOpen] = useState<boolean>(false);
-
+  const { data, error } = useSWR(
+    `/user/get-user/${phone}`,
+    userAPI.getUserByPhone
+  );
   function handleProfileClick() {
     setOpen(true);
   }
+  if (!data) return null;
   return (
     <div className="w-16 min-w-16 pt-8 bg-[#0091ff] h-dvh flex flex-col justify-between">
       <ScrollArea className="h-full">
@@ -28,7 +36,7 @@ function MainTab() {
           <Avatar className="size-12 mx-auto">
             <DropdownMenu>
               <DropdownMenuTrigger>
-                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarImage src={`${data.urlavatar}`} />
                 <AvatarFallback>CN</AvatarFallback>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
@@ -59,9 +67,11 @@ function MainTab() {
           <Settings color="#FFF" width={28} height={28} />
         </li>
       </ul>
-      <InfoUserModal open={open} onClose={() => setOpen(false)}>
-        <></>
-      </InfoUserModal>
+      {data && (
+        <InfoUserModal user={data} open={open} onClose={() => setOpen(false)}>
+          <></>
+        </InfoUserModal>
+      )}
     </div>
   );
 }

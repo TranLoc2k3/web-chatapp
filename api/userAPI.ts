@@ -37,6 +37,9 @@ const userAPI = {
       username,
       password,
     }),
+
+  getUserByPhone: (url: string) =>
+    axiosClient.get(`${url}`).then((res) => res.data),
 };
 
 export { userAPI };
