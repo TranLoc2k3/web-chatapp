@@ -1,12 +1,19 @@
 "use client";
 import React from "react";
 import { Camera, PenLine } from "lucide-react";
+import Image from "next/image";
 type propTypes = {
   open: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  user: any;
 };
-const InfoUserModal: React.FC<propTypes> = ({ open, onClose, children }) => {
+const InfoUserModal: React.FC<propTypes> = ({
+  open,
+  onClose,
+  children,
+  user,
+}) => {
   return (
     <div
       className={`fixed inset-0 flex justify-center items-center 
@@ -31,16 +38,20 @@ const InfoUserModal: React.FC<propTypes> = ({ open, onClose, children }) => {
             X
           </button>
         </div>
-        <img
-          src="https://res-zalo.zadn.vn/upload/media/2019/9/23/2_1569228369739_53127.jpg"
+        <Image
+          src={user?.urlavatar}
           alt="Thumnail User"
+          height={160}
+          width={100}
           className="h-40 w-full object-cover"
         />
         <span className="block w-full h-px bg-gray-400 my-3"></span>
         <div className="flex items-center">
           <div className="Avatar relative inline-block">
-            <img
-              src="https://github.com/shadcn.png"
+            <Image
+              width={64}
+              height={64}
+              src={user?.urlavatar}
               alt="Avatar"
               className="size-16 rounded-full m-2"
             />
@@ -48,7 +59,7 @@ const InfoUserModal: React.FC<propTypes> = ({ open, onClose, children }) => {
               <Camera />
             </div>
           </div>
-          <h4 className="name text-sm mx-2">Công nghệ mới</h4>
+          <h4 className="name text-sm mx-2">{user?.fullname}</h4>
           <div className="edit-icon hover:bg-gray-200 rounded">
             <PenLine size={12} />
           </div>
@@ -59,15 +70,15 @@ const InfoUserModal: React.FC<propTypes> = ({ open, onClose, children }) => {
           <div className="text-sm">
             <div className="flex my-1">
               <span className="w-32">Giới tính</span>
-              <p>Nam</p>
+              <p>{user?.ismale ? "Nam" : "Nữ"}</p>
             </div>
             <div className="flex my-1">
               <span className="w-32">Ngày sinh</span>
-              <p>01/01/2024</p>
+              <p>{user?.birthday}</p>
             </div>
             <div className="flex my-1">
               <span className="w-32">Điện thoại</span>
-              <p>0123456789</p>
+              <p>{user?.phone.replace(/^84/, "0")}</p>
             </div>
           </div>
         </div>
