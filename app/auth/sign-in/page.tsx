@@ -19,6 +19,7 @@ function SignIn() {
     border: "1px solid #60a5fa",
     width: "100%",
   };
+  console.log(phone)
   const onSignIn = async () => {
     if (!phone || !password) {
       return;
