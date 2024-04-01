@@ -17,7 +17,6 @@ import InfoUserModal from "../../modal/InfoUserModal";
 
 function MainTab() {
   const [open, setOpen] = useState<boolean>(false);
-
   function handleProfileClick() {
     setOpen(true);
   }
