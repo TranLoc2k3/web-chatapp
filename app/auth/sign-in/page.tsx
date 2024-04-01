@@ -27,7 +27,6 @@ function SignIn() {
       const res = await userAPI.onSignIn(phone, password);
       if (res.data === "Success") {
         localStorage.setItem("phone", phone);
-
         route.push("/dashboard");
       }
     } catch (err: any) {

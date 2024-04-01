@@ -25,6 +25,7 @@ function MainTab() {
     `/user/get-user/${phone}`,
     userAPI.getUserByPhone
   );
+
   function handleProfileClick() {
     setOpen(true);
   }

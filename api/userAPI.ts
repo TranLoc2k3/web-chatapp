@@ -1,4 +1,6 @@
 import { axiosClient } from "@/configs/axios.config";
+import { url } from "inspector";
+import { use } from "react";
 
 const userAPI = {
   onSignUp: (
@@ -37,9 +39,14 @@ const userAPI = {
       username,
       password,
     }),
-
   getUserByPhone: (url: string) =>
     axiosClient.get(`${url}`).then((res) => res.data),
+  updatePassword: (url: string,
+    { username, password }: { username: string; password: string }) =>
+    axiosClient.patch(url, {
+      username,
+      password,
+    })
 };
 
 export { userAPI };
