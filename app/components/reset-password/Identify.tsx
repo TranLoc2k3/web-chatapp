@@ -14,31 +14,42 @@ function Identify() {
   const searchParams = useSearchParams();
   const route = useRouter();
   const { toast } = useToast();
-  const onClickSignUp = async () => {
+  const onClickResetPassword = async () => {
     const payload = {
       username: searchParams.get("phone") as string,
       password,
     };
     if (password === confirmPassword) {
       try {
-        const res = await userAPI.onSignUp("/auth/sign-up", payload);
-        if (res.data.message == "Username existing") {
+        const resUpdatePassword = await userAPI.updatePassword("/auth/update-password", payload);
+        if (resUpdatePassword.data.message === "New password must be different from the old one") {
           toast({
-            title: "Đăng ký không thành công",
-            description: "Tài khoản đã tồn tại!",
+            title: "Cập nhật mật khẩu",
+            description: "Mật khẩu mới phải khác mật khẩu cũ!",
             duration: 2000,
             variant: "destructive",
           });
-        } else {
-          route.push(
-            `/auth/sign-up/identify/info-signup?phone=${searchParams.get(
-              "phone"
-            )}`
-          );
+        }
+        else if (resUpdatePassword.data.message === "Update password success") {
+          toast({
+            title: "Cập nhật mật khẩu",
+            description: "Cập nhật mật khẩu thành công!",
+            duration: 2000,
+            variant: "destructive",
+          });
+          route.push("/auth/sign-in");
+        }
+        else if (resUpdatePassword.data.message === "Update password failed") {
+          toast({
+            title: "Cập nhật mật khẩu",
+            description: "Cập nhật mật khẩu thất bại!",
+            duration: 2000,
+            variant: "destructive",
+          });
         }
       } catch (error) {
         toast({
-          title: "Đăng ký không thành công",
+          title:  "Đăng ký không thành công",
           description: "Có lỗi xảy ra khi gửi yêu cầu!",
           duration: 2000,
           variant: "destructive",
@@ -46,7 +57,7 @@ function Identify() {
       }
     } else {
       toast({
-        title: "Đăng ký thất bại",
+        title: "Cập nhật thất bại",
         description: "Xác nhận mật khẩu thất bại !",
         duration: 2000,
         variant: "destructive",
@@ -64,13 +75,13 @@ function Identify() {
         <div className="text-center mt-[50px]">
           <h1 className="text-blue-600 text-5xl font-bold ">Zalo</h1>
           <h2 className="mt-2">
-            Đăng ký tài khoản Zalo <br />
+            Cập nhật mật khẩu TinTin <br />
             Thông tin bảo mật đến với lựa chọn khách hàng
           </h2>
         </div>
         <div className="bg-white w-[420px] mt-6 ">
           <div className="">
-            <h3 className="text-center p-4  border-b">Đăng ký tài khoản</h3>
+            <h3 className="text-center p-4  border-b">Cập nhật mật khẩu</h3>
           </div>
           {/* password */}
           <div className="pl-8 pr-8">
@@ -108,9 +119,9 @@ function Identify() {
           <div className="pl-8 pr-8 mt-8">
             <button
               className=" bg-blue-500 text-white w-full p-3 rounded-full hover:bg-blue-600"
-              onClick={onClickSignUp}
+              onClick={onClickResetPassword}
             >
-              Đăng ký tài khoản
+              Cập nhật mật khẩu
             </button>
           </div>
 
