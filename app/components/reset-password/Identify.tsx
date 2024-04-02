@@ -9,7 +9,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import "react-phone-input-2/lib/style.css";
 function Identify() {
-  const [oldpassword, setOldPassword] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const searchParams = useSearchParams();
@@ -18,7 +17,6 @@ function Identify() {
   const onClickResetPassword = async () => {
     const payload = {
       username: searchParams.get("phone") as string,
-      oldpassword: oldpassword,
       newpassword: password
     };
     if (password === confirmPassword) {
@@ -49,14 +47,6 @@ function Identify() {
             variant: "destructive",
           });
         }
-        else if (resUpdatePassword.data.message = "Old password is incorrect"){
-          toast({
-            title: "Cập nhật mật khẩu",
-            description: "Mật khẩu cũ không chính xác!",
-            duration: 2000,
-            variant: "destructive",
-          });
-        }
       } catch (error) {
         console.log(error)
         toast({
@@ -68,8 +58,8 @@ function Identify() {
       }
     } else {
       toast({
-        title: "Cập nhật thất bại",
-        description: "Xác nhận mật khẩu thất bại !",
+        title: "Cập nhật mật khẩu",
+        description: "Mật khẩu không khớp!",
         duration: 2000,
         variant: "destructive",
       });
@@ -93,23 +83,6 @@ function Identify() {
         <div className="bg-white w-[420px] mt-6 ">
           <div className="">
             <h3 className="text-center p-4  border-b">Cập nhật mật khẩu</h3>
-          </div>
-          {/*old password */}
-          <div className="pl-8 pr-8">
-            <div className="flex mt-8 border-b pb-2">
-              <span className="mr-4">
-                <Lock />
-              </span>
-
-              <input
-                placeholder="Nhập mật khẩu cũ"
-                className="w-full transition focus-visible:outline-none"
-                type="text" // Change the type to "text"
-                onChange={(e) => setOldPassword(e.target.value)}
-                value={oldpassword}
-                required
-              />
-            </div>
           </div>
           {/* newpassword */}
           <div className="pl-8 pr-8">

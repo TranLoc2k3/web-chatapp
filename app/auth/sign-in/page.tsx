@@ -85,6 +85,7 @@ function SignIn() {
                 type="password"
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
+                required
               ></input>
             </div>
           </div>
