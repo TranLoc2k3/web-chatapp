@@ -9,6 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import "react-phone-input-2/lib/style.css";
 function Identify() {
+  const [oldpassword, setOldPassword] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const searchParams = useSearchParams();
@@ -17,7 +18,8 @@ function Identify() {
   const onClickResetPassword = async () => {
     const payload = {
       username: searchParams.get("phone") as string,
-      password,
+      oldpassword: oldpassword,
+      newpassword: password
     };
     if (password === confirmPassword) {
       try {
@@ -47,9 +49,18 @@ function Identify() {
             variant: "destructive",
           });
         }
+        else if (resUpdatePassword.data.message = "Old password is incorrect"){
+          toast({
+            title: "Cập nhật mật khẩu",
+            description: "Mật khẩu cũ không chính xác!",
+            duration: 2000,
+            variant: "destructive",
+          });
+        }
       } catch (error) {
+        console.log(error)
         toast({
-          title:  "Đăng ký không thành công",
+          title:  "Cập nhật không thành công",
           description: "Có lỗi xảy ra khi gửi yêu cầu!",
           duration: 2000,
           variant: "destructive",
@@ -83,7 +94,24 @@ function Identify() {
           <div className="">
             <h3 className="text-center p-4  border-b">Cập nhật mật khẩu</h3>
           </div>
-          {/* password */}
+          {/*old password */}
+          <div className="pl-8 pr-8">
+            <div className="flex mt-8 border-b pb-2">
+              <span className="mr-4">
+                <Lock />
+              </span>
+
+              <input
+                placeholder="Nhập mật khẩu cũ"
+                className="w-full transition focus-visible:outline-none"
+                type="text" // Change the type to "text"
+                onChange={(e) => setOldPassword(e.target.value)}
+                value={oldpassword}
+                required
+              />
+            </div>
+          </div>
+          {/* newpassword */}
           <div className="pl-8 pr-8">
             <div className="flex mt-8 border-b pb-2">
               <span className="mr-4">
@@ -96,10 +124,11 @@ function Identify() {
                 type="password"
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
+                required
               />
             </div>
           </div>
-          {/* confilm password */}
+          {/* confilm newpassword */}
           <div className="pl-8 pr-8">
             <div className="flex mt-8 border-b pb-2 ">
               <span className="mr-4">
@@ -112,6 +141,7 @@ function Identify() {
                 type="password"
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 value={confirmPassword}
+                required
               />
             </div>
           </div>

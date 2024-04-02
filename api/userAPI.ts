@@ -42,10 +42,9 @@ const userAPI = {
   getUserByPhone: (url: string) =>
     axiosClient.get(`${url}`).then((res) => res.data),
   updatePassword: (url: string,
-    { username, password }: { username: string; password: string }) =>
+    { username, oldpassword, newpassword }: { username: string; oldpassword: string; newpassword: string }) =>
     axiosClient.patch(url, {
-      username,
-      password,
+      username, oldpassword, newpassword
     })
 };
 
