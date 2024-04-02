@@ -85,6 +85,7 @@ function SignIn() {
                 type="password"
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
+                required
               ></input>
             </div>
           </div>
@@ -100,7 +101,7 @@ function SignIn() {
 
           {/* quên mật khẩu */}
           <div className="pl-8 pr-8 mt-10 text-center">
-            <Link className="hover:underline mr-5" href="/auth/sign-up">
+            <Link className="hover:underline mr-5" href="/auth/reset-password">
               Quên mật khẩu
             </Link>
             <Link
