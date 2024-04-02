@@ -17,7 +17,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "products111.s3.amazonaws.com",
+        hostname: "products111.s3.ap-southeast-1.amazonaws.com",
       },
     ],
   },

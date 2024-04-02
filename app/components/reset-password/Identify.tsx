@@ -22,7 +22,7 @@ function Identify() {
     if (password === confirmPassword) {
       try {
         const resUpdatePassword = await userAPI.updatePassword("/auth/update-password", payload);
-        if (resUpdatePassword.data.message === "New password must be different from the old one") {
+        if (resUpdatePassword.data.message === "Password is the same") {
           toast({
             title: "Cập nhật mật khẩu",
             description: "Mật khẩu mới phải khác mật khẩu cũ!",
