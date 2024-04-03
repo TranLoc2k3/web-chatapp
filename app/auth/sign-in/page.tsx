@@ -1,5 +1,6 @@
 "use client";
 import { userAPI } from "@/api/userAPI";
+import { useBearStore } from "@/app/global-state/store";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import { Lock } from "lucide-react";
@@ -14,12 +15,12 @@ function SignIn() {
   const [phone, setPhone] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const { toast } = useToast();
+  const setUserPhone = useBearStore((state) => state.setUserPhone);
   const route = useRouter();
   const customInputStyle = {
     border: "1px solid #60a5fa",
     width: "100%",
   };
-  console.log(phone)
   const onSignIn = async () => {
     if (!phone || !password) {
       return;
@@ -27,7 +28,7 @@ function SignIn() {
     try {
       const res = await userAPI.onSignIn(phone, password);
       if (res.data === "Success") {
-        localStorage.setItem("phone", phone);
+        setUserPhone(phone);
         route.push("/dashboard");
       }
     } catch (err: any) {

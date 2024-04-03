@@ -21,16 +21,25 @@ function Identify() {
     };
     if (password === confirmPassword) {
       try {
-        const resUpdatePassword = await userAPI.updatePassword("/auth/update-password", payload);
-        if (resUpdatePassword.data.message === "New password must be different from the old one") {
+        const resUpdatePassword = await userAPI.updatePassword(
+          "/auth/update-password",
+          payload
+        );
+        console.log(resUpdatePassword);
+
+        if (
+          resUpdatePassword.data.message ===
+          "New password must be different from the old one"
+        ) {
           toast({
             title: "Cập nhật mật khẩu",
             description: "Mật khẩu mới phải khác mật khẩu cũ!",
             duration: 2000,
             variant: "destructive",
           });
-        }
-        else if (resUpdatePassword.data.message === "Update password success") {
+        } else if (
+          resUpdatePassword.data.message === "Update password success"
+        ) {
           toast({
             title: "Cập nhật mật khẩu",
             description: "Cập nhật mật khẩu thành công!",
@@ -38,8 +47,9 @@ function Identify() {
             variant: "destructive",
           });
           route.push("/auth/sign-in");
-        }
-        else if (resUpdatePassword.data.message === "Update password failed") {
+        } else if (
+          resUpdatePassword.data.message === "Update password failed"
+        ) {
           toast({
             title: "Cập nhật mật khẩu",
             description: "Cập nhật mật khẩu thất bại!",
@@ -49,7 +59,7 @@ function Identify() {
         }
       } catch (error) {
         toast({
-          title:  "Đăng ký không thành công",
+          title: "Đăng ký không thành công",
           description: "Có lỗi xảy ra khi gửi yêu cầu!",
           duration: 2000,
           variant: "destructive",
