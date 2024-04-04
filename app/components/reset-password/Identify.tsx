@@ -36,7 +36,6 @@ function Identify() {
             title: "Cập nhật mật khẩu",
             description: "Cập nhật mật khẩu thành công!",
             duration: 2000,
-            variant: "destructive",
           });
           route.push("/auth/sign-in");
         } else if (
