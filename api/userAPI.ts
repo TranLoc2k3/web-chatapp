@@ -43,11 +43,11 @@ const userAPI = {
     axiosClient.get(`${url}`).then((res) => res.data),
   updatePassword: (
     url: string,
-    { username, password }: { username: string; password: string }
+    { username, newpassword }: { username: string; newpassword: string }
   ) =>
     axiosClient.patch(url, {
       username,
-      password,
+      newpassword,
     }),
   getAllFriendRequests: (url: string) =>
     axiosClient.get(`${url}`).then((res) => res.data),
