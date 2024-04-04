@@ -22,6 +22,7 @@ import { useBearStore } from "@/app/global-state/store";
 function MainTab() {
   const [open, setOpen] = useState<boolean>(false);
   const userPhone = useBearStore((state) => state.userPhone);
+  // const userPhone = "84847911569";
   const setCountFriendRequest = useBearStore(
     (state) => state.setCountFriendRequest
   );

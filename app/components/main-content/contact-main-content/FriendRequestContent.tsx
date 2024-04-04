@@ -7,6 +7,7 @@ function FriendRequestContent() {
   const countFriendRequest = useBearStore((state) => state.countFriendRequest);
   const [friendRequest, setFriendRequest] = useState<any>([]);
   const userPhone = useBearStore((state) => state.userPhone);
+  // const userPhone = "84847911569";
   useEffect(() => {
     const getAllFriendRequests = async () => {
       const res = await userAPI.getAllFriendRequests(
@@ -16,6 +17,8 @@ function FriendRequestContent() {
     };
     getAllFriendRequests();
   }, [countFriendRequest, userPhone]);
+  console.log("friendRequest");
+  console.log(friendRequest);
   return (
     <div>
       <h2>{`Lời mời đã nhận (${countFriendRequest})`}</h2>
