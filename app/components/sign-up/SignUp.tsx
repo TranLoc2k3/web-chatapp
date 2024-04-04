@@ -1,26 +1,22 @@
 "use client";
 
+import { userAPI } from "@/api/userAPI";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
-import { auth } from "@/configs/firebase.init";
-import {
-  RecaptchaVerifier,
-  getAuth,
-  signInWithPhoneNumber,
-} from "firebase/auth";
-import { Loader2, LoaderIcon } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import {
   InputOTP,
   InputOTPGroup,
-  InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { useToast } from "@/components/ui/use-toast";
+import { auth } from "@/configs/firebase.init";
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { Loader2 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import { REGEXP_ONLY_DIGITS } from "input-otp";
 
 declare global {
   interface Window {
@@ -58,6 +54,16 @@ function SignUp() {
     }
   };
 
+  const getUser = async () => {
+    try {
+      const res = await userAPI.getUserByPhone(`user/get-user/${phone}`);
+
+      return res;
+    } catch (e) {
+      return e;
+    }
+  };
+
   const onOtpVerify = () => {
     if (window.confirmationResult) {
       window.confirmationResult
@@ -92,7 +98,17 @@ function SignUp() {
       });
     }
   };
-  const handleSendOpt = () => {
+  const handleSendOpt = async () => {
+    const user = await getUser();
+    if (user?.username) {
+      toast({
+        description: "Tài khoản đã tồn tại",
+        duration: 2000,
+        variant: "destructive",
+      });
+      return;
+    }
+
     onCaptchaVerify();
     const appVerifier = window.recaptchaVerifier;
 

@@ -41,11 +41,18 @@ const userAPI = {
     }),
   getUserByPhone: (url: string) =>
     axiosClient.get(`${url}`).then((res) => res.data),
-  updatePassword: (url: string,
-    { username, newpassword }: { username: string; newpassword: string }) =>
+  updatePassword: (
+    url: string,
+    { username, password }: { username: string; password: string }
+  ) =>
     axiosClient.patch(url, {
-      username, newpassword
-    })
+      username,
+      password,
+    }),
+  getAllFriendRequests: (url: string) =>
+    axiosClient.get(`${url}`).then((res) => res.data),
+  handleFriendRequest: (payload: { id: string; type: string }) =>
+    axiosClient.post("/user/process-friend-request", payload),
 };
 
 export { userAPI };

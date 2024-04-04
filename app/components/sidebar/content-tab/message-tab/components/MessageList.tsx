@@ -1,9 +1,9 @@
 import MessageItem from "./MessageItem";
 import { useEffect, useState } from 'react';
 interface User {
-  id: string;
-  name: string;
-  image: string;
+  ID: string;
+  fullname: string;
+  avatar: string;
 }
 interface MessageItemProps {
   searchTerm: string;
@@ -23,13 +23,13 @@ function MessageList({searchTerm}: MessageItemProps) {
     fetchData();
   },[])
   // Search Filter by userID
-  const filteredUsers = users.filter((user) => user.id.includes(searchTerm));
+  const filteredUsers = users.filter((user) => user.ID.includes(searchTerm));
 
 
   return (
     <div>
       {filteredUsers.map((user) => (
-        <MessageItem key={user.id} user={user} />
+        <MessageItem key={user.ID} user={user} />
       ))}
   
     </div>

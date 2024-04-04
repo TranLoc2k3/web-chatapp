@@ -29,8 +29,9 @@ function Identify() {
             duration: 2000,
             variant: "destructive",
           });
-        }
-        else if (resUpdatePassword.data.message === "Update password success") {
+        } else if (
+          resUpdatePassword.data.message === "Update password success"
+        ) {
           toast({
             title: "Cập nhật mật khẩu",
             description: "Cập nhật mật khẩu thành công!",
@@ -38,8 +39,9 @@ function Identify() {
             variant: "destructive",
           });
           route.push("/auth/sign-in");
-        }
-        else if (resUpdatePassword.data.message === "Update password failed") {
+        } else if (
+          resUpdatePassword.data.message === "Update password failed"
+        ) {
           toast({
             title: "Cập nhật mật khẩu",
             description: "Cập nhật mật khẩu thất bại!",

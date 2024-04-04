@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Be_Vietnam_Pro } from "next/font/google";
 import "./globals.scss";
+import NextAuthProvider from "./components/NextAuthProvider/NextAuthProvider";
 
 const vietNam_Pro_Font = Be_Vietnam_Pro({
   subsets: ["latin"],
@@ -18,9 +19,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html suppressHydrationWarning lang="en">
-      <body className={vietNam_Pro_Font.className}>{children}</body>
-      {/* <Toaster /> */}
-    </html>
+    <NextAuthProvider>
+      <html suppressHydrationWarning lang="en">
+        <body className={vietNam_Pro_Font.className}>{children}</body>
+        {/* <Toaster /> */}
+      </html>
+    </NextAuthProvider>
   );
 }
