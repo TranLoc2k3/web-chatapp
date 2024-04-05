@@ -21,6 +21,7 @@ import {
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { userAPI } from "@/api/userAPI";
 
 declare global {
   interface Window {
@@ -92,7 +93,18 @@ function SignUp() {
       });
     }
   };
-  const handleSendOpt = () => {
+  const handleSendOpt = async () => {
+    try {
+      const checkUser = await userAPI.getUserByPhone(`user/get-user/${phone}`);
+    } catch (error) {
+      toast({
+        title: "Thông báo",
+        description: "Số điện thoại không tồn tại!",
+        duration: 2000,
+        variant: "destructive",
+      });
+      return;
+    }    
     onCaptchaVerify();
     const appVerifier = window.recaptchaVerifier;
 

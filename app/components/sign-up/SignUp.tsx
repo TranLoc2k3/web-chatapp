@@ -1,5 +1,6 @@
 "use client";
 
+import { userAPI } from "@/api/userAPI";
 import { Button } from "@/components/ui/button";
 import {
   InputOTP,
@@ -53,6 +54,16 @@ function SignUp() {
     }
   };
 
+  const getUser = async () => {
+    try {
+      const res = await userAPI.getUserByPhone(`user/get-user/${phone}`);
+
+      return res;
+    } catch (e) {
+      return e;
+    }
+  };
+
   const onOtpVerify = () => {
     if (window.confirmationResult) {
       window.confirmationResult
@@ -87,7 +98,17 @@ function SignUp() {
       });
     }
   };
-  const handleSendOpt = () => {
+  const handleSendOpt = async () => {
+    const user = await getUser();
+    if (user?.username) {
+      toast({
+        description: "Tài khoản đã tồn tại",
+        duration: 2000,
+        variant: "destructive",
+      });
+      return;
+    }
+
     onCaptchaVerify();
     const appVerifier = window.recaptchaVerifier;
 
