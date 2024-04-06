@@ -11,13 +11,13 @@ function FriendRequestContent() {
   useEffect(() => {
     const getAllFriendRequests = async () => {
       const res = await userAPI.getAllFriendRequests(
-        `/user/get-all-friend-requests/${userPhone}`
+        `/user/get-all-friend-requests/${session.data?.token?.user}`
       );
       setFriendRequest(res);
     };
 
     getAllFriendRequests();
-  }, [countFriendRequest, userPhone]);
+  }, [countFriendRequest, session.data?.token?.user]);
   return (
     <div>
       <h2>{`Lời mời đã nhận (${countFriendRequest})`}</h2>

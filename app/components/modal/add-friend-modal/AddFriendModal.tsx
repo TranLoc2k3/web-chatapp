@@ -27,8 +27,9 @@ const AddFriendModal: React.FC<AddFriendModalProps> = ({
   const [phone, setPhone] = useState("");
   const [user, setUser] = useState<any>(null);
   const [isHoverX, setIsHoverX] = useState(false);
-  const userPhone = useSession().data?.token?.user
+  const userPhone = useSession().data?.token?.user;
   const { toast } = useToast();
+  const session = useSession();
   const handleFindUser = async () => {
     const res = await userAPI.getUserByPhone(`/user/get-user/${phone}`);
     setUser(res);
@@ -43,7 +44,7 @@ const AddFriendModal: React.FC<AddFriendModalProps> = ({
     if (!user) return;
 
     const payload = {
-      senderId: userPhone,
+      senderId: session.data?.token?.user,
       receiverId: user.ID,
     };
     socket.emit("new friend request client", payload);

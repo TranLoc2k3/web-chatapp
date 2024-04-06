@@ -15,22 +15,23 @@ function Identify() {
   const route = useRouter();
   const { toast } = useToast();
   const onClickResetPassword = async () => {
+    if (!password || !confirmPassword) {
+      toast({
+        title: "Đăng ký không thành công",
+        description: "Vui lòng nhập đầy đủ thông tin",
+        duration: 2000,
+        variant: "destructive",
+      });
+      return;
+    }
     const payload = {
       username: searchParams.get("phone") as string,
-      password,
+      newpassword: password
     };
     if (password === confirmPassword) {
       try {
-        const resUpdatePassword = await userAPI.updatePassword(
-          "/auth/update-password",
-          payload
-        );
-        console.log(resUpdatePassword);
-
-        if (
-          resUpdatePassword.data.message ===
-          "New password must be different from the old one"
-        ) {
+        const resUpdatePassword = await userAPI.resetPassword("/auth/reset-password", payload);
+        if (resUpdatePassword.data.message === "Password is the same") {
           toast({
             title: "Cập nhật mật khẩu",
             description: "Mật khẩu mới phải khác mật khẩu cũ!",
@@ -44,7 +45,6 @@ function Identify() {
             title: "Cập nhật mật khẩu",
             description: "Cập nhật mật khẩu thành công!",
             duration: 2000,
-            variant: "destructive",
           });
           route.push("/auth/sign-in");
         } else if (
@@ -58,8 +58,9 @@ function Identify() {
           });
         }
       } catch (error) {
+        console.log(error)
         toast({
-          title: "Đăng ký không thành công",
+          title:  "Cập nhật không thành công",
           description: "Có lỗi xảy ra khi gửi yêu cầu!",
           duration: 2000,
           variant: "destructive",
@@ -67,8 +68,8 @@ function Identify() {
       }
     } else {
       toast({
-        title: "Cập nhật thất bại",
-        description: "Xác nhận mật khẩu thất bại !",
+        title: "Cập nhật mật khẩu",
+        description: "Mật khẩu không khớp!",
         duration: 2000,
         variant: "destructive",
       });
@@ -93,7 +94,7 @@ function Identify() {
           <div className="">
             <h3 className="text-center p-4  border-b">Cập nhật mật khẩu</h3>
           </div>
-          {/* password */}
+          {/* newpassword */}
           <div className="pl-8 pr-8">
             <div className="flex mt-8 border-b pb-2">
               <span className="mr-4">
@@ -106,10 +107,11 @@ function Identify() {
                 type="password"
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
+                required
               />
             </div>
           </div>
-          {/* confilm password */}
+          {/* confilm newpassword */}
           <div className="pl-8 pr-8">
             <div className="flex mt-8 border-b pb-2 ">
               <span className="mr-4">
@@ -122,6 +124,7 @@ function Identify() {
                 type="password"
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 value={confirmPassword}
+                required
               />
             </div>
           </div>

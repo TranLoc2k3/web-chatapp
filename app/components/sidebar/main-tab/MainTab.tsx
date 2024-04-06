@@ -1,7 +1,7 @@
 "use client";
 import { userAPI } from "@/api/userAPI";
 import { useBearStore } from "@/app/global-state/store";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,11 +15,10 @@ import { socket } from "@/configs/socket";
 import { cn } from "@/lib/utils";
 import { Cloud, Settings } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
+import Image from "next/image";
 import { useEffect, useState } from "react";
-import useSWR from "swr";
 import InfoUserModal from "../../modal/InfoUserModal";
 import MainTabList from "./MainTabList";
-import Image from "next/image";
 
 function MainTab() {
   const [open, setOpen] = useState<boolean>(false);
