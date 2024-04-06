@@ -20,7 +20,7 @@ function ConversationInfoBody({ typeGroup }: IProps) {
   return (
     <div>
       {typeGroup === TYPE_GROUP.GROUP && (
-        <ConversationMember memberList={[1, 2, 3, 4]} />
+        <ConversationMember memberList={[1, 2, 3, 4,5,132,42,4]} />
       )}
       <ConversationBoard typeGroup={typeGroup} />
       <Album />
