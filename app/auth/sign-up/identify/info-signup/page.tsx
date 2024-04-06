@@ -22,7 +22,7 @@ import { ChangeEvent, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const formSchema = z.object({
+export const formSchema = z.object({
   fullname: z.string().min(2, {
     message: "FullName must be at least 2 characters.",
   }),

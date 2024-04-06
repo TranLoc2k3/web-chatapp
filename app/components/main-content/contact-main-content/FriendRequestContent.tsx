@@ -8,18 +8,16 @@ function FriendRequestContent() {
   const countFriendRequest = useBearStore((state) => state.countFriendRequest);
   const [friendRequest, setFriendRequest] = useState<any>([]);
   const userPhone = useSession().data?.token?.user;
-  const session = useSession()
-  console.log(session);
-  
   useEffect(() => {
     const getAllFriendRequests = async () => {
       const res = await userAPI.getAllFriendRequests(
-        `/user/get-all-friend-requests/${session.data?.token?.user}`
+        `/user/get-all-friend-requests/${userPhone}`
       );
       setFriendRequest(res);
     };
+
     getAllFriendRequests();
-  }, [countFriendRequest, session.data?.token?.user]);
+  }, [countFriendRequest, userPhone]);
   return (
     <div>
       <h2>{`Lời mời đã nhận (${countFriendRequest})`}</h2>

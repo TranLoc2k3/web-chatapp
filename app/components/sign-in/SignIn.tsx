@@ -6,7 +6,7 @@ import { Lock } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { permanentRedirect, redirect, useRouter } from "next/navigation";
 import { useState } from "react";
 
 import PhoneInput from "react-phone-input-2";
@@ -22,40 +22,34 @@ function SignIn() {
     border: "1px solid #60a5fa",
     width: "100%",
   };
+  const onSignIn = async () => {
+    if (!phone || !password) {
+      toast({
+        title: "Thông báo",
+        description: "Vui lòng nhập đầy đủ thông tin",
+        duration: 2000,
+        variant: "destructive",
+      });
+      return;
+    }
+    const res = await signIn("credentials", {
+      phone,
+      password,
+      callbackUrl: "/dashboard/messages",
+      redirect: false,
+    });
 
-  //   const onSignIn = async () => {
-  //     if (!phone || !password) {
-  //       return;
-  //     }
-  //     try {
-  //       const res = await userAPI.onSignIn(phone, password);
-  //       if (res.data === "Success") {
-  //         setUserPhone(phone);
-  //         route.push("/dashboard");
-  //       }
-  //     } catch (err: any) {
-  //       if (err.response.data === "The password is incorrect") {
-  //         toast({
-  //           title: "Đăng nhập thất bại",
-  //           description: "Mật khẩu không chính xác",
-  //           duration: 2000,
-  //           variant: "destructive",
-  //         });
-  //       } else if (err.response.data === "Username is not exist") {
-  //         toast({
-  //           title: "Đăng nhập thất bại",
-  //           description: "Tài khoản không tồn tại",
-  //           duration: 2000,
-  //           variant: "destructive",
-  //         });
-  //       }
-  //     }
-  //   };
-  // useEffect(() => {
-  //   if (session.status === "authenticated") {
-  //     route.push("/dashboard");
-  //   }
-  // }, [route, session]);
+    if (res?.error === "Request failed with status code 400") {
+      toast({
+        title: "Thông báo",
+        description: "Thông tin tài khoản không hợp lệ",
+        duration: 2000,
+        variant: "destructive",
+      });
+    } else if (res?.url && res?.error === null) {
+      route.push(res.url);
+    }
+  };
   return (
     <div className="bg-gradient-to-bl from-cyan-200 to-blue-400 h-screen w-screen flex justify-center">
       <div>
@@ -100,13 +94,7 @@ function SignIn() {
           <div className="pl-8 pr-8 mt-8">
             <button
               className=" bg-blue-500 text-white w-full p-3 rounded-full hover:bg-blue-600"
-              onClick={() =>
-                signIn("credentials", {
-                  phone,
-                  password,
-                  callbackUrl: "/dashboard",
-                })
-              }
+              onClick={onSignIn}
             >
               Đăng nhập với mật khẩu
             </button>

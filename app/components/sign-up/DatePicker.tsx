@@ -43,6 +43,7 @@ function DatePicker({ date, setDate }: IProps) {
           selected={date}
           onSelect={setDate}
           initialFocus
+          defaultMonth={date}
           captionLayout="dropdown-buttons"
           fromYear={1900}
           toYear={new Date().getFullYear() - 14}

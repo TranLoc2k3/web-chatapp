@@ -4,6 +4,8 @@ interface BearState {
   isOpenConversationInfo: boolean;
   setOpenConversationInfo: () => void;
   userPhone: string;
+  user: any;
+  setUser: (user: any) => void;
   setUserPhone: (phone: string) => void;
   countFriendRequest: number;
   setCountFriendRequest: (count: number) => void;
@@ -12,6 +14,12 @@ interface BearState {
 export const useBearStore = create<BearState>()((set) => ({
   isOpenConversationInfo: false,
   userPhone: "",
+  user: null,
+  setUser: (user: any) =>
+    set((prevState) => ({
+      ...prevState,
+      user,
+    })),
   setUserPhone: (userPhone: string) =>
     set((prevState) => ({
       ...prevState,

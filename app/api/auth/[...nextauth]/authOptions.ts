@@ -20,6 +20,7 @@ export const authOptions: AuthOptions = {
       async authorize(credentials, req) {
         // Add logic here to look up the user from the credentials supplied
         const { phone, password } = credentials as any;
+
         if (!phone || !password) {
           return null;
         }
@@ -31,7 +32,7 @@ export const authOptions: AuthOptions = {
           return res.data.data;
         }
 
-        return res.data.data;
+        return null;
       },
     }),
   ],
