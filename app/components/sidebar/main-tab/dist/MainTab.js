@@ -53,16 +53,16 @@ var store_1 = require("@/app/global-state/store");
 var react_2 = require("next-auth/react");
 function MainTab() {
     var _this = this;
-    var _a, _b;
-    var _c = react_1.useState(false), open = _c[0], setOpen = _c[1];
-    var _d = react_1.useState(false), openSetting = _d[0], setOpenSetting = _d[1];
+    var _a, _b, _c, _d;
+    var _e = react_1.useState(false), open = _e[0], setOpen = _e[1];
+    var _f = react_1.useState(false), openSetting = _f[0], setOpenSetting = _f[1];
     var session = react_2.useSession();
     var setCountFriendRequest = store_1.useBearStore(function (state) { return state.setCountFriendRequest; });
     var countFriendRequest = store_1.useBearStore(function (state) { return state.countFriendRequest; });
-    var _e = store_1.useBearStore(function (state) { return ({
+    var _g = store_1.useBearStore(function (state) { return ({
         setUserPhone: state.setUserPhone,
         userPhone: state.userPhone
-    }); }), setUserPhone = _e.setUserPhone, userPhone = _e.userPhone;
+    }); }), setUserPhone = _g.setUserPhone, userPhone = _g.userPhone;
     var data = swr_1["default"]("/user/get-user/" + ((_b = (_a = session.data) === null || _a === void 0 ? void 0 : _a.token) === null || _b === void 0 ? void 0 : _b.user), userAPI_1.userAPI.getUserByPhone).data;
     function handleProfileClick() {
         setOpen(true);
@@ -71,7 +71,7 @@ function MainTab() {
         setOpenSetting(true);
     }
     react_1.useEffect(function () {
-        var _a, _b, _c, _d;
+        var _a, _b, _c, _d, _e, _f;
         setUserPhone((_b = (_a = session.data) === null || _a === void 0 ? void 0 : _a.token) === null || _b === void 0 ? void 0 : _b.user);
         var getAllFriendRequests = function () { return __awaiter(_this, void 0, void 0, function () {
             var res;
@@ -89,8 +89,8 @@ function MainTab() {
             });
         }); };
         getAllFriendRequests();
-        socket_1.socket.emit("new user connect", {
-            phone: (_d = (_c = session.data) === null || _c === void 0 ? void 0 : _c.token) === null || _d === void 0 ? void 0 : _d.user
+        ((_d = (_c = session.data) === null || _c === void 0 ? void 0 : _c.token) === null || _d === void 0 ? void 0 : _d.user) && socket_1.socket.emit("new user connect", {
+            phone: (_f = (_e = session.data) === null || _e === void 0 ? void 0 : _e.token) === null || _f === void 0 ? void 0 : _f.user
         });
         socket_1.socket.on("new friend request server", function (data) {
             console.log(data);
@@ -102,7 +102,7 @@ function MainTab() {
             socket_1.socket.off("new friend request server");
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [(_d = (_c = session.data) === null || _c === void 0 ? void 0 : _c.token) === null || _d === void 0 ? void 0 : _d.user]);
     if (session.status === "loading")
         return null;
     if (!data)
