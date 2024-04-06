@@ -15,13 +15,18 @@ import { Cloud, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import InfoUserModal from "../../modal/InfoUserModal";
+import SettingModal from "../../modal/SettingModal";
 import MainTabList from "./MainTabList";
 import { socket } from "@/configs/socket";
 import { useBearStore } from "@/app/global-state/store";
 import { signOut, useSession } from "next-auth/react";
+import { da } from "date-fns/locale";
 
 function MainTab() {
   const [open, setOpen] = useState<boolean>(false);
+  const [openSetting, setOpenSetting] = useState<boolean>(false);
+
+
   const session = useSession();
   const setCountFriendRequest = useBearStore(
     (state) => state.setCountFriendRequest
@@ -38,6 +43,9 @@ function MainTab() {
 
   function handleProfileClick() {
     setOpen(true);
+  }
+  function handleSettingClick() {
+    setOpenSetting(true);
   }
   useEffect(() => {
     setUserPhone(session.data?.token?.user);
@@ -77,13 +85,16 @@ function MainTab() {
                 <AvatarImage src={`${data.urlavatar}`} />
                 <AvatarFallback>CN</AvatarFallback>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent className="ml-[68px] mt-[-30px] w-[300px]">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleProfileClick}>
                   Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem
+                <DropdownMenuItem onClick={handleSettingClick}>
+                  Setting
+                </DropdownMenuItem>
+                <DropdownMenuItem className="border-t-2 mt-2"
                   onClick={() => signOut({ callbackUrl: "/auth/sign-in" })}
                 >
                   Đăng xuất
@@ -112,6 +123,11 @@ function MainTab() {
           <></>
         </InfoUserModal>
       )}
+      {data &&
+        <SettingModal  open={openSetting} onClose={() => setOpenSetting(false)} >
+          <></>
+        </SettingModal>
+      }
     </div>
   );
 }
