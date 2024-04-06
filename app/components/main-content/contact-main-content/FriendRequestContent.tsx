@@ -2,20 +2,24 @@ import { useEffect, useState } from "react";
 import FriendRequestItem from "./FriendRequestItem";
 import { userAPI } from "@/api/userAPI";
 import { useBearStore } from "@/app/global-state/store";
+import { useSession } from "next-auth/react";
 
 function FriendRequestContent() {
   const countFriendRequest = useBearStore((state) => state.countFriendRequest);
   const [friendRequest, setFriendRequest] = useState<any>([]);
-  const userPhone = useBearStore((state) => state.userPhone);
+  const userPhone = useSession().data?.token?.user;
+  const session = useSession()
+  console.log(session);
+  
   useEffect(() => {
     const getAllFriendRequests = async () => {
       const res = await userAPI.getAllFriendRequests(
-        `/user/get-all-friend-requests/${userPhone}`
+        `/user/get-all-friend-requests/${session.data?.token?.user}`
       );
       setFriendRequest(res);
     };
     getAllFriendRequests();
-  }, [countFriendRequest, userPhone]);
+  }, [countFriendRequest, session.data?.token?.user]);
   return (
     <div>
       <h2>{`Lời mời đã nhận (${countFriendRequest})`}</h2>
