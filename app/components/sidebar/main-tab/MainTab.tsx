@@ -1,5 +1,6 @@
 "use client";
 import { userAPI } from "@/api/userAPI";
+import { useBearStore } from "@/app/global-state/store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -10,15 +11,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { socket } from "@/configs/socket";
 import { cn } from "@/lib/utils";
 import { Cloud, Settings } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import InfoUserModal from "../../modal/InfoUserModal";
 import MainTabList from "./MainTabList";
-import { socket } from "@/configs/socket";
-import { useBearStore } from "@/app/global-state/store";
-import { signOut, useSession } from "next-auth/react";
+import Image from "next/image";
 
 function MainTab() {
   const [open, setOpen] = useState<boolean>(false);
@@ -26,36 +27,42 @@ function MainTab() {
   const setCountFriendRequest = useBearStore(
     (state) => state.setCountFriendRequest
   );
-  const countFriendRequest = useBearStore((state) => state.countFriendRequest);
-  const { setUserPhone, userPhone } = useBearStore((state) => ({
-    setUserPhone: state.setUserPhone,
-    userPhone: state.userPhone,
+  const { user, setUser } = useBearStore((state) => ({
+    user: state.user,
+    setUser: state.setUser,
   }));
-  const { data } = useSWR(
-    `/user/get-user/${session.data?.token?.user}`,
-    userAPI.getUserByPhone
-  );
+  const countFriendRequest = useBearStore((state) => state.countFriendRequest);
+  const [data, setData] = useState<any>(null);
 
   function handleProfileClick() {
     setOpen(true);
   }
   useEffect(() => {
-    setUserPhone(session.data?.token?.user);
-    const getAllFriendRequests = async () => {
-      const res = await userAPI.getAllFriendRequests(
-        `/user/get-all-friend-requests/${session.data?.token?.user}`
+    const getUser = async () => {
+      const res = await userAPI.getUserByPhone(
+        `/user/get-user/${session.data?.token.user}`
       );
-      if (res) {
-        setCountFriendRequest(res.length);
+      setData(res);
+    };
+    session.data?.token.user && getUser();
+    const getAllFriendRequests = async () => {
+      try {
+        const res = await userAPI.getAllFriendRequests(
+          `/user/get-all-friend-requests/${session.data?.token?.user}`
+        );
+        if (res) {
+          setCountFriendRequest(res.length);
+        }
+      } catch (e) {
+        console.log(e);
       }
     };
     getAllFriendRequests();
-    socket.emit("new user connect", {
-      phone: session.data?.token?.user,
-    });
+    session.data?.token?.user &&
+      socket.emit("new user connect", {
+        phone: session.data?.token?.user,
+      });
     socket.on("new friend request server", (data) => {
-      console.log(data);
-
       if (data.code === 1) {
         setCountFriendRequest(countFriendRequest + 1);
       }
@@ -64,7 +71,12 @@ function MainTab() {
       socket.off("new friend request server");
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [session.data?.token?.user]);
+
+  useEffect(() => {
+    setUser(data);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
   if (session.status === "loading") return null;
   if (!data) return null;
   return (
@@ -74,7 +86,15 @@ function MainTab() {
           <Avatar className="size-12 mx-auto">
             <DropdownMenu>
               <DropdownMenuTrigger>
-                <AvatarImage src={`${data.urlavatar}`} />
+                <Image
+                  src={`${user?.urlavatar || data.urlavatar}`}
+                  key="u-avt-side-bar"
+                  alt=""
+                  width={48}
+                  height={48}
+                  className="h-12 rounded-full"
+                  priority
+                />
                 <AvatarFallback>CN</AvatarFallback>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
@@ -107,11 +127,7 @@ function MainTab() {
           <Settings color="#FFF" width={28} height={28} />
         </li>
       </ul>
-      {data && (
-        <InfoUserModal user={data} open={open} onClose={() => setOpen(false)}>
-          <></>
-        </InfoUserModal>
-      )}
+      {data && <InfoUserModal open={open} onClose={() => setOpen(false)} />}
     </div>
   );
 }

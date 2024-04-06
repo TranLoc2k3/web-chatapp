@@ -1,19 +1,25 @@
 "use client";
-import React from "react";
-import { Camera, PenLine } from "lucide-react";
+
+import { useBearStore } from "@/app/global-state/store";
+import { convertISOToDDMMYYY } from "@/app/utils/datetimeUtils";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import Image from "next/image";
+import EditProfile from "./EditProfileModal";
+import { useState } from "react";
 type propTypes = {
   open: boolean;
   onClose: () => void;
-  children: React.ReactNode;
-  user: any;
 };
-const InfoUserModal: React.FC<propTypes> = ({
-  open,
-  onClose,
-  children,
-  user,
-}) => {
+const InfoUserModal: React.FC<propTypes> = ({ open, onClose }) => {
+  const user = useBearStore((state) => state.user);
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <div
       className={`fixed inset-0 flex justify-center items-center 
@@ -39,57 +45,82 @@ const InfoUserModal: React.FC<propTypes> = ({
           </button>
         </div>
         <Image
+          key="u-bg"
           src={user?.urlavatar}
           alt="Thumnail User"
           height={160}
           width={100}
           className="h-40 w-full object-cover"
+          priority
         />
         <span className="block w-full h-px bg-gray-400 my-3"></span>
         <div className="flex items-center">
           <div className="Avatar relative inline-block">
             <Image
+              key="u-avt"
               width={64}
               height={64}
               src={user?.urlavatar}
               alt="Avatar"
               className="size-16 rounded-full m-2"
+              priority
             />
-            <div className="absolute right-1 bottom-1 hover:bg-gray-200 rounded">
-              <Camera />
-            </div>
           </div>
-          <h4 className="name text-sm mx-2">{user?.fullname}</h4>
-          <div className="edit-icon hover:bg-gray-200 rounded">
-            <PenLine size={12} />
-          </div>
+          <h4 className="name mx-2 text-lg font-[600]">{user?.fullname}</h4>
         </div>
         <span className="block w-full h-px bg-gray-400 my-3"></span>
         <div>
-          <h4 className="my-2">Thông tin cá nhân</h4>
+          <h4 className="my-2 font-[600] text-base mb-2">Thông tin cá nhân</h4>
           <div className="text-sm">
-            <div className="flex my-1">
-              <span className="w-32">Giới tính</span>
-              <p>{user?.ismale ? "Nam" : "Nữ"}</p>
+            <div className="flex my-2 gap-3">
+              <span className="flex-1 text-[#7589A3] font-[300]">
+                Giới tính
+              </span>
+              <p className="flex-[3]">{user?.ismale ? "Nam" : "Nữ"}</p>
             </div>
-            <div className="flex my-1">
-              <span className="w-32">Ngày sinh</span>
-              <p>{user?.birthday}</p>
+            <div className="flex my-2 gap-3">
+              <span className="flex-1 text-[#7589A3] font-[300]">
+                Ngày sinh
+              </span>
+              <p className="flex-[3]">{convertISOToDDMMYYY(user?.birthday)}</p>
             </div>
-            <div className="flex my-1">
-              <span className="w-32">Điện thoại</span>
-              <p>{user?.phone.replace(/^84/, "0")}</p>
+            <div className="flex my-2 gap-3">
+              <span className="flex-1 text-[#7589A3] font-[300]">
+                Điện thoại
+              </span>
+              <p className="flex-[3]">{user?.phone.replace(/^84/, "0")}</p>
             </div>
           </div>
         </div>
         <span className="block w-full h-px bg-gray-400 my-3"></span>
-        <button
-          type="button"
-          className="px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mt-4"
-        >
-          Cập nhật
-        </button>
-        {children}
+        <div className="relative">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                onClick={() => setIsOpen(true)}
+                variant="outline"
+                className="w-full"
+              >
+                Cập nhật
+              </Button>
+            </DialogTrigger>
+            {isOpen && (
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Cập nhật thông tin</DialogTitle>
+                </DialogHeader>
+                <EditProfile
+                  setIsOpen={setIsOpen}
+                  birthday={user?.birthday}
+                  fullname={user?.fullname}
+                  phone={user?.phone}
+                  sex={user?.ismale}
+                  urlavatar={user?.urlavatar}
+                />
+              </DialogContent>
+            )}
+          </Dialog>
+        </div>
       </div>
     </div>
   );

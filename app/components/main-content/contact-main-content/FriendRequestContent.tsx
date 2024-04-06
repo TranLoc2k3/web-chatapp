@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import FriendRequestItem from "./FriendRequestItem";
 import { userAPI } from "@/api/userAPI";
 import { useBearStore } from "@/app/global-state/store";
+import { useSession } from "next-auth/react";
 
 function FriendRequestContent() {
   const countFriendRequest = useBearStore((state) => state.countFriendRequest);
   const [friendRequest, setFriendRequest] = useState<any>([]);
-  const userPhone = useBearStore((state) => state.userPhone);
+  const userPhone = useSession().data?.token?.user;
   useEffect(() => {
     const getAllFriendRequests = async () => {
       const res = await userAPI.getAllFriendRequests(
@@ -14,6 +15,7 @@ function FriendRequestContent() {
       );
       setFriendRequest(res);
     };
+
     getAllFriendRequests();
   }, [countFriendRequest, userPhone]);
   return (

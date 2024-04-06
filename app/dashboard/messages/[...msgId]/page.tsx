@@ -1,4 +1,4 @@
-import MessageMainContent from "@/app/components/main-content/MessageMainContent/MainContent";
+import MessageMainContent from "@/app/components/main-content/message-main-content/MainContent";
 
 function MessagePage() {
   return (

@@ -15,6 +15,7 @@ import { socket } from "@/configs/socket";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import { useBearStore } from "@/app/global-state/store";
+import { useSession } from "next-auth/react";
 interface AddFriendModalProps {
   isvisible: boolean;
   onClose: () => void;
@@ -26,7 +27,7 @@ const AddFriendModal: React.FC<AddFriendModalProps> = ({
   const [phone, setPhone] = useState("");
   const [user, setUser] = useState<any>(null);
   const [isHoverX, setIsHoverX] = useState(false);
-  const userPhone = useBearStore((state) => state.userPhone);
+  const userPhone = useSession().data?.token?.user
   const { toast } = useToast();
   const handleFindUser = async () => {
     const res = await userAPI.getUserByPhone(`/user/get-user/${phone}`);
