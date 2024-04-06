@@ -15,13 +15,22 @@ function Identify() {
   const route = useRouter();
   const { toast } = useToast();
   const onClickResetPassword = async () => {
+    if (!password || !confirmPassword) {
+      toast({
+        title: "Đăng ký không thành công",
+        description: "Vui lòng nhập đầy đủ thông tin",
+        duration: 2000,
+        variant: "destructive",
+      });
+      return;
+    }
     const payload = {
       username: searchParams.get("phone") as string,
       newpassword: password
     };
     if (password === confirmPassword) {
       try {
-        const resUpdatePassword = await userAPI.updatePassword("/auth/update-password", payload);
+        const resUpdatePassword = await userAPI.resetPassword("/auth/reset-password", payload);
         if (resUpdatePassword.data.message === "Password is the same") {
           toast({
             title: "Cập nhật mật khẩu",

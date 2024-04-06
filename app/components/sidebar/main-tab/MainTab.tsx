@@ -27,10 +27,11 @@ function MainTab() {
     (state) => state.setCountFriendRequest
   );
   const countFriendRequest = useBearStore((state) => state.countFriendRequest);
-  const { setUserPhone, userPhone } = useBearStore((state) => ({
+  const { setUserPhone } = useBearStore((state) => ({
     setUserPhone: state.setUserPhone,
-    userPhone: state.userPhone,
   }));
+  
+  const userPhone = useSession().data?.token?.user;
   const { data } = useSWR(
     `/user/get-user/${session.data?.token?.user}`,
     userAPI.getUserByPhone
@@ -50,7 +51,7 @@ function MainTab() {
       }
     };
     getAllFriendRequests();
-    socket.emit("new user connect", {
+    session.data?.token?.user && socket.emit("new user connect", {
       phone: session.data?.token?.user,
     });
     socket.on("new friend request server", (data) => {
@@ -64,7 +65,7 @@ function MainTab() {
       socket.off("new friend request server");
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [session.data?.token?.user]);
   if (session.status === "loading") return null;
   if (!data) return null;
   return (

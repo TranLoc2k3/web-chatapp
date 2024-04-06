@@ -15,6 +15,15 @@ function Identify() {
   const route = useRouter();
   const { toast } = useToast();
   const onClickSignUp = async () => {
+    if (!password || !confirmPassword) {
+      toast({
+        title: "Đăng ký không thành công",
+        description: "Vui lòng nhập đầy đủ thông tin",
+        duration: 2000,
+        variant: "destructive",
+      });
+      return;
+    }
     const payload = {
       username: searchParams.get("phone") as string,
       password,
@@ -85,6 +94,7 @@ function Identify() {
                 type="password"
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
+                required
               />
             </div>
           </div>
@@ -101,6 +111,7 @@ function Identify() {
                 type="password"
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 value={confirmPassword}
+                required
               />
             </div>
           </div>
