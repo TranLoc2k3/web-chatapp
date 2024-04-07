@@ -38,62 +38,82 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var userAPI_1 = require("@/api/userAPI");
+var store_1 = require("@/app/global-state/store");
 var avatar_1 = require("@/components/ui/avatar");
 var dropdown_menu_1 = require("@/components/ui/dropdown-menu");
 var scroll_area_1 = require("@/components/ui/scroll-area");
+var socket_1 = require("@/configs/socket");
 var utils_1 = require("@/lib/utils");
 var lucide_react_1 = require("lucide-react");
-var react_1 = require("react");
-var swr_1 = require("swr");
+var react_1 = require("next-auth/react");
+var image_1 = require("next/image");
+var react_2 = require("react");
 var InfoUserModal_1 = require("../../modal/InfoUserModal");
 var SettingModal_1 = require("../../modal/SettingModal");
 var MainTabList_1 = require("./MainTabList");
-var socket_1 = require("@/configs/socket");
-var store_1 = require("@/app/global-state/store");
-var react_2 = require("next-auth/react");
 function MainTab() {
     var _this = this;
-    var _a, _b, _c, _d;
-    var _e = react_1.useState(false), open = _e[0], setOpen = _e[1];
-    var _f = react_1.useState(false), openSetting = _f[0], setOpenSetting = _f[1];
-    var session = react_2.useSession();
+    var _a, _b;
+    var _c = react_2.useState(false), open = _c[0], setOpen = _c[1];
+    var _d = react_2.useState(false), openSetting = _d[0], setOpenSetting = _d[1];
+    var session = react_1.useSession();
     var setCountFriendRequest = store_1.useBearStore(function (state) { return state.setCountFriendRequest; });
+    var _e = store_1.useBearStore(function (state) { return ({
+        user: state.user,
+        setUser: state.setUser
+    }); }), user = _e.user, setUser = _e.setUser;
     var countFriendRequest = store_1.useBearStore(function (state) { return state.countFriendRequest; });
-    var _g = store_1.useBearStore(function (state) { return ({
-        setUserPhone: state.setUserPhone,
-        userPhone: state.userPhone
-    }); }), setUserPhone = _g.setUserPhone, userPhone = _g.userPhone;
-    var data = swr_1["default"]("/user/get-user/" + ((_b = (_a = session.data) === null || _a === void 0 ? void 0 : _a.token) === null || _b === void 0 ? void 0 : _b.user), userAPI_1.userAPI.getUserByPhone).data;
+    var _f = react_2.useState(null), data = _f[0], setData = _f[1];
     function handleProfileClick() {
         setOpen(true);
     }
     function handleSettingClick() {
         setOpenSetting(true);
     }
-    react_1.useEffect(function () {
-        var _a, _b, _c, _d, _e, _f;
-        setUserPhone((_b = (_a = session.data) === null || _a === void 0 ? void 0 : _a.token) === null || _b === void 0 ? void 0 : _b.user);
-        var getAllFriendRequests = function () { return __awaiter(_this, void 0, void 0, function () {
+    react_2.useEffect(function () {
+        var _a, _b, _c, _d, _e;
+        var getUser = function () { return __awaiter(_this, void 0, void 0, function () {
             var res;
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, userAPI_1.userAPI.getUserByPhone("/user/get-user/" + ((_a = session.data) === null || _a === void 0 ? void 0 : _a.token.user))];
+                    case 1:
+                        res = _b.sent();
+                        setData(res);
+                        return [2 /*return*/];
+                }
+            });
+        }); };
+        ((_a = session.data) === null || _a === void 0 ? void 0 : _a.token.user) && getUser();
+        var getAllFriendRequests = function () { return __awaiter(_this, void 0, void 0, function () {
+            var res, e_1;
             var _a, _b;
             return __generator(this, function (_c) {
                 switch (_c.label) {
-                    case 0: return [4 /*yield*/, userAPI_1.userAPI.getAllFriendRequests("/user/get-all-friend-requests/" + ((_b = (_a = session.data) === null || _a === void 0 ? void 0 : _a.token) === null || _b === void 0 ? void 0 : _b.user))];
+                    case 0:
+                        _c.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, userAPI_1.userAPI.getAllFriendRequests("/user/get-all-friend-requests/" + ((_b = (_a = session.data) === null || _a === void 0 ? void 0 : _a.token) === null || _b === void 0 ? void 0 : _b.user))];
                     case 1:
                         res = _c.sent();
                         if (res) {
                             setCountFriendRequest(res.length);
                         }
-                        return [2 /*return*/];
+                        return [3 /*break*/, 3];
+                    case 2:
+                        e_1 = _c.sent();
+                        console.log(e_1);
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
                 }
             });
         }); };
         getAllFriendRequests();
-        ((_d = (_c = session.data) === null || _c === void 0 ? void 0 : _c.token) === null || _d === void 0 ? void 0 : _d.user) && socket_1.socket.emit("new user connect", {
-            phone: (_f = (_e = session.data) === null || _e === void 0 ? void 0 : _e.token) === null || _f === void 0 ? void 0 : _f.user
-        });
+        ((_c = (_b = session.data) === null || _b === void 0 ? void 0 : _b.token) === null || _c === void 0 ? void 0 : _c.user) &&
+            socket_1.socket.emit("new user connect", {
+                phone: (_e = (_d = session.data) === null || _d === void 0 ? void 0 : _d.token) === null || _e === void 0 ? void 0 : _e.user
+            });
         socket_1.socket.on("new friend request server", function (data) {
-            console.log(data);
             if (data.code === 1) {
                 setCountFriendRequest(countFriendRequest + 1);
             }
@@ -102,7 +122,11 @@ function MainTab() {
             socket_1.socket.off("new friend request server");
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [(_d = (_c = session.data) === null || _c === void 0 ? void 0 : _c.token) === null || _d === void 0 ? void 0 : _d.user]);
+    }, [(_b = (_a = session.data) === null || _a === void 0 ? void 0 : _a.token) === null || _b === void 0 ? void 0 : _b.user]);
+    react_2.useEffect(function () {
+        setUser(data);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data]);
     if (session.status === "loading")
         return null;
     if (!data)
@@ -113,14 +137,14 @@ function MainTab() {
                 React.createElement(avatar_1.Avatar, { className: "size-12 mx-auto" },
                     React.createElement(dropdown_menu_1.DropdownMenu, null,
                         React.createElement(dropdown_menu_1.DropdownMenuTrigger, null,
-                            React.createElement(avatar_1.AvatarImage, { src: "" + data.urlavatar }),
+                            React.createElement(image_1["default"], { src: "" + ((user === null || user === void 0 ? void 0 : user.urlavatar) || data.urlavatar), key: "u-avt-side-bar", alt: "", width: 48, height: 48, className: "h-12 rounded-full", priority: true }),
                             React.createElement(avatar_1.AvatarFallback, null, "CN")),
                         React.createElement(dropdown_menu_1.DropdownMenuContent, { className: "ml-[68px] mt-[-30px] w-[300px]" },
                             React.createElement(dropdown_menu_1.DropdownMenuLabel, null, "My Account"),
                             React.createElement(dropdown_menu_1.DropdownMenuSeparator, null),
                             React.createElement(dropdown_menu_1.DropdownMenuItem, { onClick: handleProfileClick }, "Profile"),
                             React.createElement(dropdown_menu_1.DropdownMenuItem, { onClick: handleSettingClick }, "Setting"),
-                            React.createElement(dropdown_menu_1.DropdownMenuItem, { className: "border-t-2 mt-2", onClick: function () { return react_2.signOut({ callbackUrl: "/auth/sign-in" }); } }, "\u0110\u0103ng xu\u1EA5t"))))),
+                            React.createElement(dropdown_menu_1.DropdownMenuItem, { className: "border-t-2 mt-2", onClick: function () { return react_1.signOut({ callbackUrl: "/auth/sign-in" }); } }, "\u0110\u0103ng xu\u1EA5t"))))),
             React.createElement(MainTabList_1["default"], null)),
         React.createElement("ul", { className: utils_1.cn("*:flex *:justify-center *:items-center *:h-16 hover:*:bg-[rgba(0,0,0,0.1)] *:cursor-pointer") },
             React.createElement("li", null,
