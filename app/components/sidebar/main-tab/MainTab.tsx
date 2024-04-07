@@ -18,10 +18,14 @@ import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import InfoUserModal from "../../modal/InfoUserModal";
+import SettingModal from "../../modal/SettingModal";
 import MainTabList from "./MainTabList";
 
 function MainTab() {
   const [open, setOpen] = useState<boolean>(false);
+  const [openSetting, setOpenSetting] = useState<boolean>(false);
+
+
   const session = useSession();
   const setCountFriendRequest = useBearStore(
     (state) => state.setCountFriendRequest
@@ -35,6 +39,9 @@ function MainTab() {
 
   function handleProfileClick() {
     setOpen(true);
+  }
+  function handleSettingClick() {
+    setOpenSetting(true);
   }
   useEffect(() => {
     const getUser = async () => {
@@ -96,13 +103,16 @@ function MainTab() {
                 />
                 <AvatarFallback>CN</AvatarFallback>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent className="ml-[68px] mt-[-30px] w-[300px]">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleProfileClick}>
                   Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem
+                <DropdownMenuItem onClick={handleSettingClick}>
+                  Setting
+                </DropdownMenuItem>
+                <DropdownMenuItem className="border-t-2 mt-2"
                   onClick={() => signOut({ callbackUrl: "/auth/sign-in" })}
                 >
                   Đăng xuất
@@ -126,7 +136,16 @@ function MainTab() {
           <Settings color="#FFF" width={28} height={28} />
         </li>
       </ul>
-      {data && <InfoUserModal open={open} onClose={() => setOpen(false)} />}
+      {data && (
+        <InfoUserModal user={data} open={open} onClose={() => setOpen(false)}>
+          <></>
+        </InfoUserModal>
+      )}
+      {data &&
+        <SettingModal  open={openSetting} onClose={() => setOpenSetting(false)} >
+          <></>
+        </SettingModal>
+      }
     </div>
   );
 }
