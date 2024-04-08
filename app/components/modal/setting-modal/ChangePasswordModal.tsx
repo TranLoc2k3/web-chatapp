@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { userAPI } from "@/api/userAPI";
 import { useToast } from "@/components/ui/use-toast";
 import { useSession } from "next-auth/react";
@@ -11,26 +11,39 @@ const ChangePassWordModal: React.FC<propTypes> = ({ onClose }) => {
   const newPasswordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
   //  lấy thông tin user từ session
-  const userPhone = useSession().data?.token?.user;
+  // const userPhone = useSession().data?.token?.user;
   const [error, setError] = useState<string>("");
   const { toast } = useToast();
+  const { data: session, status } = useSession();
+  useEffect(() => {
+    if (status === "authenticated") {
+      if (session?.token.user) {
+        setError("");
+      }
+    }
+  },[session,status]);
+
   const handleChangePassword = async () => {
     const currentPassword = currentPasswordRef.current?.value;
     const newPassword = newPasswordRef.current?.value;
     const confirmPassword = confirmPasswordRef.current?.value;
-    console.log(currentPassword)
+    console.log(currentPassword);
     // console.log(userPhone)
     if (!currentPassword || !newPassword || !confirmPassword) {
       setError("Vui lòng nhập đầy đủ thông tin");
       return;
     }
-  
+
     try {
-      const resChangePassword= await userAPI.changePassword(userPhone,currentPassword,newPassword);
-     
-      if(resChangePassword.data.message === "Old password is incorrect"){
+      const resChangePassword = await userAPI.changePassword(
+        session?.token.user,
+        currentPassword,
+        newPassword
+      );
+
+      if (resChangePassword.data.message === "Old password is incorrect") {
         setError("Mật khẩu cũ phải giống mật khẩu hiện tại");
-        return
+        return;
       }
       if (newPassword !== confirmPassword) {
         setError("Mật khẩu không trùng khớp");
@@ -44,20 +57,18 @@ const ChangePassWordModal: React.FC<propTypes> = ({ onClose }) => {
       });
       setDeffaultValue();
     } catch (error) {
-      
       setError("Đã xảy ra lỗi khi thực hiện thay đổi mật khẩu");
       return error;
     }
   };
-const setDeffaultValue = () => {
-  setError("");
-}
+  const setDeffaultValue = () => {
+    setError("");
+  };
   const handleSearchClick = (ref: React.RefObject<HTMLInputElement>) => {
     ref.current?.focus();
   };
   return (
     <div>
-      
       <h1 className="text-[20px]">Tạo Mật khẩu mới</h1>
       <div className="p-4">
         <div className="mt-2">
@@ -65,7 +76,7 @@ const setDeffaultValue = () => {
           Mật khẩu bao gồm các số ký tự đặc biệt tối thiểu 8 ký tự trở lên
         </div>
         {error && <div className="text-red-500">{error}</div>}
-      
+
         <div
           className="mt-4"
           onClick={() => handleSearchClick(currentPasswordRef)}
@@ -110,7 +121,7 @@ const setDeffaultValue = () => {
         <button
           type="button"
           className="px-8 py-2 bg-slate-200 hover:bg-slate-300 rounded-md"
-          onClick={()=>{
+          onClick={() => {
             onClose();
             setError("");
           }}
