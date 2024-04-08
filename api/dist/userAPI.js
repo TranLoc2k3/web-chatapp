@@ -32,7 +32,7 @@ var userAPI = {
     getUserByPhone: function (url) {
         return axios_config_1.axiosClient.get("" + url).then(function (res) { return res.data; });
     },
-    updatePassword: function (url, _a) {
+    resetPassword: function (url, _a) {
         var username = _a.username, newpassword = _a.newpassword;
         return axios_config_1.axiosClient.patch(url, {
             username: username,
@@ -44,6 +44,13 @@ var userAPI = {
     },
     handleFriendRequest: function (payload) {
         return axios_config_1.axiosClient.post("/user/process-friend-request", payload);
+    },
+    changePassword: function (username, oldpassword, newpassword) {
+        return axios_config_1.axiosClient.patch("/auth/update-password", {
+            username: username,
+            oldpassword: oldpassword,
+            newpassword: newpassword
+        });
     }
 };
 exports.userAPI = userAPI;

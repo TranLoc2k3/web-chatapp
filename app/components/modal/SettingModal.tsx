@@ -88,7 +88,7 @@ const InfoUserModal: React.FC<propTypes> = ({ open, onClose, children }) => {
         <div className="bg-white w-[45%] relative pt-9 p-6">
         <div>
           {currentTab === "general" && <GeneralModal />}
-          {currentTab === "privacy" && <ChangePassWordModal onClose={onClose} />}
+          {currentTab === "privacy" && <ChangePassWordModal onClose={onClose}  />}
         </div>
           <X
             className="absolute right-2 top-2 hover:bg-slate-200  cursor-pointer "
