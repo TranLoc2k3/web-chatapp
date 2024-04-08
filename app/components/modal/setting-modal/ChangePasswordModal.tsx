@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { userAPI } from "@/api/userAPI";
 import { useToast } from "@/components/ui/use-toast";
+import { useSession } from "next-auth/react";
 type propTypes = {
   onClose: () => void;
   // userPhone:string;
@@ -9,6 +10,8 @@ const ChangePassWordModal: React.FC<propTypes> = ({ onClose }) => {
   const currentPasswordRef = useRef<HTMLInputElement>(null);
   const newPasswordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
+  //  lấy thông tin user từ session
+  const userPhone = useSession().data?.token?.user;
   const [error, setError] = useState<string>("");
   const { toast } = useToast();
   const handleChangePassword = async () => {
@@ -21,25 +24,34 @@ const ChangePassWordModal: React.FC<propTypes> = ({ onClose }) => {
       setError("Vui lòng nhập đầy đủ thông tin");
       return;
     }
-    if (newPassword !== confirmPassword) {
-      setError("Mật khẩu không trùng khớp");
-    }
+  
     try {
-      await userAPI.changePassword("84329457746",currentPassword,newPassword);
+      const resChangePassword= await userAPI.changePassword(userPhone,currentPassword,newPassword);
+     
+      if(resChangePassword.data.message === "Old password is incorrect"){
+        setError("Mật khẩu cũ phải giống mật khẩu hiện tại");
+        return
+      }
+      if (newPassword !== confirmPassword) {
+        setError("Mật khẩu không trùng khớp");
+        return;
+      }
       toast({
         title: "Thông báo",
-        description: "Vui lòng nhập đầy đủ thông tin",
+        description: "Thay đổi mật khẩu thành công",
         duration: 2000,
-        variant: "destructive",
+        // variant: "destructive",
       });
-      onClose();
+      setDeffaultValue();
     } catch (error) {
-      // console.log(error);
+      
       setError("Đã xảy ra lỗi khi thực hiện thay đổi mật khẩu");
       return error;
     }
   };
-
+const setDeffaultValue = () => {
+  setError("");
+}
   const handleSearchClick = (ref: React.RefObject<HTMLInputElement>) => {
     ref.current?.focus();
   };

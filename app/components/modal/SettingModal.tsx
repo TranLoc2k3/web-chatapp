@@ -61,7 +61,7 @@ const InfoUserModal: React.FC<propTypes> = ({ open, onClose, children }) => {
     >
       <div
         onClick={handleModalContentClick}
-        className={`fixed top-0 left-0 right-0 bottom-0 inset-0 flex  pt-[60px] ml-[300px] pb-[60px]  
+        className={`fixed top-0 left-0 right-0 bottom-0 inset-0 flex  pt-[30px] ml-[300px] pb-[30px] 
     }
     z-30`}
       >
@@ -84,12 +84,14 @@ const InfoUserModal: React.FC<propTypes> = ({ open, onClose, children }) => {
             </div>
           </div>
         </div>
-       
-        <div className="bg-white w-[45%] relative pt-9 p-6">
-        <div>
-          {currentTab === "general" && <GeneralModal />}
-          {currentTab === "privacy" && <ChangePassWordModal onClose={onClose}  />}
-        </div>
+
+        <div className="bg-white w-[45%] relative p-9">
+          <div>
+            {currentTab === "general" && <GeneralModal />}
+            {currentTab === "privacy" && (
+              <ChangePassWordModal onClose={onClose} />
+            )}
+          </div>
           <X
             className="absolute right-2 top-2 hover:bg-slate-200  cursor-pointer "
             onClick={() => {
@@ -98,7 +100,6 @@ const InfoUserModal: React.FC<propTypes> = ({ open, onClose, children }) => {
             }}
           />
         </div>
-       
       </div>
     </div>
   );
