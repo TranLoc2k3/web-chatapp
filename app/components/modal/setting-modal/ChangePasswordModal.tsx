@@ -15,6 +15,7 @@ const ChangePassWordModal: React.FC<propTypes> = ({ onClose }) => {
   const [error, setError] = useState<string>("");
   const { toast } = useToast();
   const { data: session, status } = useSession();
+  // xử lý reload khi thay đổi password.
   useEffect(() => {
     if (status === "authenticated") {
       if (session?.token.user) {
