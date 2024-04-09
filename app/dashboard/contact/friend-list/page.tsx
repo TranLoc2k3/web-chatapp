@@ -4,7 +4,7 @@ import FriendListContent from "@/app/components/main-content/contact-main-conten
 function FriendList({ children }: { children: React.ReactNode }) {
     return ( 
         <div>
-            <Header icon={<Contact2/> }title="Danh sách nhóm" />
+            <Header icon={<Contact2/> }title="Danh sách Bạn bè" />
             <div className="p-6">
                 <FriendListContent />
             </div>
