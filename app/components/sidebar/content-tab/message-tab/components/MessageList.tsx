@@ -1,5 +1,8 @@
+import { userAPI } from "@/api/userAPI";
 import MessageItem from "./MessageItem";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { set } from "date-fns";
 interface User {
   ID: string;
   fullname: string;
@@ -10,20 +13,19 @@ interface MessageItemProps {
 }
 function ConversationList({ searchTerm }: MessageItemProps) {
   const [users, setUsers] = useState<User[]>([]);
+  const username = useSession().data?.token?.user;
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          "https://66090cbaa2a5dd477b1505d2.mockapi.io/getSearcUser"
-        );
-        const data: User[] = await response.json();
-        setUsers(data);
+        const response = await userAPI.getFriendListByUserID(username);
+        setUsers(response.data);
       } catch (error) {
         console.log(error);
+        return
       }
     };
     fetchData();
-  }, []);
+  }, [username]);
   // Search Filter by userID
   const filteredUsers = users.filter((user) => user.ID.includes(searchTerm));
 

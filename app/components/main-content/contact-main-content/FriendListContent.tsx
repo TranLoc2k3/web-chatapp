@@ -1,6 +1,6 @@
 "use client";
 import { ArrowUpDown, ArrowUpNarrowWide, Search } from "lucide-react";
-import {  useEffect, useRef, useState } from "react";
+import {  use, useEffect, useRef, useState } from "react";
 import FriendListItem from "./FriendListItem";
 import { axiosClient } from "@/configs/axios.config";
 import { userAPI } from "@/api/userAPI";
@@ -35,7 +35,7 @@ const FriendListContent =  () => {
       }
     }}
     fetchFriendList();
-  },)
+  },[username]);
 //  Chức năng tìm kiếm đang bổ sung thêm
 
   return (

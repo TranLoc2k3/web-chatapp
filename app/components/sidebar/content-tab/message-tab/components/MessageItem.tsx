@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 interface User {
   ID: string;
   fullname: string;
-  avatar: string;
+  urlavatar: string;
 }
 interface MessageItemProps {
   user: User;
@@ -17,7 +17,7 @@ function MessageItem({ user }: MessageItemProps) {
       <Link href={`/dashboard/messages/${user.ID}`} key={user.ID}>
         <div className="h-[74px] flex items-center cursor-pointer hover:bg-[#f3f5f6] px-4">
           <Avatar className="size-12">
-            <AvatarImage src={user.avatar} />
+            <AvatarImage src={user.urlavatar} />
             <AvatarFallback>{user.fullname}</AvatarFallback>
           </Avatar>
           <div className="ml-3">
