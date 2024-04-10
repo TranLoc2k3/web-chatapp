@@ -1,4 +1,5 @@
 import { axiosClient } from "@/configs/axios.config";
+import { get } from "http";
 import { url } from "inspector";
 import { use } from "react";
 
@@ -51,8 +52,30 @@ const userAPI = {
     }),
   getAllFriendRequests: (url: string) =>
     axiosClient.get(`${url}`).then((res) => res.data),
+
   handleFriendRequest: (payload: { id: string; type: string }) =>
     axiosClient.post("/user/process-friend-request", payload),
+
+  changePassword: (
+    username: string,
+    oldpassword: string,
+    newpassword: string
+  ) => {
+    return axiosClient.patch("/auth/update-password", {
+      username,
+      oldpassword,
+      newpassword,
+    });
+  },
+  getFriendListByUserID: (username: string) => {
+   
+      const res=axiosClient.post("/conversation/get-list-friend",{
+        username
+      })
+      return res;
+    
+    
+  },
 };
 
 export { userAPI };
