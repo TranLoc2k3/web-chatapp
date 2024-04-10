@@ -2,6 +2,8 @@ import { userAPI } from "@/api/userAPI";
 import { useBearStore } from "@/app/global-state/store";
 import { convertISOToDDMMYYY } from "@/app/utils/datetimeUtils";
 import Image from "next/image";
+import { socket } from "@/configs/socket";
+import { useSession } from "next-auth/react";
 
 interface IProps {
   senderId: string;
@@ -13,6 +15,7 @@ interface IProps {
 }
 
 function FriendRequestItem({ avatar, fullname, sendedDate, id }: IProps) {
+  const session = useSession();
   const { setCountFriendRequest, countFriendRequest } = useBearStore(
     (state) => ({
       setCountFriendRequest: state.setCountFriendRequest,
@@ -22,7 +25,15 @@ function FriendRequestItem({ avatar, fullname, sendedDate, id }: IProps) {
   const handleFriendRequest = async (type: string) => {
     const res = await userAPI.handleFriendRequest({ id, type });
     if (res.data.code === 1) {
-      setCountFriendRequest(countFriendRequest - 1);
+      setCountFriendRequest(countFriendRequest - 1); 
+      // Lấy IDUser rồi emit
+      // useSession();
+      const IDUser = session.data?.token?.user;
+      const payload = {
+        IDUser: IDUser,
+      }
+      
+      socket.emit("load_conversations", payload);
     }
   };
   return (
