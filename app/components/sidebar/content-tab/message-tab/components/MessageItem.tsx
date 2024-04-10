@@ -1,27 +1,40 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { set } from "date-fns";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-interface User {
+interface Receiver {
   ID: string;
   fullname: string;
-  avatar: string;
+  urlavatar: string;
 }
+
+interface Conversation {
+  IDConversation: string;
+  IDReceiver: string;
+  IDSender: string;
+  Receiver: Receiver;
+  isGroup: boolean;
+  lastChange: string;
+}
+
 interface MessageItemProps {
-  user: User;
+  conversation: Conversation; // Thay vì user, sử dụng conversation chứa thông tin đầy đủ của cuộc trò chuyện
 }
-function MessageItem({ user }: MessageItemProps) {
+
+function MessageItem({ conversation }: MessageItemProps) {
+  const receiver = conversation.Receiver;
+
   return (
     <div>
-      <Link href={`/dashboard/messages/${user.ID}`} key={user.ID}>
+      <Link href={`/dashboard/messages/${receiver.ID}`} key={receiver.ID}>
         <div className="h-[74px] flex items-center cursor-pointer hover:bg-[#f3f5f6] px-4">
           <Avatar className="size-12">
-            <AvatarImage src={user.avatar} />
-            <AvatarFallback>{user.fullname}</AvatarFallback>
+            <AvatarImage src={receiver.urlavatar} />
+            <AvatarFallback>{receiver.fullname}</AvatarFallback>
           </Avatar>
           <div className="ml-3">
-            <p className="text-base font-medium text-[#081c36]">{user.fullname}</p>
+            <p className="text-base font-medium text-[#081c36]">{receiver.fullname}</p>
+            {/* Sử dụng các thông tin từ cuộc trò chuyện, ví dụ: */}
             <p className="text-sm text-[#7589a3]">Bạn: Hello</p>
           </div>
         </div>
