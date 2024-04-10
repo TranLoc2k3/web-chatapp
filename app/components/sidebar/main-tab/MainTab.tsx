@@ -137,8 +137,7 @@ function MainTab() {
         </li>
       </ul>
       {data && (
-        <InfoUserModal  open={open} onClose={() => setOpen(false)} />
-     
+        <InfoUserModal open={open} onClose={() => setOpen(false)} />
       )}
       {data &&
         <SettingModal  open={openSetting} onClose={() => setOpenSetting(false)} >
