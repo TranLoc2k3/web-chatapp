@@ -35,7 +35,7 @@ function MessageItem({ conversation }: MessageItemProps) {
           <div className="ml-3">
             <p className="text-base font-medium text-[#081c36]">{receiver.fullname}</p>
             {/* Sử dụng các thông tin từ cuộc trò chuyện, ví dụ: */}
-            <p className="text-sm text-[#7589a3]">Bạn: Hello</p>
+            <p className="text-sm text-[#7589a3]">Tin nhắn mới</p>
           </div>
         </div>
       </Link>
