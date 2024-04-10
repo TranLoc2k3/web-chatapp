@@ -1,9 +1,9 @@
-import { cn } from "@/lib/utils";
-import Header from "./header/Header";
-import ConversationInfo from "./conversation-info/ConversationInfo";
-import ChatInput from "./chat-input/ChatInput";
-import MessageThread from "./MessageThread";
 import { TYPE_GROUP } from "@/app/types";
+import { cn } from "@/lib/utils";
+import MessageThread from "./MessageThread";
+import ChatInput from "./chat-input/ChatInput";
+import ConversationInfo from "./conversation-info/ConversationInfo";
+import Header from "./header/Header";
 
 function MessageMainContent({ children }: { children: React.ReactNode }) {
   return (
@@ -13,7 +13,7 @@ function MessageMainContent({ children }: { children: React.ReactNode }) {
         "md:relative md:left-0 md:w-full md:flex"
       )}
     >
-      <div className="relative flex-1">
+      <div className="relative w-full flex-1 flex flex-col justify-between overflow-hidden">
         <Header />
         <MessageThread />
         <ChatInput />

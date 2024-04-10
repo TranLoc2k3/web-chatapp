@@ -1,22 +1,19 @@
 "use client";
-import { useBearStore } from "@/app/global-state/store";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import { Lock } from "lucide-react";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 
 import Link from "next/link";
-import { permanentRedirect, redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 function SignIn() {
   const [phone, setPhone] = useState<string>("");
-  const session = useSession();
   const [password, setPassword] = useState<string>("");
   const { toast } = useToast();
-  const setUserPhone = useBearStore((state) => state.setUserPhone);
   const route = useRouter();
   const customInputStyle = {
     border: "1px solid #60a5fa",

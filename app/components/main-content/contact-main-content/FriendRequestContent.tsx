@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import FriendRequestItem from "./FriendRequestItem";
 import { userAPI } from "@/api/userAPI";
-import { useBearStore } from "@/app/global-state/store";
 import { useSession } from "next-auth/react";
+import { useBearStore } from "@/app/global-state/store";
 
 function FriendRequestContent() {
   const countFriendRequest = useBearStore((state) => state.countFriendRequest);
