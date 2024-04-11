@@ -40,7 +40,7 @@ function MessageItem({ conversation }: MessageItemProps) {
               {receiver.fullname}
             </p>
             {/* Sử dụng các thông tin từ cuộc trò chuyện, ví dụ: */}
-            <p className="text-sm text-[#7589a3]">Tin nhắn mới</p>
+            <p className="text-sm text-[#7589a3]"></p>
           </div>
         </div>
       </Link>
