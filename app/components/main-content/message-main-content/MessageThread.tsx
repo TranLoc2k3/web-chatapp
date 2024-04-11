@@ -15,6 +15,7 @@ import {
 } from "react";
 import MessageItem, { MessageItemLoading } from "./message/MessageItem";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function MessageThread() {
   const ref = useRef<HTMLDivElement>(null);
@@ -26,6 +27,7 @@ export default function MessageThread() {
   const [isLoadingOldMessage, setIsLoadingOldMessage] = useState(false);
   const [scrollToKey, setScrollToKey] = useState<string>("");
   const messageItemrefs = useRef<Record<string, any>>({});
+  const username = useSession().data?.token?.user;
 
   const onScrollTop = useCallback(
     (e: UIEvent<HTMLDivElement>) => {
@@ -70,10 +72,9 @@ export default function MessageThread() {
         inline: "nearest",
       });
     }
-  }, [sendingCount]);
-  
-  const pathname = usePathname()
-  
+  }, [sendingCount, messageList]);
+
+  const pathname = usePathname();
 
   useEffect(() => {
     const getMessageDetails = async () => {
@@ -84,15 +85,14 @@ export default function MessageThread() {
       setMessageList(res.data.listMessageDetail);
     };
     getMessageDetails();
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     socket.on("sending_message", (data: any) => {
-      console.log(data);
-      
       setSendingCount(data);
     });
     socket.on("receive_message", (data) => {
+      // username && socket.emit("load_conversations", { IDUser: username });
       setMessageList((pre) => [data as MessageItemProps, ...pre]);
       setSendingCount(0);
     });
@@ -102,7 +102,8 @@ export default function MessageThread() {
       socket.off("receive_message");
       socket.off("sending_message");
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [username]);
 
   return (
     <div className="overflow-y-auto h-full flex-1">

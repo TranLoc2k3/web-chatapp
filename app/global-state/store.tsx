@@ -17,6 +17,8 @@ interface BearState {
   // Số lượng message đang được gửi đi
   sendingCount: number;
   setSendingCount: (count: number) => void;
+  friendRequests: any;
+  setFriendRequests: (friendRequests: any) => void;
 }
 
 export const useBearStore = create<BearState>()((set) => ({
@@ -62,5 +64,11 @@ export const useBearStore = create<BearState>()((set) => ({
     set((prevState) => ({
       ...prevState,
       sendingCount: count,
+    })),
+  friendRequests: [],
+  setFriendRequests: (friendRequests: any) =>
+    set((prevState) => ({
+      ...prevState,
+      friendRequests,
     })),
 }));

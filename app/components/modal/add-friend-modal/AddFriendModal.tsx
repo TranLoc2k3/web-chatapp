@@ -16,6 +16,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import { useBearStore } from "@/app/global-state/store";
 import { useSession } from "next-auth/react";
+import { axiosClient } from "@/configs/axios.config";
 interface AddFriendModalProps {
   isvisible: boolean;
   onClose: () => void;
@@ -29,9 +30,50 @@ const AddFriendModal: React.FC<AddFriendModalProps> = ({
   const [isHoverX, setIsHoverX] = useState(false);
   const userPhone = useSession().data?.token?.user;
   const { toast } = useToast();
-  const session = useSession();
+  const [isSend, setIsSend] = useState(false);
+  const friendRequests = useBearStore((state) => state.friendRequests);
+
+  const { setCountFriendRequest, countFriendRequest } = useBearStore(
+    (state) => ({
+      setCountFriendRequest: state.setCountFriendRequest,
+      countFriendRequest: state.countFriendRequest,
+    })
+  );
+  const handleFriendRequest = async (type: string) => {
+    const request = friendRequests.find(
+      (item: any) => item.senderId === phone && item.receiverId === userPhone
+    );
+    const res = await userAPI.handleFriendRequest({ id: request.id, type });
+    if (res.data.code === 1) {
+      setCountFriendRequest(countFriendRequest - 1);
+      // Lấy IDUser rồi emit
+      // useSession();
+      const IDUser = userPhone;
+      const payload = {
+        IDUser: IDUser,
+      };
+
+      socket.emit("load_conversations", payload);
+
+      setPhone("");
+      setUser(null);
+      onClose();
+    }
+  };
   const handleFindUser = async () => {
     const res = await userAPI.getUserByPhone(`/user/get-user/${phone}`);
+
+    const payload = {
+      senderId: userPhone,
+      receiverId: res.ID,
+    };
+    const resRequest = await axiosClient.post(
+      "friend-request/check-request-exists",
+      payload
+    );
+    if (resRequest?.data.code === 0) {
+      setIsSend(true);
+    }
     setUser(res);
   };
   const onKeyDown = (e: KeyboardEvent) => {
@@ -40,13 +82,23 @@ const AddFriendModal: React.FC<AddFriendModalProps> = ({
     }
   };
 
-  const handleSendRequest = () => {
+  const handleSendRequest = async () => {
     if (!user) return;
 
     const payload = {
       senderId: userPhone,
       receiverId: user.ID,
     };
+
+    if (payload.senderId === payload.receiverId) {
+      toast({
+        title: "Thông báo",
+        description: "Không thể gửi lời mời kết bạn cho chính mình",
+        duration: 2000,
+        variant: "destructive",
+      });
+      return;
+    }
     socket.emit("new friend request client", payload);
     socket.on("send friend request server", (res: any) => {
       if (res?.code === 1) {
@@ -112,6 +164,7 @@ const AddFriendModal: React.FC<AddFriendModalProps> = ({
                   onChange={(phone) => setPhone(phone)}
                   onKeyDown={onKeyDown}
                 />
+
                 <Button
                   onClick={handleFindUser}
                   variant="outline"
@@ -191,12 +244,21 @@ const AddFriendModal: React.FC<AddFriendModalProps> = ({
                 >
                   Huỷ
                 </button>
-                <button
-                  onClick={handleSendRequest}
-                  className="rounded-sm pl-4 pr-4 pt-2 pb-2 bg-blue-600 hover:bg-blue-800 text-white absolute top-5 right-2 "
-                >
-                  Kết bạn
-                </button>
+                {isSend ? (
+                  <button
+                    onClick={() => handleFriendRequest("ACCEPTED")}
+                    className="rounded-sm pl-4 pr-4 pt-2 pb-2 bg-blue-600 hover:bg-blue-800 text-white absolute top-5 right-2 "
+                  >
+                    Chấp nhận
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleSendRequest}
+                    className="rounded-sm pl-4 pr-4 pt-2 pb-2 bg-blue-600 hover:bg-blue-800 text-white absolute top-5 right-2 "
+                  >
+                    Kết bạn
+                  </button>
+                )}
               </div>
             </div>
           </motion.div>

@@ -86,11 +86,12 @@ function FileMessage({ fileUrl }: IProps) {
     const fetchData = async () => {
       const res = await axios.get(fileUrl);
 
-      res .headers && setFileProps({
-        name: getFileName(fileUrl.split(".com/")[1]),
-        size: Math.floor(res.headers["content-length"] / 1024) + " KB",
-        type: res.headers["content-type"],
-      });
+      res.headers &&
+        setFileProps({
+          name: getFileName(fileUrl.split(".com/")[1]),
+          size: Math.floor(res.headers["content-length"] / 1024) + " KB",
+          type: res.headers["content-type"],
+        });
     };
     fetchData();
   }, [fileUrl]);
@@ -100,7 +101,12 @@ function FileMessage({ fileUrl }: IProps) {
       <div className="flex-1 pr-3 pt-1">
         <p className="font-[500] line-clamp-1 text-sm">{fileProps.name}</p>
         <div className="text-[#7589A3] text-[13px] flex justify-between items-center mt-1">
-          <span>{fileProps.size}</span>
+          <p className="flex gap-2">
+            <span>{fileProps.size}</span>
+            <span className="cursor-pointer hover:underline">
+              Nhấn để xem trước
+            </span>
+          </p>
           <div>
             <Button variant="outline" size="icon" className="size-7">
               <Link target="_parent" download={true} href={fileUrl}>
