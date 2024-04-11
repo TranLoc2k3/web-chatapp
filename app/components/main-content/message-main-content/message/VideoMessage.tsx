@@ -4,18 +4,33 @@ import { iconStyle } from "@/app/utils/iconStyle";
 import { Button } from "@/components/ui/button";
 import { DownloadIcon } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import VideoPreviewModal from "./VideoPreviewModal";
+import axios from "axios";
 
 interface IProps {
-  fileName: string;
-  fizeSize: string;
   fileUrl: string;
+  fileName: string
 }
 
-function VideoMessage({ fileName, fizeSize, fileUrl }: IProps) {
+function VideoMessage({ fileUrl, fileName }: IProps) {
   const [openPreview, setOpenPreview] = useState(false);
   const fileExtension = detectTypeFileFromUrl(fileUrl);
+  const [fileProps, setFileProps] = useState<any>({
+    size: "",
+  });
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await axios.get(fileUrl);
+      console.log(res);
+      
+      setFileProps({
+        size: Math.floor(res.headers["content-length"] / 1024) + " KB",
+      });
+    };
+    fetchData();
+  }, [fileUrl]);
   return (
     <div className="flex gap-3">
       <FileIconBackground />
@@ -23,7 +38,7 @@ function VideoMessage({ fileName, fizeSize, fileUrl }: IProps) {
         <p className="font-[600]">{fileName}</p>
         <div className="text-[#7589A3] text-sm flex justify-between items-center">
           <p className="flex gap-2">
-            {fizeSize}
+            {fileProps.size}
             <span
               onClick={() => setOpenPreview(true)}
               className="cursor-pointer hover:underline"
