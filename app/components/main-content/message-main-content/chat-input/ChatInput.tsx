@@ -41,9 +41,12 @@ export default function ChatInput() {
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isLink, setIsLink] = useState(false);
-  const setSendingCount = useBearStore((state) => state.setSendingCount);
+  const { conversations, setConversations } = useBearStore((state) => ({
+    conversations: state.conversations,
+    setConversations: state.setConversations,
+  }));
   const [isOpenEmoji, setIsOpenEmoji] = useState(false);
-  const pathname = usePathname()
+  const pathname = usePathname();
   // const setMsgList = useBearStore((state) => state.setMsgList);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -108,9 +111,23 @@ export default function ChatInput() {
     payload.image = listImages;
     payload.fileList = fileList;
     payload.video = videoList;
-    console.log(payload);
+    if (senderId) {
+      socket.emit("send_message", payload);
+      const currentConversations = pathname.split("/")[3];
+      const currentIndex = conversations.findIndex(
+        (conversation: any) =>
+          conversation.IDConversation === currentConversations
+      );
+      if (currentIndex > -1) {
+        const updatedConversations = [
+          conversations[currentIndex],
+          ...conversations,
+        ];
+        updatedConversations.splice(currentIndex + 1, 1);
 
-    senderId && socket.emit("send_message", payload);
+        setConversations(updatedConversations);
+      }
+    }
     setFiles([]);
     setMessage({
       content: "",

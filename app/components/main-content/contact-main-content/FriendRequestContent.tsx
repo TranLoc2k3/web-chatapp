@@ -6,6 +6,9 @@ import { useBearStore } from "@/app/global-state/store";
 
 function FriendRequestContent() {
   const countFriendRequest = useBearStore((state) => state.countFriendRequest);
+  const setGlobalFriendRequests = useBearStore(
+    (state) => state.setFriendRequests
+  );
   const [friendRequest, setFriendRequest] = useState<any>([]);
   const userPhone = useSession().data?.token?.user;
   useEffect(() => {
@@ -14,9 +17,11 @@ function FriendRequestContent() {
         `/user/get-all-friend-requests/${userPhone}`
       );
       setFriendRequest(res);
+      setGlobalFriendRequests(res);
     };
 
     getAllFriendRequests();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [countFriendRequest, userPhone]);
   return (
     <div>

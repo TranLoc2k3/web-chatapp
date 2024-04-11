@@ -22,9 +22,10 @@ interface MessageItemProps {
 function ConversationList({ searchTerm }: MessageItemProps) {
   const username = useSession().data?.token?.user;
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const setConversationsGlobal = useBearStore(
+  const setGlobalConversations = useBearStore(
     (state) => state.setConversations
   );
+  const globalConversations = useBearStore((state) => state.conversations);
 
   useEffect(() => {
     // Gắn data vào message nha Quý, cái này để Quý gắn lại chứ tui chưa gắn
@@ -37,17 +38,18 @@ function ConversationList({ searchTerm }: MessageItemProps) {
   useEffect(() => {
     socket.on("load_conversations_server", (data: any) => {
       setConversations(data);
-      setConversationsGlobal(data);
+      setGlobalConversations(data);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const filteredUsers = conversations.filter((conversation) =>
+
+  const filteredUsers = globalConversations.filter((conversation: any) =>
     conversation.Receiver.ID.includes(searchTerm)
   );
 
   return (
     <div>
-      {filteredUsers.map((conversation) => (
+      {filteredUsers.map((conversation: any) => (
         <MessageItem
           key={conversation.Receiver.ID}
           conversation={conversation}
