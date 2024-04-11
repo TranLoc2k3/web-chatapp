@@ -12,7 +12,7 @@ function ImagePreview({ file }: IProps) {
   const previewImage = useMemo(() => {
     return URL.createObjectURL(file) || null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [file]);
 
   return (
     <div

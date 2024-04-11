@@ -24,11 +24,10 @@ export interface UserProps {
 }
 
 export interface MessageItemProps {
-  idMessageDetail: string;
-  idSender: string;
-  idConversation: string;
+  IDMessageDetail: string;
+  IDSender: string;
   type: TypeMessage;
   content: string;
-  dateTime: Date;
+  dateTime: string;
   isRemove: boolean;
 }

@@ -5,6 +5,7 @@ import { iconStyle } from "@/app/utils/iconStyle";
 import { isValidUrl } from "@/app/utils/validUrl";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { socket } from "@/configs/socket";
 import { cn } from "@/lib/utils";
 import {
   ImageIcon,
@@ -13,20 +14,20 @@ import {
   Smile,
   ThumbsUp,
 } from "lucide-react";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
-import InputPreviewWrapper from "./InputPreviewWrapper";
-import LinkPreview from "./LinkPreview";
 import { useSession } from "next-auth/react";
-const msgItem = {
-  idMessageDetail: "id2",
-  idSender: "84704462652",
-  idConversation: "1",
-  type: TypeMessage.FILE,
-  content:
-    "https://ap-southeast-1.console.aws.amazon.com/s3/object/demo-s3-bucket-iuh?region=ap-southeast-1&bucketType=general&prefix=Tao_XacMinh_ChuKy.docx",
-  dateTime: new Date(2023, 12, 25, 15, 30, 10),
-  isRemove: false,
-};
+import dynamic from "next/dynamic";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
+import InputPreviewWrapper, {
+  detectTypeOfPreview,
+} from "./InputPreviewWrapper";
+import LinkPreview from "./LinkPreview";
+
+const EmojiPicker = dynamic(
+  () => {
+    return import("emoji-picker-react");
+  },
+  { ssr: false }
+);
 export default function ChatInput() {
   const [message, setMessage] = useState({
     content: "",
@@ -38,8 +39,9 @@ export default function ChatInput() {
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isLink, setIsLink] = useState(false);
-  const setMsgList = useBearStore((state) => state.setMsgList);
-
+  const setSendingCount = useBearStore((state) => state.setSendingCount);
+  const [isOpenEmoji, setIsOpenEmoji] = useState(false);
+  // const setMsgList = useBearStore((state) => state.setMsgList);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setMessage((pre) => ({
@@ -72,32 +74,47 @@ export default function ChatInput() {
   };
 
   const onSendMessage = () => {
+    const payload = {
+      IDSender: senderId,
+      IDConversation: "8b6e5b23-298e-4c32-89df-3d65f112ad59",
+      textMessage: message.content,
+      image: [] as any,
+      fileList: [] as any,
+      video: [] as any,
+    };
+    let listImages: any = [];
+    let fileList: any = [];
+    let videoList: any = [];
     if (files.length > 0) {
-      // Gửi từng file lên server -> nhận lại response khi file upload thành công
-      // Add vào msgList -> file covnert sang ObjectURL để view tạm
       files.forEach((file) => {
-        setMsgList({
-          ...msgItem,
-          idMessageDetail: Math.random().toString(),
-          content: URL.createObjectURL(file),
-          type: TypeMessage.FILE,
-          idSender: senderId,
-        });
+        if (detectTypeOfPreview(file) === "image") {
+          listImages.push(file);
+        } else {
+          if (file.type.includes("video")) {
+            videoList.push(file);
+          } else
+            fileList.push({
+              mimeType: file.type,
+              content: file,
+              fileName: file.name,
+            });
+        }
       });
     }
-    setMsgList({
-      ...msgItem,
-      idMessageDetail: Math.random().toString(),
-      content: message.content,
-      type: message.type,
-      idSender: senderId,
-    });
+
+    payload.image = listImages;
+    payload.fileList = fileList;
+    payload.video = videoList;
+    console.log(payload);
+
+    senderId && socket.emit("send_message", payload);
+    setFiles([]);
     setMessage({
       content: "",
       type: TypeMessage.TEXT,
     });
     setIsLink(false);
-    setHeight((pre: number) => (pre === 80 ? pre : pre - 80));
+    setHeight(80);
   };
 
   useEffect(() => {
@@ -106,7 +123,18 @@ export default function ChatInput() {
     } else if (files.length === 0) {
       setHeight((pre: number) => (pre === 80 ? pre : pre - 92));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [files]);
+  // useEffect(() => {
+  //   const fechtData = async () => {
+  //     const res = await axios.get(
+  //       "https://imagetintin.s3.ap-southeast-1.amazonaws.com/d64e4feb-584b-4c85-bd3e-a77724da6d75"
+  //     );
+  //     console.log(res);
+  //   };
+  //   fechtData();
+  // }, []);
+
   return (
     // h-24
     <div className="bg-white w-full">
@@ -123,6 +151,7 @@ export default function ChatInput() {
               ref={fileInputRef}
               onChange={onChangeFile}
               multiple
+              value={fileInputRef.current?.name}
             />
           </Button>
           <Button size="icon" variant="icon">
@@ -153,9 +182,29 @@ export default function ChatInput() {
               <Button size="icon" variant="icon">
                 <MessageSquareText {...iconStyle} />
               </Button>
-              <Button size="icon" variant="icon">
-                <Smile {...iconStyle} />
-              </Button>
+              <div>
+                <Button
+                  onClick={() => setIsOpenEmoji((pre) => !pre)}
+                  size="icon"
+                  variant="icon"
+                  className="relative"
+                >
+                  <Smile {...iconStyle} />
+                  <EmojiPicker
+                    open={isOpenEmoji}
+                    width={350}
+                    height={450}
+                    onEmojiClick={(e, emojiObject) => {
+                      setMessage((pre) => ({
+                        ...pre,
+                        content: pre.content + e.emoji,
+                      }));
+                    }}
+                    className="!absolute top-0 left-0 -translate-x-[100%] -translate-y-[100%]"
+                  />
+                </Button>
+              </div>
+
               {showLikeIcon ? (
                 <button className="mx-2 text-xl text-slate-600"> Gửi </button>
               ) : (

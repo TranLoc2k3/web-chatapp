@@ -25,7 +25,6 @@ function MainTab() {
   const [open, setOpen] = useState<boolean>(false);
   const [openSetting, setOpenSetting] = useState<boolean>(false);
 
-
   const session = useSession();
   const setCountFriendRequest = useBearStore(
     (state) => state.setCountFriendRequest
@@ -63,7 +62,7 @@ function MainTab() {
         console.log(e);
       }
     };
-    getAllFriendRequests();
+    session.data?.token?.user && getAllFriendRequests();
     session.data?.token?.user &&
       socket.emit("new user connect", {
         phone: session.data?.token?.user,
@@ -83,43 +82,48 @@ function MainTab() {
     setUser(data);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
-  if (session.status === "loading") return null;
-  if (!data) return null;
   return (
     <div className="w-16 min-w-16 pt-8 bg-[#0091ff] h-dvh flex flex-col justify-between">
       <ScrollArea className="h-full">
         <div className="mb-8">
-          <Avatar className="size-12 mx-auto">
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Image
-                  src={`${user?.urlavatar || data.urlavatar}`}
-                  key="u-avt-side-bar"
-                  alt=""
-                  width={48}
-                  height={48}
-                  className="h-12 rounded-full"
-                  priority
-                />
-                <AvatarFallback>CN</AvatarFallback>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="ml-[68px] mt-[-30px] w-[300px]">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleProfileClick}>
-                  Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleSettingClick}>
-                  Setting
-                </DropdownMenuItem>
-                <DropdownMenuItem className="border-t-2 mt-2"
-                  onClick={() => signOut({ callbackUrl: "/auth/sign-in" })}
-                >
-                  Đăng xuất
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </Avatar>
+          {!data ? (
+            <div className="flex justify-center items-center">
+              <div className="size-12 animate-pulse bg-gray-300 rounded-full" />
+            </div>
+          ) : (
+            <Avatar className="size-12 mx-auto">
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <Image
+                    src={`${user?.urlavatar || data.urlavatar}`}
+                    key="u-avt-side-bar"
+                    alt=""
+                    width={48}
+                    height={48}
+                    className="h-12 rounded-full"
+                    priority
+                  />
+                  <AvatarFallback>CN</AvatarFallback>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="ml-[68px] mt-[-30px] w-[300px]">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleProfileClick}>
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSettingClick}>
+                    Setting
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="border-t-2 mt-2"
+                    onClick={() => signOut({ callbackUrl: "/auth/sign-in" })}
+                  >
+                    Đăng xuất
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </Avatar>
+          )}
         </div>
         <MainTabList />
       </ScrollArea>
@@ -136,14 +140,12 @@ function MainTab() {
           <Settings color="#FFF" width={28} height={28} />
         </li>
       </ul>
+      {data && <InfoUserModal open={open} onClose={() => setOpen(false)} />}
       {data && (
-        <InfoUserModal open={open} onClose={() => setOpen(false)} />
-      )}
-      {data &&
-        <SettingModal  open={openSetting} onClose={() => setOpenSetting(false)} >
+        <SettingModal open={openSetting} onClose={() => setOpenSetting(false)}>
           <></>
         </SettingModal>
-      }
+      )}
     </div>
   );
 }
