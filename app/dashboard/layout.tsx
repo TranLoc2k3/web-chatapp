@@ -14,7 +14,9 @@ export default function DashboardLayout({
   return (
     <div className="flex relative">
       <Sidebar />
-      <main className="md:flex-1">{children}</main>
+      <main className="md:flex-1 h-screen w-[calc(100vw-408px-344px)] relative">
+        {children}
+      </main>
     </div>
   );
 }

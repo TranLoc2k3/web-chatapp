@@ -9,14 +9,17 @@ interface MessageTabHeaderProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
 }
-const MessageTabHeader: React.FC<MessageTabHeaderProps> = ({searchTerm,onSearchChange}) => {
+const MessageTabHeader: React.FC<MessageTabHeaderProps> = ({
+  searchTerm,
+  onSearchChange,
+}) => {
   const [showAddFriend, setShowAddFriend] = useState<boolean>(false);
   const [showAddGroup, setShowAddGroup] = useState<boolean>(false);
 
   return (
     <Fragment>
       <div className="h-16 px-4 flex items-center gap-4">
-      <Search searchTerm={searchTerm} onSearchChange={onSearchChange} />
+        <Search searchTerm={searchTerm} onSearchChange={onSearchChange} />
 
         <div className="flex gap-3">
           <Button

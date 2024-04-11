@@ -44,7 +44,7 @@ const AddFriendModal: React.FC<AddFriendModalProps> = ({
     if (!user) return;
 
     const payload = {
-      senderId: session.data?.token?.user,
+      senderId: userPhone,
       receiverId: user.ID,
     };
     socket.emit("new friend request client", payload);
