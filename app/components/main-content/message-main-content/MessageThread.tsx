@@ -14,6 +14,7 @@ import {
   useState,
 } from "react";
 import MessageItem, { MessageItemLoading } from "./message/MessageItem";
+import { usePathname } from "next/navigation";
 
 export default function MessageThread() {
   const ref = useRef<HTMLDivElement>(null);
@@ -70,11 +71,14 @@ export default function MessageThread() {
       });
     }
   }, [sendingCount]);
+  
+  const pathname = usePathname()
+  
 
   useEffect(() => {
     const getMessageDetails = async () => {
       const res = await axiosClient.post("/conversation/getMessageDetail", {
-        IDConversation: "8b6e5b23-298e-4c32-89df-3d65f112ad59",
+        IDConversation: pathname.split("/")[3],
       });
       setIDNextBucket(res.data.IDNextBucket);
       setMessageList(res.data.listMessageDetail);
@@ -84,6 +88,8 @@ export default function MessageThread() {
 
   useEffect(() => {
     socket.on("sending_message", (data: any) => {
+      console.log(data);
+      
       setSendingCount(data);
     });
     socket.on("receive_message", (data) => {

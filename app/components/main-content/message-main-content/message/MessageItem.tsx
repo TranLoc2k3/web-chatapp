@@ -94,9 +94,8 @@ const MessageItem = forwardRef(
           )}
           {message.type === TypeMessage.VIDEO && (
             <VideoMessage
-              fileName="A"
+              fileName={message.IDMessageDetail}
               fileUrl={message.content}
-              fizeSize="18.39 KB"
             />
           )}
           {message.type === TypeMessage.IMAGE && (

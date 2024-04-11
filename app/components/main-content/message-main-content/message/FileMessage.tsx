@@ -86,7 +86,7 @@ function FileMessage({ fileUrl }: IProps) {
     const fetchData = async () => {
       const res = await axios.get(fileUrl);
 
-      setFileProps({
+      res .headers && setFileProps({
         name: getFileName(fileUrl.split(".com/")[1]),
         size: Math.floor(res.headers["content-length"] / 1024) + " KB",
         type: res.headers["content-type"],

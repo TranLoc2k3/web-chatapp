@@ -21,6 +21,8 @@ import InputPreviewWrapper, {
   detectTypeOfPreview,
 } from "./InputPreviewWrapper";
 import LinkPreview from "./LinkPreview";
+import path from "path";
+import { usePathname } from "next/navigation";
 
 const EmojiPicker = dynamic(
   () => {
@@ -41,6 +43,7 @@ export default function ChatInput() {
   const [isLink, setIsLink] = useState(false);
   const setSendingCount = useBearStore((state) => state.setSendingCount);
   const [isOpenEmoji, setIsOpenEmoji] = useState(false);
+  const pathname = usePathname()
   // const setMsgList = useBearStore((state) => state.setMsgList);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -76,7 +79,7 @@ export default function ChatInput() {
   const onSendMessage = () => {
     const payload = {
       IDSender: senderId,
-      IDConversation: "8b6e5b23-298e-4c32-89df-3d65f112ad59",
+      IDConversation: pathname.split("/")[3],
       textMessage: message.content,
       image: [] as any,
       fileList: [] as any,
