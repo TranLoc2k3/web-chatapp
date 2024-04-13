@@ -77,3 +77,8 @@
 input {
   outline: none;
 }
+
+// Customize Calendar - shadcn/ui
+div.rdp-caption_dropdowns {
+  @apply justify-between gap-2
+}
