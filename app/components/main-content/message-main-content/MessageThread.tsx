@@ -92,6 +92,8 @@ export default function MessageThread() {
       setSendingCount(data);
     });
     socket.on("receive_message", (data) => {
+      console.log(data);
+
       // username && socket.emit("load_conversations", { IDUser: username });
       setMessageList((pre) => [data as MessageItemProps, ...pre]);
       setSendingCount(0);
