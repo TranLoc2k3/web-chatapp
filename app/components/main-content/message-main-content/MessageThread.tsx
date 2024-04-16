@@ -28,6 +28,11 @@ export default function MessageThread() {
   const [scrollToKey, setScrollToKey] = useState<string>("");
   const messageItemrefs = useRef<Record<string, any>>({});
   const username = useSession().data?.token?.user;
+  const pathname = usePathname();
+  const { conversations, setConversations } = useBearStore((state) => ({
+    conversations: state.conversations,
+    setConversations: state.setConversations,
+  }));
 
   const onScrollTop = useCallback(
     (e: UIEvent<HTMLDivElement>) => {
@@ -36,7 +41,7 @@ export default function MessageThread() {
           if (IDNextBucket === "") return;
           setIsLoadingOldMessage(true);
           const res = await axiosClient.post("/conversation/getMessageDetail", {
-            IDConversation: "8b6e5b23-298e-4c32-89df-3d65f112ad59",
+            IDConversation: pathname.split("/")[3],
             IDNextBucket,
           });
           const currentOldestID = messageList
@@ -74,8 +79,6 @@ export default function MessageThread() {
     }
   }, [sendingCount, messageList]);
 
-  const pathname = usePathname();
-
   useEffect(() => {
     const getMessageDetails = async () => {
       const res = await axiosClient.post("/conversation/getMessageDetail", {
@@ -91,9 +94,30 @@ export default function MessageThread() {
     socket.on("sending_message", (data: any) => {
       setSendingCount(data);
     });
-    socket.on("receive_message", (data) => {
+    socket.on("receive_message", (data: any) => {
+      // Đẩy conversation lên đầu nếu nhận tin nhắn
+      const currentConversations = pathname.split("/")[3];
+
+      if (data.IDSender !== username) {
+        const currentIndex = conversations.findIndex(
+          (conversation: any) =>
+            conversation.IDConversation === data.IDConversation
+        );
+
+        if (currentIndex > -1) {
+          const updatedConversations = [
+            conversations[currentIndex],
+            ...conversations,
+          ];
+
+          updatedConversations.splice(currentIndex + 1, 1);
+
+          setConversations(updatedConversations);
+        }
+      }
       // username && socket.emit("load_conversations", { IDUser: username });
-      setMessageList((pre) => [data as MessageItemProps, ...pre]);
+      data.IDConversation === currentConversations &&
+        setMessageList((pre) => [data as MessageItemProps, ...pre]);
       setSendingCount(0);
     });
     return () => {
