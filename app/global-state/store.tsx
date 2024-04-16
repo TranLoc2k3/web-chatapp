@@ -22,7 +22,7 @@ interface BearState {
 }
 
 export const useBearStore = create<BearState>()((set) => ({
-  isOpenConversationInfo: false,
+  isOpenConversationInfo: true,
   userPhone: "",
   user: null,
   senders: [],

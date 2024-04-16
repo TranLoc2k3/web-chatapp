@@ -26,10 +26,7 @@ function MessageItem({ conversation }: MessageItemProps) {
 
   return (
     <div>
-      <Link
-        href={`/dashboard/messages/${conversation.IDConversation}`}
-        key={receiver.ID}
-      >
+      <Link href={`/dashboard/messages/${conversation.IDConversation}`}>
         <div className="h-[74px] flex items-center cursor-pointer hover:bg-[#f3f5f6] px-4">
           <Avatar className="size-12">
             <AvatarImage src={receiver.urlavatar} />
