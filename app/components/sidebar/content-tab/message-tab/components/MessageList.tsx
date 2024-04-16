@@ -33,6 +33,11 @@ function ConversationList({ searchTerm }: MessageItemProps) {
     // Check có thì hiển thị tin nhắn đó danh sách cuộc hội thoại
     // socket.emit("load_conversations", { IDUser: "84355887042" })
     username && socket.emit("load_conversations", { IDUser: username });
+
+    username &&
+      socket.on("new_group_conversation", (data) => {
+        socket.emit("load_conversations", { IDUser: username });
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [username]);
   useEffect(() => {
@@ -43,15 +48,15 @@ function ConversationList({ searchTerm }: MessageItemProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const filteredUsers = globalConversations.filter((conversation: any) =>
-    conversation.Receiver.ID.includes(searchTerm)
+  const filteredUsers = globalConversations.filter(
+    (conversation: any) => conversation.Receiver
   );
 
   return (
     <div>
       {filteredUsers.map((conversation: any) => (
         <MessageItem
-          key={conversation.Receiver.ID}
+          key={conversation.IDConversation}
           conversation={conversation}
         />
       ))}

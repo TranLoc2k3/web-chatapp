@@ -1,39 +1,15 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { Camera, Check, Search, X, XCircle } from "lucide-react";
+import { UserProps } from "@/app/types";
+import { Label } from "@/components/ui/label";
+import { axiosClient } from "@/configs/axios.config";
+import { socket } from "@/configs/socket";
+import { AnimatePresence, motion } from "framer-motion";
+import { Camera, Search, X } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import FriendItem from "./components/friend-item/FriendItem";
-const data = [
-  {
-    id: 1,
-    name: "Bố",
-    phone: "+84 0935912425",
-    imageUrl:
-      "https://th.bing.com/th/id/OIP.6n5mkmpjmfQkoWvILfChPwHaJE?rs=1&pid=ImgDetMain",
-  },
-  {
-    id: 2,
-    name: "Hoàng",
-    phone: "+84 0935912425",
-    imageUrl:
-      "https://hinhgaixinh.com/wp-content/uploads/2021/07/20210627-vo-thuy-hang-6-835x1254.jpg",
-  },
-  {
-    id: 3,
-    name: "Huy",
-    phone: "+84 0935912425",
-    imageUrl:
-      "https://th.bing.com/th/id/OIP.sjOEzaP9CjiNb-X_NDQiIAHaMr?pid=ImgDet&w=182&h=311&c=7&dpr=1.3",
-  },
-];
-
-interface ItemFriend {
-  id: number;
-  name: string;
-  phone: string;
-  imageUrl: string;
-}
 
 interface AddGroupModalProps {
   isvisible: boolean;
@@ -44,45 +20,54 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({
   isvisible,
   onClose,
 }) => {
-  const [checkedItems, setCheckedItems] = useState<boolean[]>(
-    Array(data.length).fill(false)
-  );
-  const [selectFriends, setSelectFriends] = useState<ItemFriend[]>([]);
+  const [checkedItems, setCheckedItems] = useState<boolean[]>([]);
+  const username = useSession().data?.token.user;
+  const [file, setFile] = useState<File | null>(null);
+  const [groupData, setGroupData] = useState<any>({
+    IDOwner: "",
+    groupName: "",
+    groupMembers: [],
+    groupAvatar: file,
+  });
+  const [friendList, setFriendList] = useState<UserProps[]>([]);
   const handleCheck = (index: number) => {
-    // action1 an hien x
     const newCheckedItems = [...checkedItems];
     newCheckedItems[index] = !newCheckedItems[index];
     setCheckedItems(newCheckedItems);
-    // action2 add vao modal
-    const friend = data[index];
-    const isSelected = selectFriends.some(
-      (selectFriends) => selectFriends.id === friend.id
-    );
-    if (selectFriends.length === 100 && !isSelected) {
-      alert("Đã đầy danh sách");
-      return;
-    }
-    if (!isSelected) {
-      setSelectFriends((preSelect) => [...preSelect, friend]);
-    } else {
-      setSelectFriends((preSelect) =>
-        preSelect.filter((selectFriend) => selectFriend.id !== friend.id)
-      );
-    }
   };
 
-  const handleRemoveFriend = (id: number) => {
-    setSelectFriends((preSelect) =>
-      preSelect.filter((friend) => friend.id !== id)
+  const onCreateGroup = () => {
+    const selectFriends = friendList.filter(
+      (_, index) => checkedItems[index] === true
     );
-
-    // Sau khi xóa bạn bè, cập nhật trạng thái checkedItems để bỏ chọn mục tương ứng
-    setCheckedItems((prevCheckedItems) =>
-      prevCheckedItems.map(
-        (isChecked, index) => (index === id - 1 ? false : isChecked) // Giả sử id của bạn bè bắt đầu từ 1, nên trừ đi 1 để tính index
-      )
-    );
+    const listIdFriends = selectFriends.map((item) => item.ID);
+    const payload = {
+      ...groupData,
+      groupMembers: [username, ...listIdFriends],
+      groupAvatar: file,
+      IDOwner: username,
+    };
+    socket.emit("create_group_conversation", payload);
+    setFile(null);
+    setGroupData({
+      IDOwner: "",
+      groupName: "",
+      groupMembers: [],
+      groupAvatar: null,
+    });
+    onClose();
   };
+
+  useEffect(() => {
+    const getFriendList = async () => {
+      const res = await axiosClient.post("conversation/get-list-friend", {
+        username,
+      });
+      setFriendList(res.data);
+      setCheckedItems(new Array(res.data.length).fill(false));
+    };
+    username && getFriendList();
+  }, [username]);
 
   return (
     <AnimatePresence>
@@ -110,13 +95,31 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({
                 {/* 1 Nhập tên nhóm */}
                 <div className="flex align-middle">
                   <div className="p-2 border-2 rounded-full opacity-80">
-                    <Camera className="hover: cursor-pointer" />
+                    <Label htmlFor="avatar-group">
+                      <Camera className="cursor-pointer" />
+                    </Label>
+                    <input
+                      type="file"
+                      hidden
+                      id="avatar-group"
+                      name="avatar-group"
+                      onChange={(e) =>
+                        e.target.files && setFile(e.target.files[0])
+                      }
+                    />
                   </div>
                   <div className="flex align-middle ml-2 w-full">
                     <input
+                      value={groupData.groupName}
+                      onChange={(e) =>
+                        setGroupData({
+                          ...groupData,
+                          groupName: e.target.value,
+                        })
+                      }
                       placeholder="Nhập tên nhóm"
                       className="text-[14px] text-black border-b-[1px] w-full"
-                    ></input>
+                    />
                   </div>
                 </div>
                 {/*2 tìm số điện thoại bạn bè */}
@@ -126,19 +129,7 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({
                     <input
                       className="ml-2 w-full text-[12px]"
                       placeholder="Nhập tên, số điện thoại hoặc danh sách số điện thoại"
-                    ></input>
-                  </div>
-                  {/* 3 Các nhóm */}
-                  <div className="mt-4  text-[20px] rounded-3xl flex justify-start space-x-5">
-                    <button className="w-16 h-7 text-[14px] rounded-xl text-[10px]  bg-blue-600 text-white  hover:bg-blue-700">
-                      Tất cả
-                    </button>
-                    <button className="w-20 h-7 text-[14px] rounded-xl text-[10px]  bg-neutral-200 text-neutral-700  hover:bg-neutral-300">
-                      Công việc
-                    </button>
-                    <button className="w-20 h-7 text-[14px] rounded-xl text-[10px]  bg-neutral-200 text-neutral-700  hover:bg-neutral-300">
-                      Học tập
-                    </button>
+                    />
                   </div>
                 </div>
                 {/* 3 Chọn member để tạo nhóm */}
@@ -150,9 +141,9 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({
                           Trò chuyện gần đây
                         </p>
                       </div>
-                      {data.map((item: ItemFriend, index: number) => (
+                      {friendList.map((item: UserProps, index: number) => (
                         <FriendItem
-                          key={item.id}
+                          key={item.ID}
                           item={item}
                           isChecked={checkedItems[index]}
                           handleCheck={() => {
@@ -162,7 +153,7 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({
                       ))}
                     </div>
                     {/* them vao nhom */}
-                    <AnimatePresence>
+                    {/* <AnimatePresence>
                       {selectFriends.length > 0 && (
                         <motion.div
                           initial={{ x: 0 }} // Bắt đầu từ vị trí bên phải ngoài
@@ -187,7 +178,8 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({
                                   <img
                                     className="rounded-full w-4"
                                     src={friend.imageUrl}
-                                  ></img>
+                                    alt=""
+                                  />
                                   <p className="ml-2">{friend.name}</p>
 
                                   <XCircle
@@ -202,7 +194,7 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({
                           </div>
                         </motion.div>
                       )}
-                    </AnimatePresence>
+                    </AnimatePresence> */}
                   </div>
                 </div>
               </div>
@@ -215,7 +207,10 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({
                 >
                   Huỷ
                 </button>
-                <button className="rounded-sm pl-4 pr-4 pt-1 pb-1 bg-blue-600 hover:bg-blue-800 text-white absolute top-4 right-2 ">
+                <button
+                  onClick={onCreateGroup}
+                  className="rounded-sm pl-4 pr-4 pt-1 pb-1 bg-blue-600 hover:bg-blue-800 text-white absolute top-4 right-2 "
+                >
                   Tạo nhóm
                 </button>
               </div>

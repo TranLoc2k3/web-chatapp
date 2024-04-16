@@ -30,4 +30,18 @@ export interface MessageItemProps {
   content: string;
   dateTime: string;
   isRemove: boolean;
+  isRecall: boolean;
+}
+
+export interface ConversationItemProps {
+  IDConversation: string;
+  IDSender: string;
+  groupMembers: any;
+  IDNewestMessage: string;
+  IDReceiver?: string;
+  isGroup: boolean;
+  listFile?: any;
+  listImage?: any;
+  groupName?: string;
+  groupAvatar?: string;
 }

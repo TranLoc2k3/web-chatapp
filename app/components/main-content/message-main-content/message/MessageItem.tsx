@@ -1,10 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useBearStore } from "@/app/global-state/store";
 import { MessageItemProps, TypeMessage } from "@/app/types";
 import { convertISOToDDMMYYY } from "@/app/utils/datetimeUtils";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { LegacyRef, forwardRef, useMemo, useState } from "react";
+import { LegacyRef, forwardRef, useEffect, useMemo, useState } from "react";
 import FileMessage from "./FileMessage";
 import ImageMessage from "./ImageMessage";
 import TextMessage from "./TextMessage";
@@ -16,6 +17,7 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { axiosClient } from "@/configs/axios.config";
+import { socket } from "@/configs/socket";
 
 interface IProps {
   message: MessageItemProps;
@@ -53,19 +55,32 @@ const MessageItem = forwardRef(
       }
       console.log(res.data);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const isSend = useMemo(
-      () => {
-        return message.IDSender === session.data?.token.user;
-      },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [session]
-    );
+
+    const onRecall = () => {
+      socket.emit("recallMessage", {
+        IDMessageDetail: message.IDMessageDetail,
+      });
+    };
+
+    const isSend = useMemo(() => {
+      return message.IDSender === session.data?.token.user;
+    }, [session]);
+
+    useEffect(() => {
+      socket.on("changeStateMessage", (data) => {
+        if (data.IDMessageDetail === message.IDMessageDetail) {
+          setMessage((prev) => ({ ...prev, isRecall: true }));
+        }
+      });
+      return () => {
+        socket.off("changeStateMessage");
+      };
+    }, []);
+
     if (message.isRemove) return null;
     return (
       <ContextMenu>
         <ContextMenuTrigger>
-          {" "}
           <div
             ref={ref}
             className={cn(
@@ -86,49 +101,66 @@ const MessageItem = forwardRef(
               )}
             </div>
             {/* Content */}
-            <div
-              className={cn(
-                " p-3 rounded-[8px] w-[400px] max-w-[calc(100%-100px)]",
-                `${
-                  message.type === TypeMessage.IMAGE
-                    ? "bg-transparent"
-                    : "bg-white"
-                }`,
-                `${isSend ? "bg-[#e5efff]" : ""}`
-              )}
-            >
-              {!isSend && (
-                <p className="text-[#7589A3] text-sm mb-3">
-                  {currentSender?.fullname}
+            {message.isRecall ? (
+              <div
+                className={cn(
+                  "p-3 rounded-[8px] w-[400px] max-w-[calc(100%-100px)",
+                  `${isSend ? "bg-[#e5efff]" : "bg-white"}`
+                )}
+              >
+                <p className="break-all text-[rgba(0,0,0,0.3)]">
+                  Tin nhắn đã bị thu hồi
                 </p>
-              )}
-              {message.type === TypeMessage.FILE && (
-                <FileMessage fileUrl={message.content} />
-              )}
-              {(message.type === TypeMessage.TEXT ||
-                message.type === TypeMessage.LINK) && (
-                <TextMessage
-                  isLink={message.type === TypeMessage.LINK}
-                  content={message.content}
-                />
-              )}
-              {message.type === TypeMessage.VIDEO && (
-                <VideoMessage
-                  fileName={message.IDMessageDetail}
-                  fileUrl={message.content}
-                />
-              )}
-              {message.type === TypeMessage.IMAGE && (
-                <ImageMessage url={message.content} />
-              )}
-              <p className="text-[#476285] text-xs mt-3 flex justify-between items-center">
-                {convertISOToDDMMYYY(message.dateTime)}
-              </p>
-            </div>
+                <p className="text-[#476285] text-xs mt-3 flex justify-between items-center">
+                  {convertISOToDDMMYYY(message.dateTime)}
+                </p>
+              </div>
+            ) : (
+              <div
+                className={cn(
+                  "p-3 rounded-[8px] w-[400px] max-w-[calc(100%-100px)]",
+                  `${
+                    message.type === TypeMessage.IMAGE
+                      ? "bg-transparent"
+                      : "bg-white"
+                  }`,
+                  `${isSend ? "bg-[#e5efff]" : ""}`
+                )}
+              >
+                {!isSend && (
+                  <p className="text-[#7589A3] text-sm mb-3">
+                    {currentSender?.fullname}
+                  </p>
+                )}
+                {message.type === TypeMessage.FILE && (
+                  <FileMessage fileUrl={message.content} />
+                )}
+                {(message.type === TypeMessage.TEXT ||
+                  message.type === TypeMessage.LINK) && (
+                  <TextMessage
+                    isLink={message.type === TypeMessage.LINK}
+                    content={message.content}
+                  />
+                )}
+                {message.type === TypeMessage.VIDEO && (
+                  <VideoMessage
+                    fileName={message.IDMessageDetail}
+                    fileUrl={message.content}
+                  />
+                )}
+                {message.type === TypeMessage.IMAGE && (
+                  <ImageMessage url={message.content} />
+                )}
+                <p className="text-[#476285] text-xs mt-3 flex justify-between items-center">
+                  {convertISOToDDMMYYY(message.dateTime)}
+                </p>
+              </div>
+            )}
           </div>
         </ContextMenuTrigger>
         <ContextMenuContent>
           <ContextMenuItem onClick={onDelete}>Xóa</ContextMenuItem>
+          <ContextMenuItem onClick={onRecall}>Thu hồi</ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
     );
