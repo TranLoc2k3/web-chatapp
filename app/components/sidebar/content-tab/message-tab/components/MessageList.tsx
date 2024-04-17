@@ -21,7 +21,7 @@ interface MessageItemProps {
 }
 function ConversationList({ searchTerm }: MessageItemProps) {
   const username = useSession().data?.token?.user;
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  // const [conversations, setConversations] = useState<Conversation[]>([]);
   const setGlobalConversations = useBearStore(
     (state) => state.setConversations
   );
@@ -42,12 +42,15 @@ function ConversationList({ searchTerm }: MessageItemProps) {
   }, [username]);
   useEffect(() => {
     socket.on("load_conversations_server", (data: any) => {
-      setConversations(data);
+      console.log(data);
+      
+      // setConversations(data);
       setGlobalConversations(data);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
+  console.log("data quy:")
+console.log(globalConversations)
   const filteredUsers = globalConversations.filter(
     (conversation: any) => conversation.Receiver
   );
