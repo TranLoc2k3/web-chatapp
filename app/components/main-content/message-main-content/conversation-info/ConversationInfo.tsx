@@ -1,11 +1,14 @@
 "use client";
+import AddMemberGroup from "@/app/components/modal/AddMemberGroup";
 import { useBearStore } from "@/app/global-state/store";
-import { cn } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import ConversationInfoHeader from "./conversation-info-header/Header";
-import ConversationInfoBody from "./conversation-info-body/ConversationInfoBody";
 import { TYPE_GROUP } from "@/app/types";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import ChildModal from "./ChildModal";
+import ConversationInfoBody from "./conversation-info-body/ConversationInfoBody";
+import ConversationInfoHeader from "./conversation-info-header/Header";
+import { useState } from "react";
 
 interface IProps {
   type: TYPE_GROUP;
@@ -15,6 +18,13 @@ function ConversationInfo({ type }: IProps) {
   const onClose = () => {
     state.setOpenConversationInfo();
   };
+  const openChildModalConversationInfo = useBearStore(
+    (state) => state.openChildModalConversationInfo
+  );
+  const { openAddMemberGroup, setOpenMemberGroup } = useBearStore((state) => ({
+    openAddMemberGroup: state.openAddMemberGroup,
+    setOpenMemberGroup: state.setOpenAddMemberGroup,
+  }));
 
   return (
     <>
@@ -56,7 +66,23 @@ function ConversationInfo({ type }: IProps) {
           />
           <ConversationInfoBody typeGroup={TYPE_GROUP.GROUP} />
         </ScrollArea>
+
+        {/* Child Modal */}
+        <div
+          className={
+            openChildModalConversationInfo
+              ? "absolute size-full top-0 right-0"
+              : ""
+          }
+        >
+          <ChildModal />
+        </div>
       </div>
+
+      <AddMemberGroup
+        isvisible={openAddMemberGroup}
+        onClose={setOpenMemberGroup}
+      />
     </>
   );
 }

@@ -10,6 +10,7 @@ import { Camera, Search, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import FriendItem from "./components/friend-item/FriendItem";
+import { toLowerCaseNonAccentVietnamese } from "@/app/utils/toLowerCaseNonAccentVietnamese";
 
 interface AddGroupModalProps {
   isvisible: boolean;
@@ -22,6 +23,7 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({
 }) => {
   const [checkedItems, setCheckedItems] = useState<boolean[]>([]);
   const username = useSession().data?.token.user;
+  const [query, setQuery] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
   const [groupData, setGroupData] = useState<any>({
     IDOwner: "",
@@ -30,10 +32,19 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({
     groupAvatar: file,
   });
   const [friendList, setFriendList] = useState<UserProps[]>([]);
-  const handleCheck = (index: number) => {
-    const newCheckedItems = [...checkedItems];
-    newCheckedItems[index] = !newCheckedItems[index];
-    setCheckedItems(newCheckedItems);
+  const [searchResult, setSearchResult] = useState<UserProps[]>([]);
+  const handleCheck = (IDUser: string) => {
+    const index = friendList.findIndex((friend) => friend.ID === IDUser);
+
+    if (index !== -1) {
+      setCheckedItems((prev) => {
+        const newCheckedItems = [...prev];
+        newCheckedItems[index] = !newCheckedItems[index];
+        console.log(newCheckedItems);
+
+        return newCheckedItems;
+      });
+    }
   };
 
   const onCreateGroup = () => {
@@ -55,7 +66,18 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({
       groupMembers: [],
       groupAvatar: null,
     });
+    setQuery("");
     onClose();
+  };
+
+  const onSearch = (e: any) => {
+    const result = friendList.filter((item) =>
+      toLowerCaseNonAccentVietnamese(item.fullname).includes(
+        toLowerCaseNonAccentVietnamese(e.target.value)
+      )
+    );
+    setSearchResult(result);
+    setQuery(e.target.value);
   };
 
   useEffect(() => {
@@ -64,6 +86,7 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({
         username,
       });
       setFriendList(res.data);
+      setSearchResult(res.data);
       setCheckedItems(new Array(res.data.length).fill(false));
     };
     username && getFriendList();
@@ -76,13 +99,13 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({
           initial={{ opacity: 0, scale: 1 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 1 }}
-          className="fixed inset-0 bg-black w-full   bg-opacity-25   flex justify-center z-[1000]"
+          className="fixed inset-0 bg-black w-full bg-opacity-25 flex justify-center z-[1000]"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
           >
-            <div className="bg-white h-[98%] w-[600px] mt-[5px]  rounded-sm border-b relative z-50">
+            <div className="bg-white h-[98%] w-[600px] mt-[5px] rounded-sm border-b relative z-50">
               {/*Phần 1 Header */}
               <div className="p-4 text-black border-b-2 relative">
                 <h2>Tạo nhóm</h2>
@@ -128,7 +151,9 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({
                     <Search className="opacity-50 ml-2" width="15px" />
                     <input
                       className="ml-2 w-full text-[12px]"
-                      placeholder="Nhập tên, số điện thoại hoặc danh sách số điện thoại"
+                      placeholder="Nhập tên hoặc số điện thoại"
+                      value={query}
+                      onChange={onSearch}
                     />
                   </div>
                 </div>
@@ -138,16 +163,22 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({
                     <div className="w-full">
                       <div>
                         <p className="pl-4 pt-2 text-neutral-600 text-[14px]">
-                          Trò chuyện gần đây
+                          Danh sách bạn bè
                         </p>
                       </div>
-                      {friendList.map((item: UserProps, index: number) => (
+                      {searchResult.map((item: UserProps, index: number) => (
                         <FriendItem
                           key={item.ID}
                           item={item}
-                          isChecked={checkedItems[index]}
+                          isChecked={
+                            checkedItems[
+                              friendList.findIndex(
+                                (friend) => friend.ID === item.ID
+                              )
+                            ]
+                          }
                           handleCheck={() => {
-                            handleCheck(index);
+                            handleCheck(item.ID);
                           }}
                         />
                       ))}

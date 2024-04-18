@@ -3,11 +3,15 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-function BackButton() {
+interface IProps {
+  onClick?: any;
+}
+
+function BackButton({ onClick }: IProps) {
   const router = useRouter();
-  const onClick = () => {
-    router.back();
-  };
+  if (!onClick) {
+    onClick = () => router.back();
+  }
   return (
     <Button
       onClick={onClick}

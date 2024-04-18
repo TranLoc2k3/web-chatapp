@@ -113,23 +113,25 @@ export default function ChatInput() {
     payload.video = videoList;
     if (senderId) {
       socket.emit("send_message", payload);
+      // Load conversation
       const currentConversations = pathname.split("/")[3];
       const currentIndex = conversations.findIndex(
         (conversation: any) =>
           conversation.IDConversation === currentConversations
       );
+
       if (currentIndex > -1) {
         // xử lý conversation khi nhắn tự động update cho bên MessageList
         conversations[currentIndex].MessageDetail.type = "text";
-        // trả về kiểu time nhắn 
-        conversations[currentIndex].MessageDetail.dateTime = new Date()
+        // trả về kiểu time nhắn
+        conversations[currentIndex].MessageDetail.dateTime = new Date();
         conversations[currentIndex].MessageDetail.content = payload.textMessage;
 
         const updatedConversations = [
           conversations[currentIndex],
           ...conversations,
         ];
- 
+
         updatedConversations.splice(currentIndex + 1, 1);
 
         setConversations(updatedConversations);
