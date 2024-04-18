@@ -33,10 +33,6 @@ function ConversationList({ searchTerm }: MessageItemI) {
   const router = useRouter();
 
   useEffect(() => {
-    // Gắn data vào message nha Quý, cái này để Quý gắn lại chứ tui chưa gắn
-    // Chú ý là có thể không có thuộc tính MessageDetail trong data trả về trong lần đầu vì chưa có tin nhắn mới
-    // Check có thì hiển thị tin nhắn đó danh sách cuộc hội thoại
-    // socket.emit("load_conversations", { IDUser: "84355887042" })
     username && socket.emit("load_conversations", { IDUser: username });
 
     socket.on("new_group_conversation", (data) => {
@@ -51,6 +47,10 @@ function ConversationList({ searchTerm }: MessageItemI) {
         (item: any) => item.IDConversation === currentConversationID
       );
 
+      console.log("data quy:");
+      console.log(data);
+
+      // setConversations(data);
       setGlobalConversations(data);
       if (!isExistConversation) router.push("/dashboard/messages");
     });
@@ -86,7 +86,6 @@ function ConversationList({ searchTerm }: MessageItemI) {
       socket.off("receive_message", loadConversationAfterReceiveMsg);
     };
   }, []);
-
   const filteredUsers = globalConversations.filter(
     (conversation: any) => conversation.Receiver
   );

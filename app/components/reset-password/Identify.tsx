@@ -14,7 +14,19 @@ function Identify() {
   const searchParams = useSearchParams();
   const route = useRouter();
   const { toast } = useToast();
+  const [isPasswordValid, setIsPasswordValid] = useState(true);
+  const validatePassword = (value: string) => {
+    const regex =
+      /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/g;
+    setIsPasswordValid(regex.test(value));
+    setPassword(value);
+  };
   const onClickResetPassword = async () => {
+    if (!isPasswordValid) {
+      // Hiển thị thông báo lỗi nếu mật khẩu không hợp lệ
+      console.log("Mật khẩu không hợp lệ");
+      return;
+    }
     if (!password || !confirmPassword) {
       toast({
         title: "Đăng ký không thành công",
@@ -94,6 +106,13 @@ function Identify() {
           <div className="">
             <h3 className="text-center p-4  border-b">Cập nhật mật khẩu</h3>
           </div>
+          {/* valid mật khẩu */}
+          {!isPasswordValid && (
+            <div className="pl-8 pr-8 mt-4 text-red-500">
+              Mật khẩu phải chứa ít nhất 8 ký tự, bao gồm ít nhất một chữ hoa,
+              một chữ thường, một số và một ký tự đặc biệt.
+            </div>
+          )}
           {/* newpassword */}
           <div className="pl-8 pr-8">
             <div className="flex mt-8 border-b pb-2">
@@ -105,7 +124,7 @@ function Identify() {
                 placeholder="Mật khẩu"
                 className="w-full transition focus-visible:outline-none"
                 type="password"
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => validatePassword(e.target.value)}
                 value={password}
                 required
               />
