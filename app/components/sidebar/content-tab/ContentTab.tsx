@@ -22,7 +22,7 @@ function ContentTab() {
   const activeTab = data.find((item) => pathName.includes(item.title));
 
   return (
-    <div className={cn("flex w-full", "md:w-[344px]")}>
+    <div className={cn("flex w-full h-dvh max-h-dvh", "md:w-[344px]")}>
       <div className="flex-1">{activeTab?.component}</div>
       <Separator
         className="h-full w-[1px] bg-[#d6dbe1]"

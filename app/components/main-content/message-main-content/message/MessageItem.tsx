@@ -119,7 +119,7 @@ const MessageItem = forwardRef(
                   message.type === TypeMessage.IMAGE ||
                   message.type === TypeMessage.VIDEO
                     ? "bg-transparent"
-                    : "!bg-white"
+                    : "bg-white"
                 }`,
                 `${isSend ? "bg-[#e5efff]" : ""}`
               )}

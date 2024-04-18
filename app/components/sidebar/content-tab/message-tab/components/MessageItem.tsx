@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -34,7 +35,7 @@ function MessageItem({ conversation }: MessageItemProps) {
   const receiver = conversation.Receiver;
   const messageDetail = conversation.MessageDetail;
   const [textTime, setTextTime] = useState<string>("");
-  useEffect(()=>{
+  useEffect(() => {
     let timeString = messageDetail.dateTime;
     let timeMessage = new Date(timeString);
     let timeCurrent = new Date();
@@ -54,8 +55,9 @@ function MessageItem({ conversation }: MessageItemProps) {
       const daysAgo = Math.floor(timeProcess / 86400);
       setTextTime(daysAgo + " ngày trước");
     }
-  },)
- 
+  }, []);
+
+  if (!conversation.MessageDetail) return null;
 
   return (
     <div>
@@ -73,7 +75,9 @@ function MessageItem({ conversation }: MessageItemProps) {
               <p className="text-[12px]">{textTime}</p>
             </div>
             {/* Sử dụng các thông tin từ cuộc trò chuyện, ví dụ: */}
-            <p className="text-sm text-[#7589a3] text-[11.3px]">Tin nhắn mới: {messageDetail.content}</p>
+            <p className="text-[#7589a3] text-[11px] text-ellipsis whitespace-nowrap break-all overflow-hidden max-w-[250px]">
+              Tin nhắn mới: {messageDetail.content}
+            </p>
           </div>
         </div>
       </Link>
