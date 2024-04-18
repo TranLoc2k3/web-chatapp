@@ -43,12 +43,11 @@ function ConversationList({ searchTerm }: MessageItemI) {
   useEffect(() => {
     socket.on("load_conversations_server", (data: any) => {
       // Kiểm tra conversation đang mở có tồn tại trong conversation hay không
+      console.log(data);
+
       const isExistConversation = data.find(
         (item: any) => item.IDConversation === currentConversationID
       );
-
-      console.log("data quy:");
-      console.log(data);
 
       // setConversations(data);
       setGlobalConversations(data);
