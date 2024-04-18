@@ -73,7 +73,14 @@ function MessageItem({ conversation }: MessageItemProps) {
             </div>
             {/* Sử dụng các thông tin từ cuộc trò chuyện, ví dụ: */}
             <p className="text-[#7589a3] text-[11px] text-ellipsis whitespace-nowrap break-all overflow-hidden max-w-[250px]">
-              Tin nhắn mới: {messageDetail?.content}
+              Tin nhắn: {
+                  messageDetail?.type === 'text' ? messageDetail.content :
+                  messageDetail?.type === 'file' ? "Tệp mới được gửi" :
+                  messageDetail?.type === 'image' ? "Hình ảnh mới được gửi" :
+                  messageDetail?.type === 'video' ? "Video mới được gửi" :
+                  messageDetail?.type === 'link' ? "Liên kết mới được gửi" :
+                  messageDetail?.content
+              }
             </p>
           </div>
         </div>
