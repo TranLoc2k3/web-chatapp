@@ -59,10 +59,6 @@ export default function ChatInput() {
       ...pre,
       content: value,
     }));
-    setReplyMessageData({
-      ...replyMessageData,
-      content: value,
-    });
     const validUrl = isValidUrl(value);
     setIsLink(validUrl);
     validUrl &&
@@ -121,8 +117,12 @@ export default function ChatInput() {
     payload.fileList = fileList;
     payload.video = videoList;
     if (senderId) {
-      if (replyMessageData && replyMessageData.content.trim() !== "") {
-        socket.emit("reply_message", replyMessageData);
+      if (replyMessageData && message.content.trim() !== "") {
+        const payload = {
+          ...replyMessageData,
+          content: message.content
+        }
+        socket.emit("reply_message", payload);
         setReplyMessageData(null);
       } else socket.emit("send_message", payload);
       // Load conversation
