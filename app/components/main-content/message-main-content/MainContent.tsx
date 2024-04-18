@@ -26,17 +26,28 @@ function MessageMainContent({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversations]);
   useEffect(() => {
+    // Xử lý load ảnh ng gửi
     if (!conversations) return;
+    let members: any = [];
     const getSender = async () => {
-      const sender = await axiosClient.get(
-        `user/get-user/${currentConversation.IDSender}`
-      );
-      if (!currentConversation.isGroup) {
+      if (currentConversation.isGroup) {
+        // for (let member of currentConversation.groupMembers) {
+        //   const sender = await axiosClient.get(`user/get-user/${member}`);
+        //   members.push(sender.data);
+        // }
+        members = currentConversation.groupMembers;
+      } else {
+        const sender = await axiosClient.get(
+          `user/get-user/${currentConversation.IDSender}`
+        );
+        members.push(sender.data);
         const sender1 = await axiosClient.get(
           `user/get-user/${currentConversation.IDReceiver}`
         );
-        setSenders([sender.data, sender1.data]);
-      } else setSenders([sender.data]);
+        members.push(sender1.data);
+      }
+
+      setSenders(members);
     };
     currentConversation && getSender();
 

@@ -118,6 +118,7 @@ export default function MessageThread() {
       // username && socket.emit("load_conversations", { IDUser: username });
       data.IDConversation === currentConversations &&
         setMessageList((pre) => [data as MessageItemProps, ...pre]);
+
       setSendingCount(0);
     });
     return () => {

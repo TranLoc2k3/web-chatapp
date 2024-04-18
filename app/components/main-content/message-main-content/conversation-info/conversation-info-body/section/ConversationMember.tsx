@@ -1,17 +1,19 @@
 import { Copy, Link, Share, UsersRound } from "lucide-react";
 import SectionWrapper, { SectionButton } from "./SectionWrapper";
 import { iconStyle } from "@/app/utils/iconStyle";
+import { useBearStore } from "@/app/global-state/store";
 
-interface IProps {
-  memberList: any[];
-}
-
-function ConversationMember({ memberList }: IProps) {
+function ConversationMember() {
+  const setOpenChildModalConversationInfo = useBearStore(
+    (state) => state.setOpenChildModalConversationInfo
+  );
+  const senders = useBearStore((state) => state.senders);
   return (
     <div>
       <SectionWrapper title="Thành viên nhóm">
         <SectionButton
-          title={`${memberList.length} thành viên`}
+          onClick={setOpenChildModalConversationInfo}
+          title={`${senders.length} thành viên`}
           icon={<UsersRound {...iconStyle} />}
         />
         <SectionButton

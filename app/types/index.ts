@@ -25,12 +25,14 @@ export interface UserProps {
 
 export interface MessageItemProps {
   IDMessageDetail: string;
+  IDConversation: string;
   IDSender: string;
   type: TypeMessage;
   content: string;
   dateTime: string;
   isRemove: boolean;
   isRecall: boolean;
+  userSender?: any;
 }
 
 export interface ConversationItemProps {

@@ -113,16 +113,19 @@ export default function ChatInput() {
     payload.video = videoList;
     if (senderId) {
       socket.emit("send_message", payload);
+      // Load conversation
       const currentConversations = pathname.split("/")[3];
       const currentIndex = conversations.findIndex(
         (conversation: any) =>
           conversation.IDConversation === currentConversations
       );
+
       if (currentIndex > -1) {
         const updatedConversations = [
           conversations[currentIndex],
           ...conversations,
         ];
+
         updatedConversations.splice(currentIndex + 1, 1);
 
         setConversations(updatedConversations);

@@ -40,8 +40,8 @@ function VideoMessage({ fileUrl, fileName }: IProps) {
     fetchData();
   }, [fileUrl]);
   return (
-    <div className="flex gap-3">
-      <FileVideoIcon />
+    <div className="flex gap-3 rounded overflow-hidden">
+      {/* <FileVideoIcon />
       <div className="flex-1">
         <p className="text-sm font-[500]">{fileName}</p>
         <div className="text-[#7589A3] text-[13px] flex justify-between items-center">
@@ -62,13 +62,16 @@ function VideoMessage({ fileUrl, fileName }: IProps) {
             </Button>
           </div>
         </div>
-      </div>
-      {openPreview && (
+      </div> */}
+      {/* {openPreview && (
         <VideoPreviewModal
           onClose={() => setOpenPreview(false)}
           url={fileUrl}
         />
-      )}
+      )} */}
+      <video className="size-full" controls autoPlay>
+        <source src={fileUrl} />
+      </video>
     </div>
   );
 }

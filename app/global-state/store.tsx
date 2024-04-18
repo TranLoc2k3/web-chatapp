@@ -19,6 +19,12 @@ interface BearState {
   setSendingCount: (count: number) => void;
   friendRequests: any;
   setFriendRequests: (friendRequests: any) => void;
+  openAddMemberGroup: boolean;
+  setOpenAddMemberGroup: () => void;
+  openChildModalConversationInfo: boolean;
+  setOpenChildModalConversationInfo: () => void;
+  memberInfoCurrentGroupConversation: any;
+  setMemberInfoCurrentGroupConversation: (memberInfo: any) => void;
 }
 
 export const useBearStore = create<BearState>()((set) => ({
@@ -70,5 +76,23 @@ export const useBearStore = create<BearState>()((set) => ({
     set((prevState) => ({
       ...prevState,
       friendRequests,
+    })),
+  openAddMemberGroup: false,
+  setOpenAddMemberGroup: () =>
+    set((prevState) => ({
+      ...prevState,
+      openAddMemberGroup: !prevState.openAddMemberGroup,
+    })),
+  openChildModalConversationInfo: false,
+  setOpenChildModalConversationInfo: () =>
+    set((prevState) => ({
+      ...prevState,
+      openChildModalConversationInfo: !prevState.openChildModalConversationInfo,
+    })),
+  memberInfoCurrentGroupConversation: [],
+  setMemberInfoCurrentGroupConversation: (memberInfo: any) =>
+    set((prevState) => ({
+      ...prevState,
+      memberInfoCurrentGroupConversation: memberInfo,
     })),
 }));

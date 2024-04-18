@@ -40,12 +40,10 @@ const MessageItem = forwardRef(
   (props: IProps, ref: LegacyRef<HTMLDivElement>) => {
     const [message, setMessage] = useState<MessageItemProps>(props.message);
     const session = useSession();
-    // Nên store = object thay vì mảng
-    const senders = useBearStore((state) => state.senders);
     const currentSender = useMemo(() => {
-      return senders.find((sender: any) => sender.ID === message.IDSender);
+      return message.userSender;
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [senders]);
+    }, [message]);
     const onDelete = async () => {
       const res = await axiosClient.post("message/remove", {
         IDMessageDetail: message.IDMessageDetail,
@@ -53,7 +51,6 @@ const MessageItem = forwardRef(
       if (res.data) {
         setMessage((prev) => ({ ...prev, isRemove: true }));
       }
-      console.log(res.data);
     };
 
     const onRecall = () => {
@@ -80,53 +77,54 @@ const MessageItem = forwardRef(
     if (message.isRemove) return null;
     return (
       <ContextMenu>
-        <ContextMenuTrigger>
-          <div
-            ref={ref}
-            className={cn(
-              "flex gap-3 mx-4 mb-2",
-              `${isSend ? "flex-row-reverse" : ""}`
+        <div
+          ref={ref}
+          className={cn(
+            "flex gap-3 mx-4 mb-2",
+            `${isSend ? "flex-row-reverse" : ""}`
+          )}
+        >
+          {/* Sender */}
+          <div className={isSend ? " self-end" : ""}>
+            {currentSender?.urlavatar && !isSend && (
+              <Image
+                src={currentSender.urlavatar}
+                alt=""
+                width={40}
+                height={40}
+                className="h-10 rounded-full"
+              />
             )}
-          >
-            {/* Sender */}
-            <div className={isSend ? " self-end" : ""}>
-              {currentSender?.urlavatar && !isSend && (
-                <Image
-                  src={currentSender.urlavatar}
-                  alt=""
-                  width={40}
-                  height={40}
-                  className="h-10 rounded-full"
-                />
+          </div>
+          {/* Content */}
+          {message.isRecall ? (
+            <div
+              className={cn(
+                "p-3 rounded-[8px] w-[400px] max-w-[calc(100%-100px)",
+                `${isSend ? "bg-[#e5efff]" : "bg-white"}`
               )}
+            >
+              <p className="break-all text-[rgba(0,0,0,0.3)]">
+                Tin nhắn đã bị thu hồi
+              </p>
+              <p className="text-[#476285] text-xs mt-3 flex justify-between items-center">
+                {convertISOToDDMMYYY(message.dateTime)}
+              </p>
             </div>
-            {/* Content */}
-            {message.isRecall ? (
-              <div
-                className={cn(
-                  "p-3 rounded-[8px] w-[400px] max-w-[calc(100%-100px)",
-                  `${isSend ? "bg-[#e5efff]" : "bg-white"}`
-                )}
-              >
-                <p className="break-all text-[rgba(0,0,0,0.3)]">
-                  Tin nhắn đã bị thu hồi
-                </p>
-                <p className="text-[#476285] text-xs mt-3 flex justify-between items-center">
-                  {convertISOToDDMMYYY(message.dateTime)}
-                </p>
-              </div>
-            ) : (
-              <div
-                className={cn(
-                  "p-3 rounded-[8px] w-[400px] max-w-[calc(100%-100px)]",
-                  `${
-                    message.type === TypeMessage.IMAGE
-                      ? "bg-transparent"
-                      : "bg-white"
-                  }`,
-                  `${isSend ? "bg-[#e5efff]" : ""}`
-                )}
-              >
+          ) : (
+            <div
+              className={cn(
+                "p-3 rounded-[8px] w-[400px] max-w-[calc(100%-100px)]",
+                `${
+                  message.type === TypeMessage.IMAGE ||
+                  message.type === TypeMessage.VIDEO
+                    ? "bg-transparent"
+                    : "!bg-white"
+                }`,
+                `${isSend ? "bg-[#e5efff]" : ""}`
+              )}
+            >
+              <ContextMenuTrigger>
                 {!isSend && (
                   <p className="text-[#7589A3] text-sm mb-3">
                     {currentSender?.fullname}
@@ -154,14 +152,16 @@ const MessageItem = forwardRef(
                 <p className="text-[#476285] text-xs mt-3 flex justify-between items-center">
                   {convertISOToDDMMYYY(message.dateTime)}
                 </p>
-              </div>
-            )}
-          </div>
-        </ContextMenuTrigger>
-        <ContextMenuContent>
-          <ContextMenuItem onClick={onDelete}>Xóa</ContextMenuItem>
-          <ContextMenuItem onClick={onRecall}>Thu hồi</ContextMenuItem>
-        </ContextMenuContent>
+              </ContextMenuTrigger>
+            </div>
+          )}
+        </div>
+        {currentSender.ID === session.data?.token.user && (
+          <ContextMenuContent>
+            <ContextMenuItem onClick={onDelete}>Xóa</ContextMenuItem>
+            <ContextMenuItem onClick={onRecall}>Thu hồi</ContextMenuItem>
+          </ContextMenuContent>
+        )}
       </ContextMenu>
     );
   }
