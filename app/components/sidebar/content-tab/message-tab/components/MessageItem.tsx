@@ -36,12 +36,9 @@ function MessageItem({ conversation }: MessageItemProps) {
   const messageDetail = conversation.MessageDetail;
   const [textTime, setTextTime] = useState<string>("");
   useEffect(() => {
-    let timeString = messageDetail.dateTime;
+    let timeString = messageDetail?.dateTime;
     let timeMessage = new Date(timeString);
     let timeCurrent = new Date();
-    console.log(timeMessage.getTime());
-    console.log(timeCurrent.getTime());
-    console.log("time cua toi");
     const timeProcess = Math.round(
       (timeCurrent.getTime() - timeMessage.getTime()) / 1000
     );
@@ -57,26 +54,26 @@ function MessageItem({ conversation }: MessageItemProps) {
     }
   }, []);
 
-  if (!conversation.MessageDetail) return null;
-
   return (
     <div>
       <Link href={`/dashboard/messages/${conversation.IDConversation}`}>
         <div className="h-[74px] flex items-center cursor-pointer hover:bg-[#f3f5f6] px-4">
           <Avatar className="size-12">
-            <AvatarImage src={receiver.urlavatar} />
-            <AvatarFallback>{receiver.fullname}</AvatarFallback>
+            <AvatarImage src={receiver?.urlavatar} />
+            <AvatarFallback>{receiver?.fullname}</AvatarFallback>
           </Avatar>
           <div className="ml-3 w-full">
             <div className="flex w-full justify-between">
               <p className="text-base font-medium text-[#081c36]">
-                {receiver.fullname}
+                {receiver?.fullname}
               </p>
-              <p className="text-[12px]">{textTime}</p>
+              <p className="text-[12px]">
+                {!textTime.includes("NaN") && textTime}
+              </p>
             </div>
             {/* Sử dụng các thông tin từ cuộc trò chuyện, ví dụ: */}
             <p className="text-[#7589a3] text-[11px] text-ellipsis whitespace-nowrap break-all overflow-hidden max-w-[250px]">
-              Tin nhắn mới: {messageDetail.content}
+              Tin nhắn mới: {messageDetail?.content}
             </p>
           </div>
         </div>

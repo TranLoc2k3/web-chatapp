@@ -25,6 +25,8 @@ interface BearState {
   setOpenChildModalConversationInfo: () => void;
   memberInfoCurrentGroupConversation: any;
   setMemberInfoCurrentGroupConversation: (memberInfo: any) => void;
+  replyMessageData: any;
+  setReplyMessageData: (data: any) => void;
 }
 
 export const useBearStore = create<BearState>()((set) => ({
@@ -94,5 +96,11 @@ export const useBearStore = create<BearState>()((set) => ({
     set((prevState) => ({
       ...prevState,
       memberInfoCurrentGroupConversation: memberInfo,
+    })),
+  replyMessageData: null,
+  setReplyMessageData: (data: any) =>
+    set((prevState) => ({
+      ...prevState,
+      replyMessageData: data,
     })),
 }));

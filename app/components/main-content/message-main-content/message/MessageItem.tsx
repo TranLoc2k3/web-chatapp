@@ -40,6 +40,9 @@ const MessageItem = forwardRef(
   (props: IProps, ref: LegacyRef<HTMLDivElement>) => {
     const [message, setMessage] = useState<MessageItemProps>(props.message);
     const session = useSession();
+    const setReplyMessageData = useBearStore(
+      (state) => state.setReplyMessageData
+    );
     const currentSender = useMemo(() => {
       return message.userSender;
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -56,6 +59,15 @@ const MessageItem = forwardRef(
     const onRecall = () => {
       socket.emit("recallMessage", {
         IDMessageDetail: message.IDMessageDetail,
+      });
+    };
+
+    const onReply = () => {
+      setReplyMessageData({
+        IDConversation: message.IDConversation,
+        IDReplyMessage: message.IDMessageDetail,
+        IDUser: session.data?.token.user,
+        content: "",
       });
     };
 
@@ -130,6 +142,9 @@ const MessageItem = forwardRef(
                     {currentSender?.fullname}
                   </p>
                 )}
+                {message.isReply && (
+                  <p className="text-[#7589A3] italic">Tin nhắn phản hồi</p>
+                )}
                 {message.type === TypeMessage.FILE && (
                   <FileMessage fileUrl={message.content} />
                 )}
@@ -156,10 +171,15 @@ const MessageItem = forwardRef(
             </div>
           )}
         </div>
-        {currentSender.ID === session.data?.token.user && (
+        {currentSender.ID === session.data?.token.user ? (
           <ContextMenuContent>
             <ContextMenuItem onClick={onDelete}>Xóa</ContextMenuItem>
             <ContextMenuItem onClick={onRecall}>Thu hồi</ContextMenuItem>
+          </ContextMenuContent>
+        ) : (
+          <ContextMenuContent>
+            <ContextMenuItem onClick={onReply}>Trả lời</ContextMenuItem>
+            <ContextMenuItem>Chuyển tiếp</ContextMenuItem>
           </ContextMenuContent>
         )}
       </ContextMenu>
