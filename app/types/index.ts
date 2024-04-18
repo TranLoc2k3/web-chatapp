@@ -21,6 +21,8 @@ export interface UserProps {
   urlavatar: string;
   birthday: string;
   friendList: string[];
+  isOwner?: boolean;
+  isCoOwner?: boolean;
 }
 
 export interface MessageItemProps {
@@ -33,6 +35,7 @@ export interface MessageItemProps {
   isRemove: boolean;
   isRecall: boolean;
   userSender?: any;
+  isReply?: boolean;
 }
 
 export interface ConversationItemProps {

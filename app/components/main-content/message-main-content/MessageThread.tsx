@@ -95,6 +95,8 @@ export default function MessageThread() {
       setSendingCount(data);
     });
     socket.on("receive_message", (data: any) => {
+      console.log(data);
+
       // Đẩy conversation lên đầu nếu nhận tin nhắn
       const currentConversations = pathname.split("/")[3];
 

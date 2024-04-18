@@ -25,6 +25,8 @@ interface MemberButtonProps {
   currentConversation: any;
   memberId: string;
   currentUserID: string;
+  isOwner: boolean;
+  isCoOwner: boolean;
 }
 
 // Current user là người đang đăng nhập
@@ -43,16 +45,33 @@ const DropdownMenuByPosition = ({
   const currentUserID = useSession().data?.token.user;
 
   const onCreateCoOwner = async (IDCoOwner: string) => {
-    const res = await axiosClient.post("conversation/addCoOwnerToGroup", {
-      IDConversation,
-      IDCoOwner,
-    });
+    try {
+      const res = await axiosClient.post("conversation/addCoOwnerToGroup", {
+        IDConversation,
+        IDCoOwner,
+      });
+      if (res.data === "Success") {
+        socket.emit("load_member_of_group", { IDConversation });
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
   const onRemoveCoOwner = async (IDCoOwner: string) => {
-    const res = await axiosClient.post("conversation/removeCoOwnerFromGroup", {
-      IDConversation,
-      IDCoOwner,
-    });
+    try {
+      const res = await axiosClient.post(
+        "conversation/removeCoOwnerFromGroup",
+        {
+          IDConversation,
+          IDCoOwner,
+        }
+      );
+      if (res.data === "Success") {
+        socket.emit("load_member_of_group", { IDConversation });
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
   const onRemoveAnotherMember = async (removeUserId: string) => {
     socket.emit("remove_member_from_group", {
@@ -131,6 +150,8 @@ const MemberButton = ({
   memberId,
   title,
   urlavatar,
+  isOwner,
+  isCoOwner,
   currentConversation,
   currentUserID,
 }: MemberButtonProps) => {
@@ -144,18 +165,18 @@ const MemberButton = ({
       });
       if (res.data === "Success") {
         socket.emit("load_conversations", { IDUser: currentUserID });
+        socket.emit("load_member_of_group", { IDConversation });
         router.push("/dashboard/messages");
       }
     } catch (e) {}
   };
-  const isOwner = currentConversation.rules.IDOwner === memberId;
-  const isCoOwner = currentConversation.rules.listIDCoOwner.includes(memberId);
   const currentUserPosition =
     currentConversation.rules.IDOwner === currentUserID
       ? "owner"
       : currentConversation.rules.listIDCoOwner.includes(currentUserID)
       ? "co-owner"
       : "member";
+
   return (
     <div className="flex justify-between px-4 h-12 items-center hover:bg-[#f3f5f6] cursor-pointer w-full">
       <div className="flex gap-3 items-center flex-1">
@@ -226,6 +247,7 @@ function GroupMember() {
       (conversation: any) => conversation.IDConversation === IDConversation
     )
   );
+  const router = useRouter();
   const openChildModalConversationInfo = useBearStore(
     (state) => state.openChildModalConversationInfo
   );
@@ -239,15 +261,24 @@ function GroupMember() {
   }));
   useEffect(() => {
     const getMembers = async () => {
-      const res = await axiosClient.post("/conversation/get-member-info", {
-        IDConversation,
-        IDSender,
-      });
-      setMembers(res.data);
-      setMemberInfoCurrentGroupConversation(res.data);
+      try {
+        const res = await axiosClient.post("/conversation/get-member-info", {
+          IDConversation,
+          IDSender,
+        });
+        setMembers(res.data);
+
+        setMemberInfoCurrentGroupConversation(res.data);
+      } catch (err) {
+        router.push("/dashboard/messages");
+      }
     };
     IDSender && getMembers();
+    socket.on("load_member_of_group_server", (data) => {
+      getMembers();
+    });
   }, [IDSender, conversations]);
+
   return (
     openChildModalConversationInfo && (
       <ContentLayout title="Thành viên">
@@ -266,6 +297,8 @@ function GroupMember() {
             urlavatar={member.urlavatar}
             key={member.ID}
             currentConversation={currentConversation}
+            isOwner={member.isOwner as boolean}
+            isCoOwner={member.isCoOwner as boolean}
           />
         ))}
       </ContentLayout>

@@ -13,6 +13,7 @@ import {
   MessageSquareText,
   Smile,
   ThumbsUp,
+  X,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
@@ -45,6 +46,10 @@ export default function ChatInput() {
     conversations: state.conversations,
     setConversations: state.setConversations,
   }));
+  const { replyMessageData, setReplyMessageData } = useBearStore((state) => ({
+    replyMessageData: state.replyMessageData,
+    setReplyMessageData: state.setReplyMessageData,
+  }));
   const [isOpenEmoji, setIsOpenEmoji] = useState(false);
   const pathname = usePathname();
   // const setMsgList = useBearStore((state) => state.setMsgList);
@@ -54,6 +59,10 @@ export default function ChatInput() {
       ...pre,
       content: value,
     }));
+    setReplyMessageData({
+      ...replyMessageData,
+      content: value,
+    });
     const validUrl = isValidUrl(value);
     setIsLink(validUrl);
     validUrl &&
@@ -112,7 +121,10 @@ export default function ChatInput() {
     payload.fileList = fileList;
     payload.video = videoList;
     if (senderId) {
-      socket.emit("send_message", payload);
+      if (replyMessageData && replyMessageData.content.trim() !== "") {
+        socket.emit("reply_message", replyMessageData);
+        setReplyMessageData(null);
+      } else socket.emit("send_message", payload);
       // Load conversation
       const currentConversations = pathname.split("/")[3];
       const currentIndex = conversations.findIndex(
@@ -122,6 +134,8 @@ export default function ChatInput() {
 
       if (currentIndex > -1) {
         // xử lý conversation khi nhắn tự động update cho bên MessageList
+        if (!conversations[currentIndex]?.MessageDetail)
+          conversations[currentIndex].MessageDetail = {};
         conversations[currentIndex].MessageDetail.type = "text";
         // trả về kiểu time nhắn
         conversations[currentIndex].MessageDetail.dateTime = new Date();
@@ -154,15 +168,6 @@ export default function ChatInput() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [files]);
-  // useEffect(() => {
-  //   const fechtData = async () => {
-  //     const res = await axios.get(
-  //       "https://imagetintin.s3.ap-southeast-1.amazonaws.com/d64e4feb-584b-4c85-bd3e-a77724da6d75"
-  //     );
-  //     console.log(res);
-  //   };
-  //   fechtData();
-  // }, []);
 
   return (
     // h-24
@@ -195,8 +200,19 @@ export default function ChatInput() {
             </div>
           )}
           <div className="flex flex-1 items-center bg-white flex-grow space-x-1 justify-between">
+            {replyMessageData && (
+              <p className="pl-2 font-[500] flex items-center gap-1">
+                Phản hồi:
+                <span>
+                  <X
+                    onClick={() => setReplyMessageData(null)}
+                    className="cursor-pointer"
+                  />
+                </span>
+              </p>
+            )}
             <input
-              className="w-full h-10 px-3"
+              className="flex-1 h-10 px-3"
               type="text"
               placeholder="Nhập tin nhắn..."
               onChange={handleChange}

@@ -85,11 +85,13 @@ const AddMemberGroup: React.FC<AddGroupModalProps> = ({
       const res = await axiosClient.post("conversation/get-list-friend", {
         username,
       });
-      res.data = res.data.filter((item: any) => {
-        return memberInfoCurrentGroupConversation.every(
-          (member: any) => member.ID !== item.ID
-        );
-      });
+      memberInfoCurrentGroupConversation
+        ? (res.data = res.data.filter((item: any) => {
+            return memberInfoCurrentGroupConversation.every(
+              (member: any) => member.ID !== item.ID
+            );
+          }))
+        : "";
 
       setFriendList(res.data);
       setSearchResult(res.data);
