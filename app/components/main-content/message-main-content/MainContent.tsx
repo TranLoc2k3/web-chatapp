@@ -28,6 +28,7 @@ function MessageMainContent({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!conversations) return;
     const getSender = async () => {
+      if(!currentConversation) return;
       const sender = await axiosClient.get(
         `user/get-user/${currentConversation.IDSender}`
       );
