@@ -43,13 +43,10 @@ function ConversationList({ searchTerm }: MessageItemProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const filteredUsers = globalConversations.filter((conversation: any) =>
-    conversation.Receiver.ID.includes(searchTerm)
-  );
 
   return (
     <div>
-      {filteredUsers.map((conversation: any) => (
+      {globalConversations.map((conversation: any) => (
         <MessageItem
           key={conversation.Receiver.ID}
           conversation={conversation}

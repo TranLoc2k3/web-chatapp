@@ -3,12 +3,14 @@ import BackButton from "./BackButton";
 import HeaderBtns from "./HeaderBtns";
 import { useBearStore } from "@/app/global-state/store";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 function Header() {
   const conversations = useBearStore((state) => state.conversations)
   const IDConversation = usePathname().split("/")[3]
   const senders = useBearStore((state) => state.senders)
-  
+ 
+
   const currentConversation = conversations.find((conversation: any) => conversation.IDConversation === IDConversation)
   const receiver = senders.find((sender: any) => sender.ID === currentConversation.IDReceiver)
   if (!receiver) return null
@@ -20,7 +22,7 @@ function Header() {
         </div>
         <div className="flex items-center justify-center">
           <Avatar className="size-12">
-            <AvatarImage src={receiver.urlavatar} />
+            <AvatarImage src={receiver.urlavatar} className="hover:cursor-pointer" />
             <AvatarFallback>{receiver.fullname}</AvatarFallback>
           </Avatar>
           <div className="header-title pl-4">{receiver.fullname}</div>
