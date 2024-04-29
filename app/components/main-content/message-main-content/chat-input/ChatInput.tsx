@@ -120,13 +120,13 @@ export default function ChatInput() {
       if (replyMessageData && message.content.trim() !== "") {
         const payload = {
           ...replyMessageData,
-          content: message.content
-        }
+          content: message.content,
+        };
         socket.emit("reply_message", payload);
         setReplyMessageData(null);
       } else socket.emit("send_message", payload);
       // Load conversation
-      // const currentConversations = pathname.split("/")[3];
+      const currentConversations = pathname.split("/")[3];
       // const currentIndex = conversations.findIndex(
       //   (conversation: any) =>
       //     conversation.IDConversation === currentConversations

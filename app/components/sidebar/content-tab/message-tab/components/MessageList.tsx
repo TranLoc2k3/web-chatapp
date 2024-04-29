@@ -48,37 +48,38 @@ function ConversationList({ searchTerm }: MessageItemI) {
       const isExistConversation = data.find(
         (item: any) => item.IDConversation === currentConversationID
       );
-
       // setConversations(data);
       setGlobalConversations(data);
       if (!isExistConversation) router.push("/dashboard/messages");
     });
-  }, []);
+  }, [currentConversationID]);
 
   useEffect(() => {
     const loadConversationAfterReceiveMsg = (data: MessageItemProps) => {
-      console.log(
-        "Người nhận receive_message và trigger load conversation chỗ này: ",
-        data
-      );
+      // console.log(
+      //   "Người nhận receive_message và trigger load conversation chỗ này: ",
+      //   data
+      // );
 
-      if (data.IDSender !== username) {
-        const currentIndex = globalConversations.findIndex(
-          (conversation: any) =>
-            conversation.IDConversation === data.IDConversation
-        );
+      // if (data.IDSender !== username) {
+      //   const currentIndex = globalConversations.findIndex(
+      //     (conversation: any) =>
+      //       conversation.IDConversation === data.IDConversation
+      //   );
 
-        if (currentIndex > -1) {
-          const updatedConversations = [
-            globalConversations[currentIndex],
-            ...globalConversations,
-          ];
+      //   if (currentIndex > -1) {
+      //     const updatedConversations = [
+      //       globalConversations[currentIndex],
+      //       ...globalConversations,
+      //     ];
 
-          updatedConversations.splice(currentIndex + 1, 1);
+      //     updatedConversations.splice(currentIndex + 1, 1);
 
-          setGlobalConversations(updatedConversations);
-        }
-      }
+      //     setGlobalConversations(updatedConversations);
+      //   }
+      // }
+
+      socket.emit("load_conversations", { IDUser: data.IDSender });
     };
     socket.on("receive_message", loadConversationAfterReceiveMsg);
     return () => {

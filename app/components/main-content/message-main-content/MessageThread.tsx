@@ -147,15 +147,16 @@ export default function MessageThread() {
             .map((item, index) => (
               <MessageItemLoading key={index} />
             ))}
-          {messageList.map((item) => (
-            <MessageItem
-              ref={(el: HTMLDivElement) =>
-                (messageItemrefs.current[item.IDMessageDetail] = el)
-              }
-              message={item}
-              key={item.IDMessageDetail}
-            />
-          ))}
+          {messageList &&
+            messageList.map((item) => (
+              <MessageItem
+                ref={(el: HTMLDivElement) =>
+                  (messageItemrefs.current[item.IDMessageDetail] = el)
+                }
+                message={item}
+                key={item.IDMessageDetail}
+              />
+            ))}
         </div>
         <div ref={ref} className="pb-2" />
       </ScrollArea>
