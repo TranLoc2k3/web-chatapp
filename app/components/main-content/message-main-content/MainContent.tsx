@@ -1,5 +1,5 @@
 "use client";
-import { TYPE_GROUP } from "@/app/types";
+import { ConversationItemProps, TYPE_GROUP } from "@/app/types";
 import { cn } from "@/lib/utils";
 import MessageThread from "./MessageThread";
 import ChatInput from "./chat-input/ChatInput";
@@ -17,7 +17,7 @@ function MessageMainContent({ children }: { children: React.ReactNode }) {
   }));
   const pathname = usePathname();
 
-  const currentConversation = useMemo(() => {
+  const currentConversation: ConversationItemProps = useMemo(() => {
     const currentIdConversation = pathname.split("/")[3];
     return conversations.find(
       (conversation: any) =>
@@ -26,18 +26,31 @@ function MessageMainContent({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversations]);
   useEffect(() => {
+    // Xử lý load ảnh ng gửi
     if (!conversations) return;
+    let members: any = [];
     const getSender = async () => {
-      if(!currentConversation) return;
-      const sender = await axiosClient.get(
-        `user/get-user/${currentConversation.IDSender}`
-      );
-      const sender1 = await axiosClient.get(
-        `user/get-user/${currentConversation.IDReceiver}`
-      );
-      setSenders([sender.data, sender1.data]);
+      if (currentConversation.isGroup) {
+        // for (let member of currentConversation.groupMembers) {
+        //   const sender = await axiosClient.get(`user/get-user/${member}`);
+        //   members.push(sender.data);
+        // }
+        members = currentConversation.groupMembers;
+      } else {
+        const sender = await axiosClient.get(
+          `user/get-user/${currentConversation.IDSender}`
+        );
+        members.push(sender.data);
+        const sender1 = await axiosClient.get(
+          `user/get-user/${currentConversation.IDReceiver}`
+        );
+        members.push(sender1.data);
+      }
+
+      setSenders(members);
     };
     currentConversation && getSender();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversations]);
   if (!currentConversation)

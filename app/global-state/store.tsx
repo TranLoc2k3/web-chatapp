@@ -19,10 +19,18 @@ interface BearState {
   setSendingCount: (count: number) => void;
   friendRequests: any;
   setFriendRequests: (friendRequests: any) => void;
+  openAddMemberGroup: boolean;
+  setOpenAddMemberGroup: () => void;
+  openChildModalConversationInfo: boolean;
+  setOpenChildModalConversationInfo: () => void;
+  memberInfoCurrentGroupConversation: any;
+  setMemberInfoCurrentGroupConversation: (memberInfo: any) => void;
+  replyMessageData: any;
+  setReplyMessageData: (data: any) => void;
 }
 
 export const useBearStore = create<BearState>()((set) => ({
-  isOpenConversationInfo: false,
+  isOpenConversationInfo: true,
   userPhone: "",
   user: null,
   senders: [],
@@ -70,5 +78,29 @@ export const useBearStore = create<BearState>()((set) => ({
     set((prevState) => ({
       ...prevState,
       friendRequests,
+    })),
+  openAddMemberGroup: false,
+  setOpenAddMemberGroup: () =>
+    set((prevState) => ({
+      ...prevState,
+      openAddMemberGroup: !prevState.openAddMemberGroup,
+    })),
+  openChildModalConversationInfo: false,
+  setOpenChildModalConversationInfo: () =>
+    set((prevState) => ({
+      ...prevState,
+      openChildModalConversationInfo: !prevState.openChildModalConversationInfo,
+    })),
+  memberInfoCurrentGroupConversation: [],
+  setMemberInfoCurrentGroupConversation: (memberInfo: any) =>
+    set((prevState) => ({
+      ...prevState,
+      memberInfoCurrentGroupConversation: memberInfo,
+    })),
+  replyMessageData: null,
+  setReplyMessageData: (data: any) =>
+    set((prevState) => ({
+      ...prevState,
+      replyMessageData: data,
     })),
 }));

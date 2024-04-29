@@ -21,13 +21,32 @@ export interface UserProps {
   urlavatar: string;
   birthday: string;
   friendList: string[];
+  isOwner?: boolean;
+  isCoOwner?: boolean;
 }
 
 export interface MessageItemProps {
   IDMessageDetail: string;
+  IDConversation: string;
   IDSender: string;
   type: TypeMessage;
   content: string;
   dateTime: string;
   isRemove: boolean;
+  isRecall: boolean;
+  userSender?: any;
+  isReply?: boolean;
+}
+
+export interface ConversationItemProps {
+  IDConversation: string;
+  IDSender: string;
+  groupMembers: any;
+  IDNewestMessage: string;
+  IDReceiver?: string;
+  isGroup: boolean;
+  listFile?: any;
+  listImage?: any;
+  groupName?: string;
+  groupAvatar?: string;
 }

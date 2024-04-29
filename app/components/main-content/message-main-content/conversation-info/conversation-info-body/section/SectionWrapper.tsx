@@ -20,6 +20,7 @@ interface SectionButtonProps {
   isLink?: boolean;
   isDangerous?: boolean;
   rightIconList?: RightIconType[];
+  onClick?: any;
 }
 
 interface RightIconType {
@@ -34,9 +35,13 @@ export const SectionButton = ({
   subTitle,
   isLink = false,
   isDangerous = false,
+  onClick,
 }: SectionButtonProps) => {
   return (
-    <div className="flex justify-between px-4 h-12 items-center hover:bg-[#f3f5f6] cursor-pointer w-full">
+    <div
+      onClick={onClick}
+      className="flex justify-between px-4 h-12 items-center hover:bg-[#f3f5f6] cursor-pointer w-full"
+    >
       <div className="flex gap-3 items-center">
         {icon}
         <p className="flex flex-col">
