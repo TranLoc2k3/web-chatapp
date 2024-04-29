@@ -95,29 +95,8 @@ export default function MessageThread() {
       setSendingCount(data);
     });
     socket.on("receive_message", (data: any) => {
-      console.log(data);
-
-      // Đẩy conversation lên đầu nếu nhận tin nhắn
+      socket.emit("load_conversations", { IDUser: username });
       const currentConversations = pathname.split("/")[3];
-
-      if (data.IDSender !== username) {
-        const currentIndex = conversations.findIndex(
-          (conversation: any) =>
-            conversation.IDConversation === data.IDConversation
-        );
-
-        if (currentIndex > -1) {
-          const updatedConversations = [
-            conversations[currentIndex],
-            ...conversations,
-          ];
-
-          updatedConversations.splice(currentIndex + 1, 1);
-
-          setConversations(updatedConversations);
-        }
-      }
-      // username && socket.emit("load_conversations", { IDUser: username });
       data.IDConversation === currentConversations &&
         setMessageList((pre) => [data as MessageItemProps, ...pre]);
 
@@ -148,15 +127,16 @@ export default function MessageThread() {
             .map((item, index) => (
               <MessageItemLoading key={index} />
             ))}
-          {messageList.map((item) => (
-            <MessageItem
-              ref={(el: HTMLDivElement) =>
-                (messageItemrefs.current[item.IDMessageDetail] = el)
-              }
-              message={item}
-              key={item.IDMessageDetail}
-            />
-          ))}
+          {messageList &&
+            messageList.map((item) => (
+              <MessageItem
+                ref={(el: HTMLDivElement) =>
+                  (messageItemrefs.current[item.IDMessageDetail] = el)
+                }
+                message={item}
+                key={item.IDMessageDetail}
+              />
+            ))}
         </div>
         <div ref={ref} className="pb-2" />
       </ScrollArea>

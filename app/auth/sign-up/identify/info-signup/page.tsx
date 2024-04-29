@@ -67,7 +67,6 @@ function InfoSignUp() {
     if (res.data.message == "Update information successfully") {
       route.push("/auth/sign-in");
     }
-    console.log(values);
   }
 
   return (

@@ -2,7 +2,16 @@
 import { useBearStore } from "@/app/global-state/store";
 import { MessageItemProps, TypeMessage } from "@/app/types";
 import { convertISOToDDMMYYY } from "@/app/utils/datetimeUtils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { axiosClient } from "@/configs/axios.config";
+import { socket } from "@/configs/socket";
 import { cn } from "@/lib/utils";
+import { CircleEllipsis } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { LegacyRef, forwardRef, useEffect, useMemo, useState } from "react";
@@ -10,14 +19,7 @@ import FileMessage from "./FileMessage";
 import ImageMessage from "./ImageMessage";
 import TextMessage from "./TextMessage";
 import VideoMessage from "./VideoMessage";
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-} from "@/components/ui/context-menu";
-import { axiosClient } from "@/configs/axios.config";
-import { socket } from "@/configs/socket";
+import { ThreeDot } from "./ThreeDot";
 
 interface IProps {
   message: MessageItemProps;
@@ -88,11 +90,11 @@ const MessageItem = forwardRef(
 
     if (message.isRemove) return null;
     return (
-      <ContextMenu>
+      <div className="relative">
         <div
           ref={ref}
           className={cn(
-            "flex gap-3 mx-4 mb-2",
+            "flex gap-3 mx-4 mb-2 relative",
             `${isSend ? "flex-row-reverse" : ""}`
           )}
         >
@@ -126,7 +128,7 @@ const MessageItem = forwardRef(
           ) : (
             <div
               className={cn(
-                "p-3 rounded-[8px] w-[400px] max-w-[calc(100%-100px)]",
+                "p-3 rounded-[8px] w-[400px] max-w-[calc(100%-100px)] relative",
                 `${
                   message.type === TypeMessage.IMAGE ||
                   message.type === TypeMessage.VIDEO
@@ -136,7 +138,7 @@ const MessageItem = forwardRef(
                 `${isSend ? "bg-[#e5efff]" : ""}`
               )}
             >
-              <ContextMenuTrigger>
+              <>
                 {!isSend && (
                   <p className="text-[#7589A3] text-sm mb-3">
                     {currentSender?.fullname}
@@ -167,22 +169,42 @@ const MessageItem = forwardRef(
                 <p className="text-[#476285] text-xs mt-3 flex justify-between items-center">
                   {convertISOToDDMMYYY(message.dateTime)}
                 </p>
-              </ContextMenuTrigger>
+              </>
+              <div className="pt-2" />
+              {currentSender.ID === session.data?.token.user ? (
+                // <ContextMenuContent>
+                //   <ContextMenuItem onClick={onDelete}>Xóa</ContextMenuItem>
+                //   <ContextMenuItem onClick={onRecall}>Thu hồi</ContextMenuItem>
+                // </ContextMenuContent>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="absolute bottom-1 right-2 hover:bg-[rgba(174,172,172,0.3)] rounded-[6px]">
+                    <ThreeDot />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={onDelete}>Xóa</DropdownMenuItem>
+                    <DropdownMenuItem onClick={onRecall}>
+                      Thu hồi
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="absolute bottom-1 right-2 hover:bg-[rgba(174,172,172,0.3)] rounded-[6px]">
+                    <ThreeDot />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={onReply}>
+                      Trả lời
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>Chuyển tiếp</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
           )}
         </div>
-        {currentSender.ID === session.data?.token.user ? (
-          <ContextMenuContent>
-            <ContextMenuItem onClick={onDelete}>Xóa</ContextMenuItem>
-            <ContextMenuItem onClick={onRecall}>Thu hồi</ContextMenuItem>
-          </ContextMenuContent>
-        ) : (
-          <ContextMenuContent>
-            <ContextMenuItem onClick={onReply}>Trả lời</ContextMenuItem>
-            <ContextMenuItem>Chuyển tiếp</ContextMenuItem>
-          </ContextMenuContent>
-        )}
-      </ContextMenu>
+      </div>
     );
   }
 );
