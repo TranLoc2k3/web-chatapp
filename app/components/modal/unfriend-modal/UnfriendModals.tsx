@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 interface UnfriendModalsProps {
   onClose: () => void;
@@ -6,14 +6,26 @@ interface UnfriendModalsProps {
 }
 
 function UnfriendModals({ ID, onClose }: UnfriendModalsProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
+  const handleOutSideClick = (e: MouseEvent) => {
+    if(modalRef.current&&!modalRef.current.contains(e.target as Node)){
+      onClose();
+    }
+  };
   const handleUnfriend = () => {
     // Thực hiện hành động xoá với ID được truyền vào
     console.log(`Xoá bạn với ID: ${ID}`);
     onClose();
   };
-  return (
-    <div className="fixed ">
-      <div className="bg-slate-200 p-4 ">
+  useEffect(() => {
+    document.addEventListener("mousedown",handleOutSideClick);
+    return  ()=>{
+      document.removeEventListener("mousedown",handleOutSideClick);
+    }
+    });
+    return (
+    <div className="fixed z-50">
+      <div className="bg-slate-200 p-4" ref={modalRef}>
         <ul className="space-y-2">
           <li>
             <button
@@ -26,10 +38,7 @@ function UnfriendModals({ ID, onClose }: UnfriendModalsProps) {
           <li>
             <button
               className="text-blue-500 hover:text-blue-700 p-2"
-              onClick={() => {
-         
-                onClose();
-              }}
+            
             >
               Xem thông tin
             </button>
