@@ -1,4 +1,5 @@
 import { axiosClient } from "@/configs/axios.config";
+import axios from "axios";
 import { get } from "http";
 import { url } from "inspector";
 import { use } from "react";
@@ -74,8 +75,28 @@ const userAPI = {
       })
       return res;
     
-    
   },
+  onUpdateGroupInfo: async (
+    
+    IDConversation: string,
+    groupName: string,
+    groupAvatar: File
+  )=>{
+    try {
+      const formData= new FormData(s);
+      formData.append("IDConversation",IDConversation);
+      formData.append("groupName",groupName);
+      formData.append("groupAvatar",groupAvatar);
+      const res= await axios.post("/conversation/update-info-group",formData,{
+        headers:{
+          "Content-Type":"multipart/form-data"
+        }
+      });
+      return res;
+    } catch (error) {
+      console.error("Error updating group info:", error);
+    }
+  }
 };
 
 export { userAPI };
