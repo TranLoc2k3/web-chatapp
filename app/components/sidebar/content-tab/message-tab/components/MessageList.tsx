@@ -1,25 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { userAPI } from "@/api/userAPI";
-import { socket } from "@/configs/socket";
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import MessageItem from "./MessageItem";
 import { useBearStore } from "@/app/global-state/store";
 import { MessageItemProps } from "@/app/types";
+import { socket } from "@/configs/socket";
+import { useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
-interface Conversation {
-  IDConversation: string;
-  IDReceiver: string;
-  IDSender: string;
-  Receiver: {
-    ID: string;
-    fullname: string;
-    urlavatar: string;
-  };
-  MessageDetail: MessageItemProps;
-  isGroup: boolean;
-  lastChange: string;
-}
+import { useEffect } from "react";
+import MessageItem from "./MessageItem";
 interface MessageItemI {
   searchTerm: string;
 }
@@ -28,7 +14,7 @@ function ConversationList({ searchTerm }: MessageItemI) {
   const setGlobalConversations = useBearStore(
     (state) => state.setConversations
   );
-  const currentConversationID = usePathname().split("/")[3];
+  const currentConversationID = usePathname();
   const globalConversations = useBearStore((state) => state.conversations);
   const router = useRouter();
 
@@ -42,44 +28,23 @@ function ConversationList({ searchTerm }: MessageItemI) {
 
   useEffect(() => {
     socket.on("load_conversations_server", (data: any) => {
-      // Kiểm tra conversation đang mở có tồn tại trong conversation hay không
-      console.log(data);
-
       const isExistConversation = data.find(
-        (item: any) => item.IDConversation === currentConversationID
+        (item: any) =>
+          item.IDConversation === currentConversationID.split("/")[3]
       );
-      // setConversations(data);
+
+      if (!isExistConversation && currentConversationID.split("/")[3])
+        router.push("/dashboard/messages");
+
       setGlobalConversations(data);
-      if (!isExistConversation) router.push("/dashboard/messages");
     });
   }, [currentConversationID]);
 
   useEffect(() => {
-    const loadConversationAfterReceiveMsg = (data: MessageItemProps) => {
-      // console.log(
-      //   "Người nhận receive_message và trigger load conversation chỗ này: ",
-      //   data
-      // );
+    const loadConversationAfterReceiveMsg = (data: any) => {
+      console.log(data);
 
-      // if (data.IDSender !== username) {
-      //   const currentIndex = globalConversations.findIndex(
-      //     (conversation: any) =>
-      //       conversation.IDConversation === data.IDConversation
-      //   );
-
-      //   if (currentIndex > -1) {
-      //     const updatedConversations = [
-      //       globalConversations[currentIndex],
-      //       ...globalConversations,
-      //     ];
-
-      //     updatedConversations.splice(currentIndex + 1, 1);
-
-      //     setGlobalConversations(updatedConversations);
-      //   }
-      // }
-
-      socket.emit("load_conversations", { IDUser: data.IDSender });
+      username && socket.emit("load_conversations", { IDUser: username });
     };
     socket.on("receive_message", loadConversationAfterReceiveMsg);
     return () => {

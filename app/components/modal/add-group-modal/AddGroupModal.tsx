@@ -40,7 +40,6 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({
       setCheckedItems((prev) => {
         const newCheckedItems = [...prev];
         newCheckedItems[index] = !newCheckedItems[index];
-        console.log(newCheckedItems);
 
         return newCheckedItems;
       });
