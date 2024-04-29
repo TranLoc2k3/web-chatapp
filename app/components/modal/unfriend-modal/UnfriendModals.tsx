@@ -12,8 +12,8 @@ function UnfriendModals({ ID, onClose }: UnfriendModalsProps) {
     onClose();
   };
   return (
-    <div className="fixed   bg-slate-600  ">
-      <div className="bg-white p-4 rounded-lg">
+    <div className="fixed ">
+      <div className="bg-slate-200 p-4 ">
         <ul className="space-y-2">
           <li>
             <button
