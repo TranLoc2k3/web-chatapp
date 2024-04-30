@@ -57,7 +57,7 @@ function ConversationList({ searchTerm }: MessageItemI) {
 
   return (
     <div>
-      {filteredUsers.map((conversation: any) => (
+      {globalConversations.map((conversation: any) => (
         <MessageItem
           key={conversation.IDConversation}
           conversation={conversation}
