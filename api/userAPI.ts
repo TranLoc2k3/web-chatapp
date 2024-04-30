@@ -83,11 +83,11 @@ const userAPI = {
     groupAvatar: File
   )=>{
     try {
-      const formData= new FormData(s);
+      const formData= new FormData();
       formData.append("IDConversation",IDConversation);
       formData.append("groupName",groupName);
       formData.append("groupAvatar",groupAvatar);
-      const res= await axios.post("/conversation/update-info-group",formData,{
+      const res= await axiosClient.post("/conversation/update-info-group",formData,{
         headers:{
           "Content-Type":"multipart/form-data"
         }

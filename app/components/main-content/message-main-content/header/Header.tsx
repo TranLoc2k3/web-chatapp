@@ -38,8 +38,7 @@ function Header() {
       )
     );
   }, [currentConversation, senders]);
-console.log("bịp")
-  console.log(currentConversation);
+
   if (!receiver) return null;
 
   return (
@@ -62,7 +61,13 @@ console.log("bịp")
         </div>
       </div>
       <HeaderBtns />
-      {isModalOpen && (<UpdateGroupInfoModal openModal={openModal} closeModal={closeModal} currentConversation={currentConversation} />)}
+      {isModalOpen && (
+        <UpdateGroupInfoModal
+          openModal={openModal}
+          closeModal={closeModal}
+          currentConversation={currentConversation}
+        />
+      )}
     </div>
   );
 }

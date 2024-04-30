@@ -1,19 +1,24 @@
 import { userAPI } from "@/api/userAPI";
+import toast, { Toast, Toaster } from "react-hot-toast";
+
 import { X } from "lucide-react";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
+import { any } from "zod";
+import { waitForDebugger } from "inspector";
 
 interface UpdateGroupInfoModalProps {
   openModal: () => void;
   closeModal: () => void;
-  currentConversation: {
-    IDConversation: string;
-    groupName: string;
-    groupAvatar: File;
-  };
+  currentConversation:
+    | {
+        IDConversation: string;
+        groupName: string;
+        groupAvatar: File | null;
+      }
+    | any;
 }
 
 function UpdateGroupInfoModal({
-  openModal,
   closeModal,
   currentConversation,
 }: UpdateGroupInfoModalProps): JSX.Element {
@@ -31,31 +36,54 @@ function UpdateGroupInfoModal({
     }
   };
 
-  const createObjectURLSafely = (groupAvatar: File | null): string => {
+  const createObjectURLSafely = (groupAvatar: File | null) => {
     try {
-      return groupAvatar ? URL.createObjectURL(groupAvatar) : currentConversation.groupAvatar;
+      return groupAvatar
+        ? URL.createObjectURL(groupAvatar)
+        : currentConversation.groupAvatar;
     } catch (error) {
       console.error("Error creating object URL:", error);
       return "";
     }
   };
-
+  //  chưa xử lý tình huống nếu dùng ảnh cũ, chỉ đổi tên nhóm
+  let apiResponse: any = null;
   const handleSave = async () => {
     try {
-      if (!currentConversation.IDConversation || !groupName || !groupAvatar) {
-        console.error("Missing required data");
+      if (!groupName) {
+        toast.error("Vui lòng nhập đầy đủ thông tin");
         return;
       }
-
-      const api = await userAPI.onUpdateGroupInfo(currentConversation.IDConversation, groupName, groupAvatar);
-      console.log(api);
+      if (!groupAvatar) {
+        toast.error("Vui lòng chọn ảnh đại diện cho nhóm");
+        return;
+      }
+      apiResponse = await userAPI.onUpdateGroupInfo(
+        currentConversation.IDConversation,
+        groupName,
+        groupAvatar
+      );
+      console.log(apiResponse.data);
+      if (apiResponse && apiResponse.data === "Success") {
+        toast.success("Cập nhật thông tin nhóm thành công");
+        setGroupName(groupName);
+        setGroupAvatar(groupAvatar);
+      } else {
+        toast.error("Cập nhật thông tin nhóm thất bại");
+        return;
+      }
+      window.location.reload();
     } catch (error) {
+      toast.error("Cập nhật thông tin nhóm thất bại");
       console.error("Error updating group info:", error);
     }
   };
+  // useEffect để cập nhật state sau khi gọi API thành công
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div id="recaptcha-container"></div>
+      <Toaster toastOptions={{ duration: 4000 }} />
       <div className="bg-gray-800 bg-opacity-50 absolute inset-0"></div>
       <div className="bg-white rounded-lg p-4 z-50 h-[500px]  w-[400px] relative">
         <div className="relative border-b-2 h-[30px]">
@@ -76,11 +104,16 @@ function UpdateGroupInfoModal({
               type="file"
               onChange={handleAvatarChange}
               className="absolute top-0 left-0 right-0 bottom-0 opacity-0"
+              accept="image/*"
             />
           </div>
         </div>
         <div className="border-2 p-2 mt-4">
-          <input type="text" placeholder={currentConversation.groupName} onChange={handleGroupNameChange} />
+          <input
+            type="text"
+            placeholder={"Nhập tên"}
+            onChange={handleGroupNameChange}
+          />
         </div>
         <button
           onClick={handleSave}
