@@ -42,8 +42,6 @@ function ConversationList({ searchTerm }: MessageItemI) {
 
   useEffect(() => {
     const loadConversationAfterReceiveMsg = (data: any) => {
-      console.log(data);
-
       username && socket.emit("load_conversations", { IDUser: username });
     };
     socket.on("receive_message", loadConversationAfterReceiveMsg);

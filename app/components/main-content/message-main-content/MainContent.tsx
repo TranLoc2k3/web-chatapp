@@ -71,7 +71,11 @@ function MessageMainContent({ children }: { children: React.ReactNode }) {
         <MessageThread />
         <ChatInput />
       </div>
-      <ConversationInfo type={TYPE_GROUP.GROUP} />
+      <ConversationInfo
+        type={
+          currentConversation.isGroup ? TYPE_GROUP.GROUP : TYPE_GROUP.SIGNLE
+        }
+      />
     </div>
   );
 }

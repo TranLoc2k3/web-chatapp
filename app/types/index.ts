@@ -49,4 +49,5 @@ export interface ConversationItemProps {
   listImage?: any;
   groupName?: string;
   groupAvatar?: string;
+  Receiver?: any;
 }

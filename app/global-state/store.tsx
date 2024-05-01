@@ -21,12 +21,14 @@ interface BearState {
   setFriendRequests: (friendRequests: any) => void;
   openAddMemberGroup: boolean;
   setOpenAddMemberGroup: () => void;
-  openChildModalConversationInfo: boolean;
-  setOpenChildModalConversationInfo: () => void;
+  openChildModalConversationInfo: any;
+  setOpenChildModalConversationInfo: (key: string, value: boolean) => void;
   memberInfoCurrentGroupConversation: any;
   setMemberInfoCurrentGroupConversation: (memberInfo: any) => void;
   replyMessageData: any;
   setReplyMessageData: (data: any) => void;
+  forwardMessage: any;
+  setForwardMessage: (data: any) => void;
 }
 
 export const useBearStore = create<BearState>()((set) => ({
@@ -85,11 +87,19 @@ export const useBearStore = create<BearState>()((set) => ({
       ...prevState,
       openAddMemberGroup: !prevState.openAddMemberGroup,
     })),
-  openChildModalConversationInfo: false,
-  setOpenChildModalConversationInfo: () =>
+  openChildModalConversationInfo: {
+    member: false,
+    commonGroup: false,
+    addMemberIntoGroup: false,
+    forwardMessage: false,
+  },
+  setOpenChildModalConversationInfo: (key: string, value: boolean) =>
     set((prevState) => ({
       ...prevState,
-      openChildModalConversationInfo: !prevState.openChildModalConversationInfo,
+      openChildModalConversationInfo: {
+        ...prevState.openChildModalConversationInfo,
+        [key]: value,
+      },
     })),
   memberInfoCurrentGroupConversation: [],
   setMemberInfoCurrentGroupConversation: (memberInfo: any) =>
@@ -102,5 +112,11 @@ export const useBearStore = create<BearState>()((set) => ({
     set((prevState) => ({
       ...prevState,
       replyMessageData: data,
+    })),
+  forwardMessage: null,
+  setForwardMessage: (data: any) =>
+    set((prevState) => ({
+      ...prevState,
+      forwardMessage: data,
     })),
 }));
