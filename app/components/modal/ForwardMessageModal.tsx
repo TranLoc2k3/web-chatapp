@@ -13,107 +13,85 @@ import FriendItem from "./add-group-modal/components/friend-item/FriendItem";
 import { usePathname } from "next/navigation";
 import { useBearStore } from "@/app/global-state/store";
 import { toLowerCaseNonAccentVietnamese } from "@/app/utils/toLowerCaseNonAccentVietnamese";
+import GroupItem from "./add-group-modal/components/GroupItem";
 
 interface AddGroupModalProps {
   isvisible: boolean;
   onClose: () => void;
 }
 
-const AddMemberGroup: React.FC<AddGroupModalProps> = ({
+const ForwardMessageModal: React.FC<AddGroupModalProps> = ({
   isvisible,
   onClose,
 }) => {
-  const [checkedItems, setCheckedItems] = useState<boolean[]>([]);
+  const conversations: ConversationItemProps[] = useBearStore(
+    (state) => state.conversations
+  );
+  const { forwardMessage, setForwardMessage } = useBearStore((state) => ({
+    forwardMessage: state.forwardMessage,
+    setForwardMessage: state.setForwardMessage,
+  }));
+  const [checkedItems, setCheckedItems] = useState<boolean[]>(() =>
+    new Array(conversations.length).fill(false)
+  );
   const username = useSession().data?.token.user;
   const [query, setQuery] = useState<string>("");
   const IDConversation = usePathname().split("/")[3];
-  const [groupData, setGroupData] = useState<any>({
-    IDConversation: IDConversation,
-    IDUser: username,
-    groupMembers: [],
-  });
-  const memberInfoCurrentGroupConversation = useBearStore(
-    (state) => state.memberInfoCurrentGroupConversation
-  );
-  const conversations = useBearStore((state) => state.conversations);
   const currentConversation: ConversationItemProps = useMemo(() => {
     return conversations.find(
       (conversation: any) => conversation.IDConversation === IDConversation
-    );
+    ) as ConversationItemProps;
   }, [IDConversation, conversations]);
-  const [friendList, setFriendList] = useState<UserProps[]>([]);
-  const [searchResult, setSearchResult] = useState<UserProps[]>([]);
+  const [searchResult, setSearchResult] =
+    useState<ConversationItemProps[]>(conversations);
 
-  const handleCheck = (IDUser: string) => {
-    const index = friendList.findIndex((friend) => friend.ID === IDUser);
-
+  const handleCheck = (IDConversation: string) => {
+    const index = conversations.findIndex(
+      (group: ConversationItemProps) => group.IDConversation === IDConversation
+    );
     if (index !== -1) {
       setCheckedItems((prev) => {
         const newCheckedItems = [...prev];
         newCheckedItems[index] = !newCheckedItems[index];
-
         return newCheckedItems;
       });
     }
   };
 
   const onSearch = (e: any) => {
-    const result = friendList.filter((item) =>
-      toLowerCaseNonAccentVietnamese(item.fullname).includes(
+    const result = conversations.filter((group: ConversationItemProps) =>
+      toLowerCaseNonAccentVietnamese(group.groupName as string).includes(
         toLowerCaseNonAccentVietnamese(e.target.value)
       )
     );
     setSearchResult(result);
     setQuery(e.target.value);
   };
-  const onAddMember = () => {
-    const selectFriends = friendList.filter(
+  const onForward = () => {
+    const conversationsForAdd = conversations.filter(
       (_, index) => checkedItems[index] === true
     );
-    const listIDMemberToAdd = selectFriends.map((item) => item.ID);
-    const payload = {
-      ...groupData,
-      groupMembers: listIDMemberToAdd,
-    };
-
-    socket.emit("add_member_to_group", payload);
-    socket.emit("load_conversations", { IDUser: username });
-    setGroupData({
-      IDConversation: IDConversation,
-      IDUser: username,
-      groupMembers: [],
-    });
-    setQuery("");
-    onClose();
+    for (let conv of conversationsForAdd) {
+      const payload = {
+        IDPassConversation: conv.IDConversation,
+        IDUser: username,
+        IDMessageDetail: forwardMessage.IDMessageDetail,
+      };
+      socket.emit("pass_message", payload);
+      // socket.emit("load_conversations", { IDUser: username });
+    }
+    setForwardMessage(null);
+    handleClose();
   };
 
-  useEffect(() => {
-    const getFriendList = async () => {
-      const res = await axiosClient.post("conversation/get-list-friend", {
-        username,
-      });
-      memberInfoCurrentGroupConversation
-        ? (res.data = res.data.filter((item: any) => {
-            return memberInfoCurrentGroupConversation.every(
-              (member: any) => member.ID !== item.ID
-            );
-          }))
-        : "";
-
-      const index = res.data.findIndex(
-        (friend: any) => friend.ID === currentConversation?.IDReceiver
-      );
-      const arr = new Array(res.data.length).fill(false);
-      if (index != -1) {
-        arr[index] = true;
-      }
-      setFriendList(res.data);
-      setSearchResult(res.data);
-      setCheckedItems(arr);
-    };
-    username && getFriendList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [username, memberInfoCurrentGroupConversation, currentConversation]);
+  const handleClose = () => {
+    setQuery("");
+    setCheckedItems((pre) => {
+      const updated = pre.map((item) => (item = false));
+      return updated;
+    });
+    onClose();
+  };
 
   return (
     <div>
@@ -132,9 +110,9 @@ const AddMemberGroup: React.FC<AddGroupModalProps> = ({
               <div className="bg-white h-[98%] w-[600px] mt-[5px]  rounded-sm border-b relative z-50">
                 {/*Phần 1 Header */}
                 <div className="p-4 text-black border-b-2 relative">
-                  <h2>Thêm thành viên</h2>
+                  <h2>Chuyển tiếp tin nhắn</h2>
                   <button className="absolute top-[20px] right-[20px]">
-                    <X onClick={() => onClose()} />
+                    <X onClick={handleClose} />
                   </button>
                 </div>
                 {/* Phần 2 Content */}
@@ -145,7 +123,7 @@ const AddMemberGroup: React.FC<AddGroupModalProps> = ({
                       <Search className="opacity-50 ml-2" width="15px" />
                       <input
                         className="ml-2 w-full text-[12px]"
-                        placeholder="Nhập tên, số điện thoại"
+                        placeholder="Nhập tên nhóm"
                         value={query}
                         onChange={onSearch}
                       />
@@ -157,43 +135,49 @@ const AddMemberGroup: React.FC<AddGroupModalProps> = ({
                       <div className="w-full">
                         <div>
                           <p className="pl-4 pt-2 text-neutral-600 text-[14px]">
-                            Trò chuyện gần đây
+                            Danh sách tin nhắn
                           </p>
                         </div>
-                        {searchResult.map((item: UserProps, index: number) => (
-                          <FriendItem
-                            key={item.ID}
-                            item={item}
-                            isChecked={
-                              checkedItems[
-                                friendList.findIndex(
-                                  (friend) => friend.ID === item.ID
-                                )
-                              ]
-                            }
-                            handleCheck={() => {
-                              handleCheck(item.ID);
-                            }}
-                          />
-                        ))}
+                        <div className="overflow-y-scroll h-[400px]">
+                          {searchResult.map(
+                            (item: ConversationItemProps, index: number) => (
+                              <GroupItem
+                                key={item.IDConversation}
+                                item={item}
+                                isChecked={
+                                  checkedItems[
+                                    conversations.findIndex(
+                                      (group) =>
+                                        group.IDConversation ===
+                                        item.IDConversation
+                                    )
+                                  ]
+                                }
+                                handleCheck={() => {
+                                  handleCheck(item.IDConversation);
+                                }}
+                              />
+                            )
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* phần 3 footer */}
-                <div className=" h-[60px]  border-t-[1px]  absolute  bottom-0 left-0 right-0 bg-white">
+                <div className="absolute bottom-0 left-0 right-0 h-[60px] border-t-[1px] bg-white flex items-center justify-end pr-4 gap-4">
                   <button
-                    className="bg-slate-200 rounded-sm pl-4 pr-4 pt-1 pb-1  text-neutral-500 absolute top-4 right-[130px] hover:bg-slate-300"
-                    onClick={() => onClose()}
+                    className="bg-slate-200 rounded-sm pl-4 pr-4 pt-1 pb-1  text-neutral-500 hover:bg-slate-300"
+                    onClick={handleClose}
                   >
                     Huỷ
                   </button>
                   <button
-                    onClick={onAddMember}
-                    className="rounded-sm pl-4 pr-4 pt-1 pb-1 bg-blue-600 hover:bg-blue-800 text-white absolute top-4 right-2 "
+                    onClick={onForward}
+                    className="rounded-sm pl-4 pr-4 pt-1 pb-1 bg-blue-600 hover:bg-blue-800 text-white"
                   >
-                    Thêm thành viên
+                    Gửi
                   </button>
                 </div>
               </div>
@@ -205,4 +189,4 @@ const AddMemberGroup: React.FC<AddGroupModalProps> = ({
   );
 };
 
-export default AddMemberGroup;
+export default ForwardMessageModal;

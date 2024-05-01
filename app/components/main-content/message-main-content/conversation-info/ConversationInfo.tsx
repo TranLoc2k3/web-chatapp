@@ -8,7 +8,8 @@ import { cn } from "@/lib/utils";
 import ChildModal from "./ChildModal";
 import ConversationInfoBody from "./conversation-info-body/ConversationInfoBody";
 import ConversationInfoHeader from "./conversation-info-header/Header";
-import { useState } from "react";
+import AddMemberToGroup from "@/app/components/modal/AddMemberToGroup";
+import ForwardMessageModal from "@/app/components/modal/ForwardMessageModal";
 
 interface IProps {
   type: TYPE_GROUP;
@@ -25,6 +26,10 @@ function ConversationInfo({ type }: IProps) {
     openAddMemberGroup: state.openAddMemberGroup,
     setOpenMemberGroup: state.setOpenAddMemberGroup,
   }));
+
+  const setOpenChildModalConversationInfo = useBearStore(
+    (state) => state.setOpenChildModalConversationInfo
+  );
 
   return (
     <>
@@ -61,16 +66,17 @@ function ConversationInfo({ type }: IProps) {
         />
         <ScrollArea className="h-[calc(100%-68px)]">
           <ConversationInfoHeader
-            type={TYPE_GROUP.GROUP}
+            type={type}
             conversationName="Công Nghệ Mới"
           />
-          <ConversationInfoBody typeGroup={TYPE_GROUP.GROUP} />
+          <ConversationInfoBody typeGroup={type} />
         </ScrollArea>
 
         {/* Child Modal */}
         <div
           className={
-            openChildModalConversationInfo
+            openChildModalConversationInfo.member ||
+            openChildModalConversationInfo.commonGroup
               ? "absolute size-full top-0 right-0"
               : ""
           }
@@ -82,6 +88,18 @@ function ConversationInfo({ type }: IProps) {
       <AddMemberGroup
         isvisible={openAddMemberGroup}
         onClose={setOpenMemberGroup}
+      />
+      <AddMemberToGroup
+        isvisible={openChildModalConversationInfo.addMemberIntoGroup}
+        onClose={() =>
+          setOpenChildModalConversationInfo("addMemberIntoGroup", false)
+        }
+      />
+      <ForwardMessageModal
+        isvisible={openChildModalConversationInfo.forwardMessage}
+        onClose={() =>
+          setOpenChildModalConversationInfo("forwardMessage", false)
+        }
       />
     </>
   );

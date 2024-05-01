@@ -41,10 +41,17 @@ export const MessageItemLoading = () => {
 const MessageItem = forwardRef(
   (props: IProps, ref: LegacyRef<HTMLDivElement>) => {
     const [message, setMessage] = useState<MessageItemProps>(props.message);
+
     const session = useSession();
     const setReplyMessageData = useBearStore(
       (state) => state.setReplyMessageData
     );
+    const { setOpenChildModalConversationInfo, setForwardMessage } =
+      useBearStore((state) => ({
+        setOpenChildModalConversationInfo:
+          state.setOpenChildModalConversationInfo,
+        setForwardMessage: state.setForwardMessage,
+      }));
     const currentSender = useMemo(() => {
       return message.userSender;
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -73,6 +80,11 @@ const MessageItem = forwardRef(
       });
     };
 
+    const onForward = () => {
+      setForwardMessage(message);
+      setOpenChildModalConversationInfo("forwardMessage", true);
+    };
+
     const isSend = useMemo(() => {
       return message.IDSender === session.data?.token.user;
     }, [session]);
@@ -89,6 +101,7 @@ const MessageItem = forwardRef(
     }, []);
 
     if (message.isRemove) return null;
+
     return (
       <div className="relative">
         <div
@@ -171,7 +184,7 @@ const MessageItem = forwardRef(
                 </p>
               </>
               <div className="pt-2" />
-              {currentSender.ID === session.data?.token.user ? (
+              {currentSender?.ID === session.data?.token.user ? (
                 // <ContextMenuContent>
                 //   <ContextMenuItem onClick={onDelete}>Xóa</ContextMenuItem>
                 //   <ContextMenuItem onClick={onRecall}>Thu hồi</ContextMenuItem>
@@ -186,6 +199,9 @@ const MessageItem = forwardRef(
                     <DropdownMenuItem onClick={onRecall}>
                       Thu hồi
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={onForward}>
+                      Chuyển tiếp
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
@@ -197,7 +213,9 @@ const MessageItem = forwardRef(
                     <DropdownMenuItem onClick={onReply}>
                       Trả lời
                     </DropdownMenuItem>
-                    <DropdownMenuItem>Chuyển tiếp</DropdownMenuItem>
+                    <DropdownMenuItem onClick={onForward}>
+                      Chuyển tiếp
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
