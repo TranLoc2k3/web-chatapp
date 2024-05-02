@@ -38,15 +38,16 @@
     isReply?: boolean;
   }
 
-  export interface ConversationItemProps {
-    IDConversation: string;
-    IDSender: string;
-    groupMembers: any;
-    IDNewestMessage: string;
-    IDReceiver?: string;
-    isGroup: boolean;
-    listFile?: any;
-    listImage?: any;
-    groupName?: string;
-    groupAvatar?: string;
-  }
+export interface ConversationItemProps {
+  IDConversation: string;
+  IDSender: string;
+  groupMembers: any;
+  IDNewestMessage: string;
+  IDReceiver?: string;
+  isGroup: boolean;
+  listFile?: any;
+  listImage?: any;
+  groupName?: string;
+  groupAvatar?: string;
+  Receiver?: any;
+}

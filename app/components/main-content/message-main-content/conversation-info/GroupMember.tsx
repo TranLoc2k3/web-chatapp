@@ -280,7 +280,7 @@ function GroupMember() {
   }, [IDSender, conversations]);
 
   return (
-    openChildModalConversationInfo && (
+    openChildModalConversationInfo.member && (
       <ContentLayout title="Thành viên">
         <Button
           onClick={setOpenMemberGroup}
@@ -289,18 +289,20 @@ function GroupMember() {
         >
           Thêm thành viên
         </Button>
-        {members.map((member) => (
-          <MemberButton
-            currentUserID={IDSender}
-            memberId={member.ID}
-            title={member.fullname}
-            urlavatar={member.urlavatar}
-            key={member.ID}
-            currentConversation={currentConversation}
-            isOwner={member.isOwner as boolean}
-            isCoOwner={member.isCoOwner as boolean}
-          />
-        ))}
+        {members &&
+          members.length > 0 &&
+          members.map((member) => (
+            <MemberButton
+              currentUserID={IDSender}
+              memberId={member.ID}
+              title={member.fullname}
+              urlavatar={member.urlavatar}
+              key={member.ID}
+              currentConversation={currentConversation}
+              isOwner={member.isOwner as boolean}
+              isCoOwner={member.isCoOwner as boolean}
+            />
+          ))}
       </ContentLayout>
     )
   );

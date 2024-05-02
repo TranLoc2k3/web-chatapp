@@ -12,6 +12,20 @@ function ContentLayout({ title, children }: IProps) {
   const setOpenChildModalConversationInfo = useBearStore(
     (state) => state.setOpenChildModalConversationInfo
   );
+  const openChildModalConversationInfo = useBearStore(
+    (state) => state.openChildModalConversationInfo
+  );
+
+  const onClose = () => {
+    if (openChildModalConversationInfo.member) {
+      setOpenChildModalConversationInfo("member", false);
+      return;
+    }
+    if (openChildModalConversationInfo.commonGroup) {
+      setOpenChildModalConversationInfo("commonGroup", false);
+      return;
+    }
+  };
   return (
     <>
       <div
@@ -31,7 +45,7 @@ function ContentLayout({ title, children }: IProps) {
       >
         {/* Title */}
         <div className="h-[68px] flex items-center px-3">
-          <BackButton onClick={setOpenChildModalConversationInfo} />
+          <BackButton onClick={onClose} />
           <p className="text-[17px] text-[#081c36] font-[600] text-center leading-[68px] flex-1">
             {title}
           </p>

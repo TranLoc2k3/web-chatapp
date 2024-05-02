@@ -12,7 +12,7 @@ function ConversationMember() {
     <div>
       <SectionWrapper title="Thành viên nhóm">
         <SectionButton
-          onClick={setOpenChildModalConversationInfo}
+          onClick={() => setOpenChildModalConversationInfo("member", true)}
           title={`${senders.length} thành viên`}
           icon={<UsersRound {...iconStyle} />}
         />

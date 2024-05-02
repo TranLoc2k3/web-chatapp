@@ -16,6 +16,8 @@ import {
 import MessageItem, { MessageItemLoading } from "./message/MessageItem";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { userAPI } from "@/api/userAPI";
+import { Loader2 } from "lucide-react";
 
 export default function MessageThread() {
   const ref = useRef<HTMLDivElement>(null);
@@ -94,12 +96,16 @@ export default function MessageThread() {
     socket.on("sending_message", (data: any) => {
       setSendingCount(data);
     });
-    socket.on("receive_message", (data: any) => {
+    socket.on("receive_message", async (data: any) => {
       socket.emit("load_conversations", { IDUser: username });
       const currentConversations = pathname.split("/")[3];
+
+      const userSender = await userAPI.getUserByPhone(
+        `user/get-user/${data.IDSender}`
+      );
+      data.userSender = userSender;
       data.IDConversation === currentConversations &&
         setMessageList((pre) => [data as MessageItemProps, ...pre]);
-
       setSendingCount(0);
     });
     return () => {
@@ -119,7 +125,9 @@ export default function MessageThread() {
         className="size-full [&>div:nth-child(2)>div:first-child]:h-full"
       >
         {isLoadingOldMessage && (
-          <div className="size-10 bg-red-400">LOADING...</div>
+          <div className="flex justify-center items-center animate-spin">
+            <Loader2 />
+          </div>
         )}
         <div ref={refMessageList} className="h-full py-3 flex flex-col-reverse">
           {Array(sendingCount)
