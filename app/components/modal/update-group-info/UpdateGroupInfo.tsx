@@ -3,8 +3,7 @@ import toast, { Toast, Toaster } from "react-hot-toast";
 
 import { X } from "lucide-react";
 import { ChangeEvent, useEffect, useState } from "react";
-import { any } from "zod";
-import { waitForDebugger } from "inspector";
+
 
 interface UpdateGroupInfoModalProps {
   openModal: () => void;
@@ -22,6 +21,7 @@ function UpdateGroupInfoModal({
   closeModal,
   currentConversation,
 }: UpdateGroupInfoModalProps): JSX.Element {
+ 
   const [groupName, setGroupName] = useState<string>(""); // State lưu trữ tên nhóm
   const [groupAvatar, setGroupAvatar] = useState<File | null>(null); // State lưu trữ avatar nhóm
 
@@ -66,7 +66,7 @@ function UpdateGroupInfoModal({
       console.log(apiResponse.data);
       if (apiResponse && apiResponse.data === "Success") {
         toast.success("Cập nhật thông tin nhóm thành công");
-        setGroupName(groupName);
+        setGroupName(groupName);  
         setGroupAvatar(groupAvatar);
       } else {
         toast.error("Cập nhật thông tin nhóm thất bại");
@@ -87,7 +87,7 @@ function UpdateGroupInfoModal({
       <div className="bg-gray-800 bg-opacity-50 absolute inset-0"></div>
       <div className="bg-white rounded-lg p-4 z-50 h-[500px]  w-[400px] relative">
         <div className="relative border-b-2 h-[30px]">
-          <h2 className="absolute ">Thông tin nhóm </h2>
+          <h2 className="absolute ">Cập nhật thông tin </h2>
           <X
             className="absolute right-6 hover:cursor-pointer"
             onClick={closeModal}
@@ -119,7 +119,7 @@ function UpdateGroupInfoModal({
           onClick={handleSave}
           className="absolute bottom-4 right-5 bg-blue-500 text-white px-4 py-2 mt-4 rounded-lg hover:bg-blue-600"
         >
-          Lưu
+          Cập nhật
         </button>
       </div>
     </div>
