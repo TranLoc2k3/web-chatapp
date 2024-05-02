@@ -32,7 +32,7 @@ function UnfriendModals({ ID, onClose }: UnfriendModalsProps) {
       console.log(`Unfriend ${ID}`);
       toast.success("Đã huỷ kết bạn");
       if(requestAPI.data.message=="Unfriend successfully"){
-        window.location.reload();
+        // window.location.reload();
       }
     } catch (error) {
       toast.error("Đã có lỗi xảy ra");
