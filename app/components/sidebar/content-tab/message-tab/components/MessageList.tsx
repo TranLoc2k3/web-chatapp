@@ -49,10 +49,6 @@ function ConversationList({ searchTerm }: MessageItemI) {
       socket.off("receive_message", loadConversationAfterReceiveMsg);
     };
   }, []);
-  const filteredUsers = globalConversations.filter(
-    (conversation: any) => conversation.Receiver
-  );
-
   return (
     <div>
       {globalConversations.map((conversation: any) => (

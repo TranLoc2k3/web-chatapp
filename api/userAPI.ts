@@ -96,7 +96,19 @@ const userAPI = {
     } catch (error) {
       console.error("Error updating group info:", error);
     }
+  },
+  onUnFriend: async (senderId: string, receiverId: string) => {
+    try {
+      const res = await axiosClient.post("/user/unfriend", {
+        senderId,
+        receiverId,
+      });
+      return res;
+    } catch (error) {
+      console.error("Error unfriending:", error);
+    }
   }
+
 };
 
 export { userAPI };
