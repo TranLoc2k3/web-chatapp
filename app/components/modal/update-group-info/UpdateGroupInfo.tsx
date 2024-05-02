@@ -50,14 +50,14 @@ function UpdateGroupInfoModal({
   let apiResponse: any = null;
   const handleSave = async () => {
     try {
-      if (!groupName) {
-        toast.error("Vui lòng nhập đầy đủ thông tin");
-        return;
-      }
-      if (!groupAvatar) {
-        toast.error("Vui lòng chọn ảnh đại diện cho nhóm");
-        return;
-      }
+      // if (!groupName) {
+      //   toast.error("Vui lòng nhập đầy đủ thông tin");
+      //   return;
+      // }
+      // if (!groupAvatar) {
+      //   toast.error("Vui lòng chọn ảnh đại diện cho nhóm");
+      //   return;
+      // }
       apiResponse = await userAPI.onUpdateGroupInfo(
         currentConversation.IDConversation,
         groupName,
