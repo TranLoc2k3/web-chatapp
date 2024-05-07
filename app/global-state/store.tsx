@@ -92,6 +92,9 @@ export const useBearStore = create<BearState>()((set) => ({
     commonGroup: false,
     addMemberIntoGroup: false,
     forwardMessage: false,
+    receiveCall: false,
+    videoCall: false,
+    groupCall: false,
   },
   setOpenChildModalConversationInfo: (key: string, value: boolean) =>
     set((prevState) => ({

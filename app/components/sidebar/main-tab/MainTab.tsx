@@ -82,6 +82,22 @@ function MainTab() {
     setUser(data);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
+  useEffect(() => {
+    socket.on("pre-offer-single-answer", (data) => {
+      if (data.preOfferAnser === "CALL_ACCEPTED") {
+        console.log(data);
+        const payload = {
+          IDCallee: data.IDCallee,
+          type: "OFFER",
+        };
+
+        // socket.emit("webRTC-signaling", payload);
+      }
+    });
+    // socket.on("webRTC-signaling", (data) => {
+    //   console.log("OFFER", data);
+    // });
+  }, []);
   return (
     <div className="w-16 min-w-16 pt-8 bg-[#0091ff] h-dvh flex flex-col justify-between">
       <ScrollArea className="h-full">
