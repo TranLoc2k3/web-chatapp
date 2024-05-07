@@ -51,3 +51,10 @@ export interface ConversationItemProps {
   groupAvatar?: string;
   Receiver?: any;
 }
+
+export enum CallStatus {
+  CALLEE_NOT_FOUND = "CALLEE_NOT_FOUND",
+  CALL_ACCEPTED = "CALL_ACCEPTED",
+  CALL_REJECTED = "CALL_REJECTED",
+  CALL_UNAVAILABLE = "CALL_UNAVAILABLE",
+}

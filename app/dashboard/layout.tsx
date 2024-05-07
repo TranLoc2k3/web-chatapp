@@ -1,5 +1,9 @@
+import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
 import Sidebar from "../components/sidebar/Sidebar";
+import ReceiveCallModal from "../components/video-call/ReceiveCallModal";
+import VideoCall from "../components/video-call/VideoCall";
+import VideoCallWrapper from "../components/video-call/VideoCallWrapper";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -17,6 +21,8 @@ export default function DashboardLayout({
       <main className="md:flex-1 h-screen w-[calc(100vw-408px-344px)] relative">
         {children}
       </main>
+      <VideoCallWrapper />
+      <Toaster />
     </div>
   );
 }
