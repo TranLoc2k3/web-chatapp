@@ -6,17 +6,36 @@ import ChatInput from "./chat-input/ChatInput";
 import ConversationInfo from "./conversation-info/ConversationInfo";
 import Header from "./header/Header";
 import { useBearStore } from "@/app/global-state/store";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { axiosClient } from "@/configs/axios.config";
 import { usePathname } from "next/navigation";
-
+import BlockFriend from "../../modal/unfriend-modal/OpenBlockFriend";
+import { io } from "socket.io-client";
+interface Conversation {
+  IDConversation: string;
+  IDNewestMessage: string;
+  IDReceiver: string;
+  IDSender: string;
+  groupMembers: string[];
+  isBlock: boolean;
+  isGroup: boolean;
+  lastChange: string;
+  listFile: string[];
+  listImage: string[];
+}
 function MessageMainContent({ children }: { children: React.ReactNode }) {
+
+  const [isBlockFriend, setIsBlockFriend] = useState(false);
+  const [conversationBlock, setConversationBlock] = useState<Conversation>();
+  const { isOpenBlockFriend, setIsOpenBlockFriend } = useBearStore(
+    (state) => state
+  );
   const { setSenders, conversations } = useBearStore((state) => ({
     setSenders: state.setSenders,
     conversations: state.conversations,
   }));
   const pathname = usePathname();
-
+  let senderId: string | any;
   const currentConversation: ConversationItemProps = useMemo(() => {
     const currentIdConversation = pathname.split("/")[3];
     return conversations.find(
@@ -25,6 +44,17 @@ function MessageMainContent({ children }: { children: React.ReactNode }) {
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversations]);
+
+//  1 chặn input 
+  useEffect(() => {
+    if(isOpenBlockFriend){
+      setIsBlockFriend(true);
+    }else{
+      setIsBlockFriend(false);
+    }
+  },[isOpenBlockFriend]);
+
+
   useEffect(() => {
     // Xử lý load ảnh ng gửi
     if (!conversations) return;
@@ -40,6 +70,7 @@ function MessageMainContent({ children }: { children: React.ReactNode }) {
         const sender = await axiosClient.get(
           `user/get-user/${currentConversation.IDSender}`
         );
+        senderId = sender;
         members.push(sender.data);
         const sender1 = await axiosClient.get(
           `user/get-user/${currentConversation.IDReceiver}`
@@ -53,12 +84,13 @@ function MessageMainContent({ children }: { children: React.ReactNode }) {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversations]);
-  if (!currentConversation)
+  if (!currentConversation) {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
       </div>
     );
+  }
   return (
     <div
       className={cn(
@@ -69,7 +101,8 @@ function MessageMainContent({ children }: { children: React.ReactNode }) {
       <div className="relative w-full flex-1 flex flex-col justify-between overflow-hidden">
         <Header />
         <MessageThread />
-        <ChatInput />
+        {isOpenBlockFriend ? <BlockFriend senderId={senderId} /> : <ChatInput />}
+        
       </div>
       <ConversationInfo
         type={

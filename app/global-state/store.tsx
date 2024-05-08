@@ -29,6 +29,8 @@ interface BearState {
   setReplyMessageData: (data: any) => void;
   forwardMessage: any;
   setForwardMessage: (data: any) => void;
+  isOpenBlockFriend: any;
+  setIsOpenBlockFriend: (data: any) => void;
 }
 
 export const useBearStore = create<BearState>()((set) => ({
@@ -119,4 +121,7 @@ export const useBearStore = create<BearState>()((set) => ({
       ...prevState,
       forwardMessage: data,
     })),
+  isOpenBlockFriend: false,
+  setIsOpenBlockFriend: (data: any) =>
+    set((state) => ({ ...state, isOpenBlockFriend: data })),
 }));

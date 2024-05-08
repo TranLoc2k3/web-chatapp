@@ -80,7 +80,7 @@ const userAPI = {
     
     IDConversation: string,
     groupName: string,
-    groupAvatar: File
+    groupAvatar: File|null
   )=>{
     try {
       const formData= new FormData();
