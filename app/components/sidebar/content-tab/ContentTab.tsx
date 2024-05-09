@@ -4,6 +4,7 @@ import { Separator } from "@/components/ui/separator";
 import MessageTab from "./message-tab/MessageTab";
 import { usePathname } from "next/navigation";
 import ContactTab from "./ContactTab";
+import MapTab from "./MapTab";
 import { cn } from "@/lib/utils";
 
 const data = [
@@ -15,6 +16,10 @@ const data = [
     title: "contact",
     component: <ContactTab />,
   },
+  {
+    title: "map",
+    component: <MapTab />,
+  }
 ];
 
 function ContentTab() {
