@@ -107,6 +107,26 @@ const userAPI = {
     } catch (error) {
       console.error("Error unfriending:", error);
     }
+  },
+  updateUserLocation: async (IDUser: string, longitude: number, latitude: number) => {
+    try {
+      const res = await axiosClient.post("/map/update-location", {
+        IDUser,
+        longitude,
+        latitude,
+      });
+      return res;
+    } catch (error) {
+      console.error("Error updating location:", error);
+    }
+  },
+  getAllUserLocation: async () => {
+    try {
+      const res = await axiosClient.get("/map/get-all-location");
+      return res;
+    } catch (error) {
+      console.error("Error getting all location:", error);
+    }
   }
 
 };

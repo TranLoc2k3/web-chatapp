@@ -1,4 +1,4 @@
-import { CheckSquare2, Contact2, MessageSquareText } from "lucide-react";
+import { CheckSquare2, Contact2, MapPinned, MessageSquareText } from "lucide-react";
 import MainTabItem from "./MainTabItem";
 
 const sidebarTopItem = [
@@ -9,6 +9,10 @@ const sidebarTopItem = [
   {
     title: "contact",
     icon: <Contact2 color="#FFF" width={28} height={28} />,
+  },
+  {
+    title: "map",
+    icon: <MapPinned color="#FFF" width={28} height={28} />,
   },
   {
     title: "todo",
