@@ -39,9 +39,6 @@ function UnfriendModals({ ID, onClose }: UnfriendModalsProps) {
   );
   const user = useSession().data?.token?.user;
   const modalRef = useRef<HTMLDivElement>(null);
-  const [message, setMessage] = useState<string>("");
-  const userID: string = user;
-  const friendID: string = ID;
   const IDSender = user;
   const IDReceiver = ID;
 
@@ -68,6 +65,12 @@ function UnfriendModals({ ID, onClose }: UnfriendModalsProps) {
           const { IDConversation } = response.data;
           // Sử dụng IDConversation ở đây cho mục đích của bạn
           IDConversation1 = IDConversation;
+          const {isBlock} = response.data;
+          if(isBlock){
+            setIsOpenBlockFriend(true);
+          }else{
+            setIsOpenBlockFriend(false);
+          }
           console.log("IDConversation:", IDConversation1);
         } else {
           console.log("IDConversation not found in response data");
@@ -98,7 +101,6 @@ function UnfriendModals({ ID, onClose }: UnfriendModalsProps) {
       return;
     }
 
-    // onClose();
   };
   const handleBlockFriend = async () => {
     try {
@@ -119,19 +121,6 @@ function UnfriendModals({ ID, onClose }: UnfriendModalsProps) {
       return error;
     }
   };
-  useEffect(() => {
-    socket.emit("get_block_friend", { IDConversation1, IDSender, IDReceiver });
-  }, []);
-  useEffect(() => {
-    socket.on("get_block_friend_server", (data) => {
-      if (data == true) {
-        setIsOpenBlockFriend(true);
-      } else {
-        setIsOpenBlockFriend(false);
-      }
-    });
-  },[]);
-
   useEffect(() => {
     socket.on("un_block_friend_server", (data) => {
       setIsOpenBlockFriend(false);
