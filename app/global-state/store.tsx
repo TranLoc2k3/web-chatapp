@@ -31,6 +31,8 @@ interface BearState {
   setForwardMessage: (data: any) => void;
   isOpenBlockFriend: any;
   setIsOpenBlockFriend: (data: any) => void;
+  searchTerm: string;
+  setSearchTerm: (searchTerm: string) => void;
 }
 
 export const useBearStore = create<BearState>()((set) => ({
@@ -127,4 +129,6 @@ export const useBearStore = create<BearState>()((set) => ({
     isOpenBlockFriend: false,
     setIsOpenBlockFriend: (data: any) =>
       set((state) => ({ ...state, isOpenBlockFriend: data }))
+    ,searchTerm: '',
+    setSearchTerm: (term: string) => set({ searchTerm: term }),
 }));
