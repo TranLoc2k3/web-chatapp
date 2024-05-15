@@ -33,7 +33,7 @@ const FriendListContent = () => {
         }
       }
     };
-    fetchFriendList();
+    username && fetchFriendList();
   }, [username]);
   //  Chức năng tìm kiếm đang bổ sung thêm
 

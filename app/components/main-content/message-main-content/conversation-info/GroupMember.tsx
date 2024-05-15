@@ -86,6 +86,13 @@ const DropdownMenuByPosition = ({
       IDUser: currentUserID,
     });
   };
+  const onChangeOwner = async (memberId: string) => {
+    socket.emit("change_owner_group", {
+      IDConversation,
+      IDUser: currentUserID,
+      IDNewOwner: memberId,
+    });
+  };
   if (currentUserPosition === "owner") {
     return (
       <DropdownMenu>
@@ -110,6 +117,9 @@ const DropdownMenuByPosition = ({
             </>
           ) : (
             <>
+              <DropdownMenuItem onClick={() => onChangeOwner(memberId)}>
+                Cấp trưởng nhóm
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onCreateCoOwner(memberId)}>
                 Cấp quyền phó nhóm
               </DropdownMenuItem>

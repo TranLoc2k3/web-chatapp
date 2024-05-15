@@ -44,11 +44,16 @@ function MainTab() {
   }
   useEffect(() => {
     const getUser = async () => {
-      const res = await userAPI.getUserByPhone(
-        `/user/get-user/${session.data?.token.user}`
-      );
-      setData(res);
+      try {
+        const res = await userAPI.getUserByPhone(
+          `/user/get-user/${session.data?.token.user}`
+        );
+        setData(res);
+      } catch (e) {
+        console.log(e);
+      }
     };
+    if (!session.data?.token.user) return;
     session.data?.token.user && getUser();
     const getAllFriendRequests = async () => {
       try {

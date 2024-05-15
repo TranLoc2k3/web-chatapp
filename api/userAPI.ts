@@ -69,29 +69,29 @@ const userAPI = {
     });
   },
   getFriendListByUserID: (username: string) => {
-   
-      const res=axiosClient.post("/conversation/get-list-friend",{
-        username
-      })
-      return res;
-    
+    return axiosClient.post("/conversation/get-list-friend", {
+      username,
+    });
   },
   onUpdateGroupInfo: async (
-    
     IDConversation: string,
     groupName: string,
     groupAvatar: File
-  )=>{
+  ) => {
     try {
-      const formData= new FormData();
-      formData.append("IDConversation",IDConversation);
-      formData.append("groupName",groupName);
-      formData.append("groupAvatar",groupAvatar);
-      const res= await axiosClient.post("/conversation/update-info-group",formData,{
-        headers:{
-          "Content-Type":"multipart/form-data"
+      const formData = new FormData();
+      formData.append("IDConversation", IDConversation);
+      formData.append("groupName", groupName);
+      formData.append("groupAvatar", groupAvatar);
+      const res = await axiosClient.post(
+        "/conversation/update-info-group",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
-      });
+      );
       return res;
     } catch (error) {
       console.error("Error updating group info:", error);
@@ -108,7 +108,11 @@ const userAPI = {
       console.error("Error unfriending:", error);
     }
   },
-  updateUserLocation: async (IDUser: string, longitude: number, latitude: number) => {
+  updateUserLocation: async (
+    IDUser: string,
+    longitude: number,
+    latitude: number
+  ) => {
     try {
       const res = await axiosClient.post("/map/update-location", {
         IDUser,
@@ -127,8 +131,7 @@ const userAPI = {
     } catch (error) {
       console.error("Error getting all location:", error);
     }
-  }
-
+  },
 };
 
 export { userAPI };

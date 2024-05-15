@@ -29,7 +29,7 @@ interface Conversation {
 }
 let IDConversation1: string;
 function UnfriendModals({ ID, onClose }: UnfriendModalsProps) {
-  const socket = io("http://localhost:8080");
+  // const socket = io("http://localhost:8080");
 
   const [conversationBlock, setConversationBlock] = useState<
     Conversation | any
@@ -65,13 +65,13 @@ function UnfriendModals({ ID, onClose }: UnfriendModalsProps) {
           const { IDConversation } = response.data;
           // Sử dụng IDConversation ở đây cho mục đích của bạn
           IDConversation1 = IDConversation;
-          const {isBlock} = response.data;
-          if(isBlock){
+          const { isBlock } = response.data;
+          if (isBlock) {
             setIsOpenBlockFriend(true);
-          }else{
+          } else {
             setIsOpenBlockFriend(false);
           }
-          console.log("IDConversation:", IDConversation1);
+          // console.log("IDConversation:", IDConversation1);
         } else {
           console.log("IDConversation not found in response data");
         }
@@ -80,7 +80,7 @@ function UnfriendModals({ ID, onClose }: UnfriendModalsProps) {
       }
     };
 
-    fetchConversation();
+    user && fetchConversation();
   }, [IDSender, IDReceiver]);
   console.log("IDConversation1:", IDConversation1);
 
@@ -100,13 +100,11 @@ function UnfriendModals({ ID, onClose }: UnfriendModalsProps) {
       toast.error("Đã có lỗi xảy ra");
       return;
     }
-
   };
   const handleBlockFriend = async () => {
     try {
       socket.emit("block_friend", { IDConversation1, IDSender, IDReceiver });
       setIsOpenBlockFriend(true);
-    
     } catch (error) {
       toast.error("Đã có lỗi xảy ra");
       return error;
@@ -124,20 +122,20 @@ function UnfriendModals({ ID, onClose }: UnfriendModalsProps) {
   useEffect(() => {
     socket.on("un_block_friend_server", (data) => {
       setIsOpenBlockFriend(false);
-      if(data == "Unblock successful"){
+      if (data == "Unblock successful") {
         toast.success("Đã bỏ chặn bạn");
       }
     });
   }, [socket, setIsOpenBlockFriend]);
   useEffect(() => {
     socket.on("block_friend_server", (data) => {
-  if(data == "Block successful"){
-    toast.success("Đã chặn bạn");
-  }
+      if (data == "Block successful") {
+        toast.success("Đã chặn bạn");
+      }
       setIsOpenBlockFriend(true);
     });
   }, [socket, setIsOpenBlockFriend]);
-  
+
   useEffect(() => {
     document.addEventListener("mousedown", handleOutSideClick);
     return () => {

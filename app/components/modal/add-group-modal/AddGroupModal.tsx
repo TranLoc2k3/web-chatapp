@@ -81,15 +81,20 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({
 
   useEffect(() => {
     const getFriendList = async () => {
-      const res = await axiosClient.post("conversation/get-list-friend", {
-        username,
-      });
-      setFriendList(res.data);
-      setSearchResult(res.data);
-      setCheckedItems(new Array(res.data.length).fill(false));
+      try {
+        const res = await axiosClient.post("conversation/get-list-friend", {
+          username,
+        });
+        setFriendList(res.data);
+        setSearchResult(res.data);
+        setCheckedItems(new Array(res.data.length).fill(false));
+      } catch (e) {
+        console.log(e);
+      }
     };
+
     username && getFriendList();
-  }, [username]);
+  }, [username, isvisible]);
 
   return (
     <AnimatePresence>
