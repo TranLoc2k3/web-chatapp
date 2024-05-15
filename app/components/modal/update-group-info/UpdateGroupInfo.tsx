@@ -85,7 +85,7 @@ function UpdateGroupInfoModal({
       <div id="recaptcha-container"></div>
       <Toaster toastOptions={{ duration: 4000 }} />
       <div className="bg-gray-800 bg-opacity-50 absolute inset-0"></div>
-      <div className="bg-white rounded-lg p-4 z-50 h-[500px]  w-[400px] relative">
+      <div className="bg-white rounded-lg p-4 z-50 h-[400px]  w-[400px] relative">
         <div className="relative border-b-2 h-[30px]">
           <h2 className="absolute ">Cập nhật thông tin </h2>
           <X

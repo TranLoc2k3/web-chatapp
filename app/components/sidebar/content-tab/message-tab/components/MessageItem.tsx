@@ -1,5 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useBearStore } from "@/app/global-state/store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { is } from "date-fns/locale";
+import { url } from "inspector";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -26,12 +29,17 @@ interface Conversation {
   Receiver: Receiver;
   isGroup: boolean;
   lastChange: string;
+  groupAvatar: string;
+  groupName: string;
+  fullnameReceiver: string;
+  urlavatarReceiver: string;
 }
 interface MessageItemProps {
   conversation: Conversation; // Thay vì user, sử dụng conversation chứa thông tin đầy đủ của cuộc trò chuyện
 }
 
 function MessageItem({ conversation }: MessageItemProps) {
+  const searchTerm = useBearStore((state) => state.searchTerm);
   const receiver = conversation.Receiver;
   const messageDetail = conversation.MessageDetail;
   const [textTime, setTextTime] = useState<string>("");
@@ -53,34 +61,52 @@ function MessageItem({ conversation }: MessageItemProps) {
       setTextTime(daysAgo + " ngày trước");
     }
   }, []);
+  let urlavatar;
+  let fullname;
+  let isGroup;
+  if (searchTerm) {
+    isGroup = conversation.isGroup;
+    if (isGroup) {
+      fullname = conversation.groupName;
+      urlavatar = conversation.groupAvatar;
+    } else {
+      fullname = conversation.fullnameReceiver;
+      urlavatar = conversation.urlavatarReceiver;
+    }
+  } else {
+    urlavatar = receiver?.urlavatar;
+    fullname = receiver?.fullname;
+  }
 
   return (
     <div>
       <Link href={`/dashboard/messages/${conversation.IDConversation}`}>
         <div className="h-[74px] flex items-center cursor-pointer hover:bg-[#f3f5f6] px-4">
           <Avatar className="size-12">
-            <AvatarImage src={receiver?.urlavatar} />
-            <AvatarFallback>{receiver?.fullname}</AvatarFallback>
+            <AvatarImage src={urlavatar} />
+            <AvatarFallback>{fullname}</AvatarFallback>
           </Avatar>
           <div className="ml-3 w-full">
             <div className="flex w-full justify-between">
-              <p className="text-base font-medium text-[#081c36]">
-                {receiver?.fullname}
-              </p>
+              <p className="text-base font-medium text-[#081c36]">{fullname}</p>
               <p className="text-[12px]">
                 {!textTime.includes("NaN") && textTime}
               </p>
             </div>
             {/* Sử dụng các thông tin từ cuộc trò chuyện, ví dụ: */}
             <p className="text-[#7589a3] text-[11px] text-ellipsis whitespace-nowrap break-all overflow-hidden max-w-[250px]">
-              Tin nhắn: {
-                  messageDetail?.type === 'text' ? messageDetail.content :
-                  messageDetail?.type === 'file' ? "Tệp mới được gửi" :
-                  messageDetail?.type === 'image' ? "Hình ảnh mới được gửi" :
-                  messageDetail?.type === 'video' ? "Video mới được gửi" :
-                  messageDetail?.type === 'link' ? "Liên kết mới được gửi" :
-                  messageDetail?.content
-              }
+              Tin nhắn:{" "}
+              {messageDetail?.type === "text"
+                ? messageDetail.content
+                : messageDetail?.type === "file"
+                ? "Tệp mới được gửi"
+                : messageDetail?.type === "image"
+                ? "Hình ảnh mới được gửi"
+                : messageDetail?.type === "video"
+                ? "Video mới được gửi"
+                : messageDetail?.type === "link"
+                ? "Liên kết mới được gửi"
+                : messageDetail?.content}
             </p>
           </div>
         </div>

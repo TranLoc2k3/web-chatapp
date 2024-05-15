@@ -32,7 +32,7 @@ const MessageTabContent: React.FC<MessageTabContentProps> = ({
       </TabsList>
       <Separator />
       <TabsContent className="mt-0" value="account">
-        <MessageList searchTerm={searchTerm} />
+        <MessageList  />
       </TabsContent>
     </Tabs>
   );
