@@ -4,16 +4,17 @@ import { TYPE_GROUP } from "@/app/types";
 
 interface IProps {
   type: TYPE_GROUP;
-  conversationName: string;
+  conversationName: string | undefined;
+  avatar: string | undefined;
 }
 
-function ConversationInfoHeader({ type, conversationName }: IProps) {
+function ConversationInfoHeader({ type, conversationName, avatar }: IProps) {
   return (
     <div className="px-4 py-3">
       <div className="flex flex-col justify-center items-center">
         <Avatar className="size-14 my-3">
-          <AvatarImage src="https://github.com/shadcn.png" />
-          <AvatarFallback>CN</AvatarFallback>
+          <AvatarImage src={avatar} />
+          <AvatarFallback>{conversationName}</AvatarFallback>
         </Avatar>
         <p className="text-[17px] text-[#081c36] font-[600]">
           {conversationName}

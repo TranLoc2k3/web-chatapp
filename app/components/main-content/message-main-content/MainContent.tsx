@@ -12,6 +12,7 @@ import { usePathname } from "next/navigation";
 import BlockFriend from "../../modal/unfriend-modal/OpenBlockFriend";
 import { io } from "socket.io-client";
 import { se } from "date-fns/locale";
+import { socket } from "@/configs/socket";
 interface Conversation {
   IDConversation: string;
   IDNewestMessage: string;
@@ -25,7 +26,7 @@ interface Conversation {
   listImage: string[];
 }
 function MessageMainContent({ children }: { children: React.ReactNode }) {
-  const socket = io("http://localhost:8080");
+  // const socket = io("http://localhost:8080");
   const [isOpenConversationBlock, setIsOpenConversationBlock] = useState(false);
   const { isOpenBlockFriend, setIsOpenBlockFriend } = useBearStore(
     (state) => state
@@ -48,7 +49,7 @@ function MessageMainContent({ children }: { children: React.ReactNode }) {
   let IDSender = currentConversation?.IDSender;
   let IDReceiver = currentConversation?.IDReceiver;
   let IDConversation1 = currentConversation?.IDConversation;
-  
+
   // chặn bạn
   useEffect(() => {
     socket.emit("get_block_friend", { IDConversation1, IDSender, IDReceiver });

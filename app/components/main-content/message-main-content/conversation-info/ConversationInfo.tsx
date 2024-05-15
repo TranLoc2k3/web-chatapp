@@ -1,7 +1,7 @@
 "use client";
 import AddMemberGroup from "@/app/components/modal/AddMemberGroup";
 import { useBearStore } from "@/app/global-state/store";
-import { TYPE_GROUP } from "@/app/types";
+import { ConversationItemProps, TYPE_GROUP } from "@/app/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,8 @@ import ConversationInfoBody from "./conversation-info-body/ConversationInfoBody"
 import ConversationInfoHeader from "./conversation-info-header/Header";
 import AddMemberToGroup from "@/app/components/modal/AddMemberToGroup";
 import ForwardMessageModal from "@/app/components/modal/ForwardMessageModal";
+import { useMemo } from "react";
+import { usePathname } from "next/navigation";
 
 interface IProps {
   type: TYPE_GROUP;
@@ -22,15 +24,26 @@ function ConversationInfo({ type }: IProps) {
   const openChildModalConversationInfo = useBearStore(
     (state) => state.openChildModalConversationInfo
   );
-  const { openAddMemberGroup, setOpenMemberGroup } = useBearStore((state) => ({
-    openAddMemberGroup: state.openAddMemberGroup,
-    setOpenMemberGroup: state.setOpenAddMemberGroup,
-  }));
+  const { openAddMemberGroup, setOpenMemberGroup, conversations } =
+    useBearStore((state) => ({
+      openAddMemberGroup: state.openAddMemberGroup,
+      setOpenMemberGroup: state.setOpenAddMemberGroup,
+      conversations: state.conversations,
+    }));
 
   const setOpenChildModalConversationInfo = useBearStore(
     (state) => state.setOpenChildModalConversationInfo
   );
+  const pathname = usePathname();
 
+  const currentConversation: ConversationItemProps = useMemo(() => {
+    const currentIdConversation = pathname.split("/")[3];
+    return conversations.find(
+      (conversation: any) =>
+        conversation.IDConversation === currentIdConversation
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversations]);
   return (
     <>
       <div
@@ -67,7 +80,8 @@ function ConversationInfo({ type }: IProps) {
         <ScrollArea className="h-[calc(100%-68px)]">
           <ConversationInfoHeader
             type={type}
-            conversationName="Công Nghệ Mới"
+            conversationName={currentConversation.groupName}
+            avatar={currentConversation.groupAvatar}
           />
           <ConversationInfoBody typeGroup={type} />
         </ScrollArea>
