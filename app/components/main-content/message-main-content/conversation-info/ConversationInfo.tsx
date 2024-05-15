@@ -78,11 +78,19 @@ function ConversationInfo({ type }: IProps) {
           orientation="vertical"
         />
         <ScrollArea className="h-[calc(100%-68px)]">
-          <ConversationInfoHeader
-            type={type}
-            conversationName={currentConversation.groupName}
-            avatar={currentConversation.groupAvatar}
-          />
+          {type === TYPE_GROUP.SIGNLE ? (
+            <ConversationInfoHeader
+              type={type}
+              conversationName={currentConversation.Receiver.fullname}
+              avatar={currentConversation.Receiver.urlavatar}
+            />
+          ) : (
+            <ConversationInfoHeader
+              type={type}
+              conversationName={currentConversation.groupName}
+              avatar={currentConversation.groupAvatar}
+            />
+          )}
           <ConversationInfoBody typeGroup={type} />
         </ScrollArea>
 
