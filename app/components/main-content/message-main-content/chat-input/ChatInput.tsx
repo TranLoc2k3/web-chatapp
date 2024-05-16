@@ -32,6 +32,7 @@ const EmojiPicker = dynamic(
   { ssr: false }
 );
 export default function ChatInput({isBlocked}: {isBlocked: boolean}) {
+  const setSearchTerm = useBearStore((state) => state.setSearchTerm);
   const [message, setMessage] = useState({
     content: "",
     type: TypeMessage.TEXT,
@@ -85,10 +86,12 @@ export default function ChatInput({isBlocked}: {isBlocked: boolean}) {
   };
 
   const onSendMessage = () => {
-    if(isBlocked) {
-      alert("Bạn đã bị chặn");
-      return;
-    };
+    setSearchTerm("");
+    // if(isBlocked) {
+    //   alert("Bạn đã bị chặn");
+    //   return;
+    // };
+    
     const payload = {
       IDSender: senderId,
       IDConversation: pathname.split("/")[3],
