@@ -13,6 +13,7 @@ import {
   MessageSquareText,
   Smile,
   ThumbsUp,
+  X,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
@@ -30,7 +31,8 @@ const EmojiPicker = dynamic(
   },
   { ssr: false }
 );
-export default function ChatInput() {
+export default function ChatInput({isBlocked}: {isBlocked: boolean}) {
+  const setSearchTerm = useBearStore((state) => state.setSearchTerm);
   const [message, setMessage] = useState({
     content: "",
     type: TypeMessage.TEXT,
@@ -44,6 +46,10 @@ export default function ChatInput() {
   const { conversations, setConversations } = useBearStore((state) => ({
     conversations: state.conversations,
     setConversations: state.setConversations,
+  }));
+  const { replyMessageData, setReplyMessageData } = useBearStore((state) => ({
+    replyMessageData: state.replyMessageData,
+    setReplyMessageData: state.setReplyMessageData,
   }));
   const [isOpenEmoji, setIsOpenEmoji] = useState(false);
   const pathname = usePathname();
@@ -80,6 +86,12 @@ export default function ChatInput() {
   };
 
   const onSendMessage = () => {
+    setSearchTerm("");
+    // if(isBlocked) {
+    //   alert("Bạn đã bị chặn");
+    //   return;
+    // };
+    
     const payload = {
       IDSender: senderId,
       IDConversation: pathname.split("/")[3],
@@ -112,21 +124,14 @@ export default function ChatInput() {
     payload.fileList = fileList;
     payload.video = videoList;
     if (senderId) {
-      socket.emit("send_message", payload);
-      const currentConversations = pathname.split("/")[3];
-      const currentIndex = conversations.findIndex(
-        (conversation: any) =>
-          conversation.IDConversation === currentConversations
-      );
-      if (currentIndex > -1) {
-        const updatedConversations = [
-          conversations[currentIndex],
-          ...conversations,
-        ];
-        updatedConversations.splice(currentIndex + 1, 1);
-
-        setConversations(updatedConversations);
-      }
+      if (replyMessageData && message.content.trim() !== "") {
+        const payload = {
+          ...replyMessageData,
+          content: message.content,
+        };
+        socket.emit("reply_message", payload);
+        setReplyMessageData(null);
+      } else socket.emit("send_message", payload);
     }
     setFiles([]);
     setMessage({
@@ -145,15 +150,6 @@ export default function ChatInput() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [files]);
-  // useEffect(() => {
-  //   const fechtData = async () => {
-  //     const res = await axios.get(
-  //       "https://imagetintin.s3.ap-southeast-1.amazonaws.com/d64e4feb-584b-4c85-bd3e-a77724da6d75"
-  //     );
-  //     console.log(res);
-  //   };
-  //   fechtData();
-  // }, []);
 
   return (
     // h-24
@@ -186,8 +182,19 @@ export default function ChatInput() {
             </div>
           )}
           <div className="flex flex-1 items-center bg-white flex-grow space-x-1 justify-between">
+            {replyMessageData && (
+              <p className="pl-2 font-[500] flex items-center gap-1">
+                Phản hồi:
+                <span>
+                  <X
+                    onClick={() => setReplyMessageData(null)}
+                    className="cursor-pointer"
+                  />
+                </span>
+              </p>
+            )}
             <input
-              className="w-full h-10 px-3"
+              className="flex-1 h-10 px-3"
               type="text"
               placeholder="Nhập tin nhắn..."
               onChange={handleChange}

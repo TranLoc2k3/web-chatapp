@@ -8,7 +8,6 @@ export default async function middleware(
 ) {
   const token = await getToken({ req });
   const isAuthenticated = !!token;
-  console.log(token, isAuthenticated);
 
   if (req.nextUrl.pathname.startsWith("/auth/sign-in") && isAuthenticated) {
     return NextResponse.redirect(new URL("/dashboard/messages", req.url));

@@ -1,3 +1,4 @@
+import { useBearStore } from "@/app/global-state/store";
 import { TYPE_GROUP } from "@/app/types";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -71,6 +72,9 @@ function ConversationInfoButton({ typeGroup }: IProps) {
       isConversationPinned: !pre.isConversationPinned,
     }));
   };
+  const setOpenAddMemberGroup = useBearStore(
+    (state) => state.setOpenAddMemberGroup
+  );
   return (
     <div className="flex pt-3 *:flex-1">
       <HeaderButton
@@ -109,7 +113,7 @@ function ConversationInfoButton({ typeGroup }: IProps) {
                 strokeWidth={1.5}
               />
             }
-            onClick={() => {}}
+            onClick={setOpenAddMemberGroup}
           />
           <HeaderButton
             title="Quản lý nhóm"

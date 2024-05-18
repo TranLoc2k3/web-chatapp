@@ -25,15 +25,20 @@ function FriendRequestItem({ avatar, fullname, sendedDate, id }: IProps) {
   const handleFriendRequest = async (type: string) => {
     const res = await userAPI.handleFriendRequest({ id, type });
     if (res.data.code === 1) {
-      setCountFriendRequest(countFriendRequest - 1); 
+      setCountFriendRequest(countFriendRequest - 1);
       // Lấy IDUser rồi emit
       // useSession();
       const IDUser = session.data?.token?.user;
       const payload = {
         IDUser: IDUser,
-      }
-      
+      };
+      const payload1 = {
+        IDUser: res.data.senderID,
+      };
+      console.log(res);
       socket.emit("load_conversations", payload);
+
+      socket.emit("load_conversations", payload1);
     }
   };
   return (

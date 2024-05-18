@@ -1,33 +1,60 @@
-export enum TYPE_GROUP {
-  SIGNLE = "single",
-  GROUP = "group",
-}
+  export enum TYPE_GROUP {
+    SIGNLE = "single",
+    GROUP = "group",
+  }
 
-export enum TypeMessage {
-  FILE = "file",
-  TEXT = "text",
-  VIDEO = "video",
-  IMAGE = "image",
-  LINK = "link",
-}
+  export enum TypeMessage {
+    FILE = "file",
+    TEXT = "text",
+    VIDEO = "video",
+    IMAGE = "image",
+    LINK = "link",
+  }
 
-export interface UserProps {
-  ID: string;
-  username: string;
-  password: string;
-  fullname: string;
-  ismale: boolean;
-  phone: string;
-  urlavatar: string;
-  birthday: string;
-  friendList: string[];
-}
+  export interface UserProps {
+    ID: string;
+    username: string;
+    password: string;
+    fullname: string;
+    ismale: boolean;
+    phone: string;
+    urlavatar: string;
+    birthday: string;
+    friendList: string[];
+    isOwner?: boolean;
+    isCoOwner?: boolean;
+  }
 
-export interface MessageItemProps {
-  IDMessageDetail: string;
+  export interface MessageItemProps {
+    IDMessageDetail: string;
+    IDConversation: string;
+    IDSender: string;
+    type: TypeMessage;
+    content: string;
+    dateTime: string;
+    isRemove: boolean;
+    isRecall: boolean;
+    userSender?: any;
+    isReply?: boolean;
+  }
+
+export interface ConversationItemProps {
+  IDConversation: string;
   IDSender: string;
-  type: TypeMessage;
-  content: string;
-  dateTime: string;
-  isRemove: boolean;
+  groupMembers: any;
+  IDNewestMessage: string;
+  IDReceiver?: string;
+  isGroup: boolean;
+  listFile?: any;
+  listImage?: any;
+  groupName?: string;
+  groupAvatar?: string;
+  Receiver?: any;
+}
+
+export enum CallStatus {
+  CALLEE_NOT_FOUND = "CALLEE_NOT_FOUND",
+  CALL_ACCEPTED = "CALL_ACCEPTED",
+  CALL_REJECTED = "CALL_REJECTED",
+  CALL_UNAVAILABLE = "CALL_UNAVAILABLE",
 }

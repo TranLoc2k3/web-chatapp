@@ -5,7 +5,7 @@ import Credentials from "next-auth/providers/credentials";
 export const authOptions: AuthOptions = {
   session: {
     strategy: "jwt",
-    maxAge: 15 * 60,
+    maxAge: 60 * 60,
   },
   providers: [
     Credentials({
@@ -26,8 +26,7 @@ export const authOptions: AuthOptions = {
         }
 
         const res = await userAPI.onSignIn(phone, password);
-        console.log(res, phone, password);
-        
+
         if (res.data.message === "Success") {
           return res.data.data;
         }

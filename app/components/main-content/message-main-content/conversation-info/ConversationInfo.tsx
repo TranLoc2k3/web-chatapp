@@ -1,11 +1,17 @@
 "use client";
+import AddMemberGroup from "@/app/components/modal/AddMemberGroup";
 import { useBearStore } from "@/app/global-state/store";
-import { cn } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
+import { ConversationItemProps, TYPE_GROUP } from "@/app/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import ConversationInfoHeader from "./conversation-info-header/Header";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import ChildModal from "./ChildModal";
 import ConversationInfoBody from "./conversation-info-body/ConversationInfoBody";
-import { TYPE_GROUP } from "@/app/types";
+import ConversationInfoHeader from "./conversation-info-header/Header";
+import AddMemberToGroup from "@/app/components/modal/AddMemberToGroup";
+import ForwardMessageModal from "@/app/components/modal/ForwardMessageModal";
+import { useMemo } from "react";
+import { usePathname } from "next/navigation";
 
 interface IProps {
   type: TYPE_GROUP;
@@ -15,7 +21,29 @@ function ConversationInfo({ type }: IProps) {
   const onClose = () => {
     state.setOpenConversationInfo();
   };
+  const openChildModalConversationInfo = useBearStore(
+    (state) => state.openChildModalConversationInfo
+  );
+  const { openAddMemberGroup, setOpenMemberGroup, conversations } =
+    useBearStore((state) => ({
+      openAddMemberGroup: state.openAddMemberGroup,
+      setOpenMemberGroup: state.setOpenAddMemberGroup,
+      conversations: state.conversations,
+    }));
 
+  const setOpenChildModalConversationInfo = useBearStore(
+    (state) => state.setOpenChildModalConversationInfo
+  );
+  const pathname = usePathname();
+
+  const currentConversation: ConversationItemProps = useMemo(() => {
+    const currentIdConversation = pathname.split("/")[3];
+    return conversations.find(
+      (conversation: any) =>
+        conversation.IDConversation === currentIdConversation
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversations]);
   return (
     <>
       <div
@@ -50,13 +78,51 @@ function ConversationInfo({ type }: IProps) {
           orientation="vertical"
         />
         <ScrollArea className="h-[calc(100%-68px)]">
-          <ConversationInfoHeader
-            type={TYPE_GROUP.GROUP}
-            conversationName="Công Nghệ Mới"
-          />
-          <ConversationInfoBody typeGroup={TYPE_GROUP.GROUP} />
+          {type === TYPE_GROUP.SIGNLE ? (
+            <ConversationInfoHeader
+              type={type}
+              conversationName={currentConversation.Receiver.fullname}
+              avatar={currentConversation.Receiver.urlavatar}
+            />
+          ) : (
+            <ConversationInfoHeader
+              type={type}
+              conversationName={currentConversation.groupName}
+              avatar={currentConversation.groupAvatar}
+            />
+          )}
+          <ConversationInfoBody typeGroup={type} />
         </ScrollArea>
+
+        {/* Child Modal */}
+        <div
+          className={
+            openChildModalConversationInfo.member ||
+            openChildModalConversationInfo.commonGroup
+              ? "absolute size-full top-0 right-0"
+              : ""
+          }
+        >
+          <ChildModal />
+        </div>
       </div>
+
+      <AddMemberGroup
+        isvisible={openAddMemberGroup}
+        onClose={setOpenMemberGroup}
+      />
+      <AddMemberToGroup
+        isvisible={openChildModalConversationInfo.addMemberIntoGroup}
+        onClose={() =>
+          setOpenChildModalConversationInfo("addMemberIntoGroup", false)
+        }
+      />
+      <ForwardMessageModal
+        isvisible={openChildModalConversationInfo.forwardMessage}
+        onClose={() =>
+          setOpenChildModalConversationInfo("forwardMessage", false)
+        }
+      />
     </>
   );
 }

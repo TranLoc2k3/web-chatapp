@@ -19,10 +19,24 @@ interface BearState {
   setSendingCount: (count: number) => void;
   friendRequests: any;
   setFriendRequests: (friendRequests: any) => void;
+  openAddMemberGroup: boolean;
+  setOpenAddMemberGroup: () => void;
+  openChildModalConversationInfo: any;
+  setOpenChildModalConversationInfo: (key: string, value: boolean) => void;
+  memberInfoCurrentGroupConversation: any;
+  setMemberInfoCurrentGroupConversation: (memberInfo: any) => void;
+  replyMessageData: any;
+  setReplyMessageData: (data: any) => void;
+  forwardMessage: any;
+  setForwardMessage: (data: any) => void;
+  isOpenBlockFriend: any;
+  setIsOpenBlockFriend: (data: any) => void;
+  searchTerm: string;
+  setSearchTerm: (searchTerm: string) => void;
 }
 
 export const useBearStore = create<BearState>()((set) => ({
-  isOpenConversationInfo: false,
+  isOpenConversationInfo: true,
   userPhone: "",
   user: null,
   senders: [],
@@ -71,4 +85,50 @@ export const useBearStore = create<BearState>()((set) => ({
       ...prevState,
       friendRequests,
     })),
+  openAddMemberGroup: false,
+  setOpenAddMemberGroup: () =>
+    set((prevState) => ({
+      ...prevState,
+      openAddMemberGroup: !prevState.openAddMemberGroup,
+    })),
+  openChildModalConversationInfo: {
+    member: false,
+    commonGroup: false,
+    addMemberIntoGroup: false,
+    forwardMessage: false,
+    receiveCall: false,
+    videoCall: false,
+    groupCall: false,
+  },
+  setOpenChildModalConversationInfo: (key: string, value: boolean) =>
+    set((prevState) => ({
+      ...prevState,
+      openChildModalConversationInfo: {
+        ...prevState.openChildModalConversationInfo,
+        [key]: value,
+      },
+    })),
+  memberInfoCurrentGroupConversation: [],
+  setMemberInfoCurrentGroupConversation: (memberInfo: any) =>
+    set((prevState) => ({
+      ...prevState,
+      memberInfoCurrentGroupConversation: memberInfo,
+    })),
+  replyMessageData: null,
+  setReplyMessageData: (data: any) =>
+    set((prevState) => ({
+      ...prevState,
+      replyMessageData: data,
+    })),
+  forwardMessage: null,
+  setForwardMessage: (data: any) =>
+    set((prevState) => ({
+      ...prevState,
+      forwardMessage: data,
+    })),
+    isOpenBlockFriend: false,
+    setIsOpenBlockFriend: (data: any) =>
+      set((state) => ({ ...state, isOpenBlockFriend: data }))
+    ,searchTerm: '',
+    setSearchTerm: (term: string) => set({ searchTerm: term }),
 }));

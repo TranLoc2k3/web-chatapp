@@ -16,6 +16,8 @@ import {
 import MessageItem, { MessageItemLoading } from "./message/MessageItem";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { userAPI } from "@/api/userAPI";
+import { Loader2 } from "lucide-react";
 
 export default function MessageThread() {
   const ref = useRef<HTMLDivElement>(null);
@@ -28,6 +30,11 @@ export default function MessageThread() {
   const [scrollToKey, setScrollToKey] = useState<string>("");
   const messageItemrefs = useRef<Record<string, any>>({});
   const username = useSession().data?.token?.user;
+  const pathname = usePathname();
+  const { conversations, setConversations } = useBearStore((state) => ({
+    conversations: state.conversations,
+    setConversations: state.setConversations,
+  }));
 
   const onScrollTop = useCallback(
     (e: UIEvent<HTMLDivElement>) => {
@@ -36,7 +43,7 @@ export default function MessageThread() {
           if (IDNextBucket === "") return;
           setIsLoadingOldMessage(true);
           const res = await axiosClient.post("/conversation/getMessageDetail", {
-            IDConversation: "8b6e5b23-298e-4c32-89df-3d65f112ad59",
+            IDConversation: pathname.split("/")[3],
             IDNextBucket,
           });
           const currentOldestID = messageList
@@ -74,8 +81,6 @@ export default function MessageThread() {
     }
   }, [sendingCount, messageList]);
 
-  const pathname = usePathname();
-
   useEffect(() => {
     const getMessageDetails = async () => {
       const res = await axiosClient.post("/conversation/getMessageDetail", {
@@ -91,9 +96,16 @@ export default function MessageThread() {
     socket.on("sending_message", (data: any) => {
       setSendingCount(data);
     });
-    socket.on("receive_message", (data) => {
-      // username && socket.emit("load_conversations", { IDUser: username });
-      setMessageList((pre) => [data as MessageItemProps, ...pre]);
+    socket.on("receive_message", async (data: any) => {
+      socket.emit("load_conversations", { IDUser: username });
+      const currentConversations = pathname.split("/")[3];
+
+      const userSender = await userAPI.getUserByPhone(
+        `user/get-user/${data.IDSender}`
+      );
+      data.userSender = userSender;
+      data.IDConversation === currentConversations &&
+        setMessageList((pre) => [data as MessageItemProps, ...pre]);
       setSendingCount(0);
     });
     return () => {
@@ -113,7 +125,9 @@ export default function MessageThread() {
         className="size-full [&>div:nth-child(2)>div:first-child]:h-full"
       >
         {isLoadingOldMessage && (
-          <div className="size-10 bg-red-400">LOADING...</div>
+          <div className="flex justify-center items-center animate-spin">
+            <Loader2 />
+          </div>
         )}
         <div ref={refMessageList} className="h-full py-3 flex flex-col-reverse">
           {Array(sendingCount)
@@ -121,15 +135,16 @@ export default function MessageThread() {
             .map((item, index) => (
               <MessageItemLoading key={index} />
             ))}
-          {messageList.map((item) => (
-            <MessageItem
-              ref={(el: HTMLDivElement) =>
-                (messageItemrefs.current[item.IDMessageDetail] = el)
-              }
-              message={item}
-              key={item.IDMessageDetail}
-            />
-          ))}
+          {messageList &&
+            messageList.map((item) => (
+              <MessageItem
+                ref={(el: HTMLDivElement) =>
+                  (messageItemrefs.current[item.IDMessageDetail] = el)
+                }
+                message={item}
+                key={item.IDMessageDetail}
+              />
+            ))}
         </div>
         <div ref={ref} className="pb-2" />
       </ScrollArea>
